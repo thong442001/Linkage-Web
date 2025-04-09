@@ -1,0 +1,368 @@
+/* Container chính */
+.home-container {
+    background-color: #f8f9fb;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Header (div chứa logo, search bar, và các phần tử khác) */
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 20px;
+    background-color: white;
+    margin-bottom: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Div chứa logo và search bar */
+.logo-search-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+/* Logo */
+.logo {
+    width: 45px;
+    height: 45px;
+}
+
+/* Search bar */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f0f2f5;
+    border-radius: 20px;
+    padding: 0 10px;
+    margin-left: 10px;
+    width: fit-content;
+}
+
+/* Icon tìm kiếm */
+.search-icon {
+    color: #606770;
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+/* Input tìm kiếm */
+.search-input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    min-height: 40px;
+    padding: 0;
+    font-size: 16px;
+    color: #1c1e21;
+    width: 200px;
+}
+
+/* Tùy chỉnh placeholder */
+.search-input::placeholder {
+    color: #606770;
+    opacity: 1;
+}
+
+/* Mid-header (chứa các icon điều hướng) */
+.mid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 45%;
+    gap: 20px;
+    /* Khoảng cách giữa các icon */
+}
+
+/* Mid-header1 (chứa các icon bên phải: Menu, Messenger, Notifications, Profile) */
+.mid-header1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Khoảng cách giữa các icon */
+}
+
+/* Wrapper cho từng icon */
+.icon-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Wrapper cho từng icon trong mid-header1 */
+.icon-wrapper1 {
+    background-color: #e4e6eb;
+    /* Màu nền xám nhạt giống trong hình */
+    border-radius: 50%;
+    /* Bo tròn thành hình tròn */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    /* Chiều rộng cố định */
+    height: 40px;
+    /* Chiều cao cố định */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    /* Hiệu ứng chuyển màu mượt mà */
+}
+
+
+/* Icon trong mid-header1 */
+.nav-icon1 {
+    font-size: 20px;
+    color: #050505;
+    /* Màu đen giống trong hình */
+}
+
+/* Icon điều hướng */
+.nav-icon {
+    font-size: 24px;
+    color: #606770;
+    /* Màu xám đậm khi không được chọn */
+}
+
+/* Hiệu ứng khi icon được chọn */
+.icon-wrapper.active .nav-icon {
+    color: #1877f2;
+    /* Màu xanh của Facebook khi được chọn */
+}
+
+/* Đường gạch màu xanh bên dưới icon được chọn */
+.icon-wrapper.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    /* Chiều rộng của đường gạch */
+    height: 3px;
+    /* Độ dày của đường gạch */
+    background-color: #1877f2;
+    /* Màu xanh của Facebook */
+}
+
+/* Hiệu ứng hover */
+.icon-wrapper:hover .nav-icon {
+    color: #1877f2;
+}
+
+/* Wrapper cho avatar */
+.avatar-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Avatar */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* Bo tròn hình đại diện */
+    object-fit: cover;
+    /* Đảm bảo ảnh không bị méo */
+}
+
+/* Body container (chia thành 3 phần bằng Grid) */
+.body-container {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    /* 3 cột: sidebar trái (250px), nội dung chính (co giãn), sidebar phải (300px) */
+    gap: 20px;
+    /* Khoảng cách giữa các cột */
+    padding: 20px;
+    max-width: 1400px;
+    /* Giới hạn chiều rộng tối đa */
+    margin: 0 auto;
+    /* Căn giữa */
+}
+
+/* Sidebar trái */
+.sidebar-left {
+    position: sticky;
+    top: 70px;
+    /* Đảm bảo sidebar không bị che bởi header */
+    height: calc(100vh - 70px);
+    /* Chiều cao sidebar bằng chiều cao màn hình trừ header */
+    overflow-y: auto;
+    /* Cho phép cuộn nếu nội dung dài */
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.menu-item:hover {
+    background-color: #e4e6eb;
+}
+
+.menu-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.menu-icon {
+    font-size: 24px;
+    color: #1877f2;
+    margin-right: 10px;
+}
+
+.menu-item span {
+    font-size: 16px;
+    color: #050505;
+}
+
+.see-more {
+    color: #65676b;
+    font-weight: 500;
+}
+
+/* Nội dung chính (giữa) */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: 150px;
+}
+
+.create-post {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.post-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: #f0f2f5;
+    padding: 10px;
+    border-radius: 20px;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.post-input::placeholder {
+    color: #65676b;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.action-button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px;
+    font-size: 14px;
+    color: #65676b;
+    cursor: pointer;
+    text-align: center;
+}
+
+.action-button:hover {
+    background-color: #e4e6eb;
+    border-radius: 8px;
+}
+
+.post {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-author {
+    font-weight: 600;
+    color: #050505;
+}
+
+.post-time {
+    font-size: 14px;
+    color: #65676b;
+}
+
+.post-info {
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.post p {
+    margin: 10px 0;
+    color: #050505;
+}
+
+.post-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+/* Sidebar phải */
+.sidebar-right {
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+}
+
+.contacts h3 {
+    font-size: 16px;
+    color: #65676b;
+    margin-bottom: 10px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.contact-item:hover {
+    background-color: #e4e6eb;
+}
+
+.contact-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.contact-item span {
+    font-size: 16px;
+    color: #050505;
+}
