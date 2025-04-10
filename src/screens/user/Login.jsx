@@ -2,91 +2,94 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginWeb } from '../../rtk/API'; // Import actions
+import { loginWeb } from '../../rtk/API';
+import { QRCodeCanvas } from 'qrcode.react'; // Đã thay đổi từ QRCode sang QRCodeCanvas
+import './styles.css';
 
-const Login = () => {
-
+    // Hàm tạo token ngẫu nhiên
+    const taoTokenNgauNhien = (doDai = 16) => {
+        const kyTu = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let token = '';
+        for (let i = 0; i < doDai; i++) {
+            token += kyTu.charAt(Math.floor(Math.random() * kyTu.length));
+        }
+        return token;
+    };
+const DangNhap = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user, messageLogin } = useSelector((state) => state.app);
+    const { nguoiDung, thongBaoDangNhap } = useSelector((state) => state.app);
 
-    const [emailVsPhone, setEmailVsPhone] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorEmailPhone, setErrorEmailPhone] = useState('');
-    const [errorPassword, setErrorPassword] = useState('');
+    const [emailHoacDienThoai, setEmailHoacDienThoai] = useState('');
+    const [matKhau, setMatKhau] = useState('');
+    const [loiEmailDienThoai, setLoiEmailDienThoai] = useState('');
+    const [loiMatKhau, setLoiMatKhau] = useState('');
+    const [hienThiQR, setHienThiQR] = useState(false);
+    const [qrToken, setQrToken] = useState(''); // State để lưu token cho QR
 
-    // // Chuyển hướng nếu người dùng đã đăng nhập
-    // useEffect(() => {
-    //     if (user) {
-    //         navigate('/home'); // Chuyển hướng đến trang Home nếu đã đăng nhập
-    //     } else {
-    //         navigate('/login');
-    //     }
-    // }, [user, navigate]);
+    // Tạo token mới mỗi khi modal QR được mở
+    useEffect(() => {
+        if (hienThiQR) {
+            setQrToken(taoTokenNgauNhien());
+        }
+    }, [hienThiQR]);
 
-    function isValidEmail(email) {
+    function kiemTraEmailHopLe(email) {
         return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
     }
 
-    function isValidPhone(phone) {
+    function kiemTraDienThoaiHopLe(phone) {
         return /^(84|0[3|5|7|8|9])[0-9]{8}$/.test(phone);
     }
 
-    function isValidPassword(password) {
+    function kiemTraMatKhauHopLe(password) {
         return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(password);
     }
 
-    const validateForm = () => {
-        let isValid = true;
-        if (!emailVsPhone.trim()) {
-            setErrorEmailPhone('Vui lòng nhập số điện thoại hoặc email.');
-            isValid = false;
-        } else if (!isValidEmail(emailVsPhone) && !isValidPhone(emailVsPhone)) {
-            setErrorEmailPhone('Email hoặc số điện thoại không hợp lệ.');
-            isValid = false;
+    const kiemTraForm = () => {
+        let hopLe = true;
+        if (!emailHoacDienThoai.trim()) {
+            setLoiEmailDienThoai('Vui lòng nhập số điện thoại hoặc email.');
+            hopLe = false;
+        } else if (!kiemTraEmailHopLe(emailHoacDienThoai) && !kiemTraDienThoaiHopLe(emailHoacDienThoai)) {
+            setLoiEmailDienThoai('Email hoặc số điện thoại không hợp lệ.');
+            hopLe = false;
         } else {
-            setErrorEmailPhone('');
+            setLoiEmailDienThoai('');
         }
 
-        if (!password.trim()) {
-            setErrorPassword('Vui lòng nhập mật khẩu.');
-            isValid = false;
-        } else if (!isValidPassword(password)) {
-            setErrorPassword('Mật khẩu phải có ít nhất 6 ký tự.');
-            isValid = false;
+        if (!matKhau.trim()) {
+            setLoiMatKhau('Vui lòng nhập mật khẩu.');
+            hopLe = false;
+        } else if (!kiemTraMatKhauHopLe(matKhau)) {
+            setLoiMatKhau('Mật khẩu phải có ít nhất 6 ký tự.');
+            hopLe = false;
         } else {
-            setErrorPassword('');
+            setLoiMatKhau('');
         }
-        return isValid;
+        return hopLe;
     };
 
-    const checkLogin = () => {
-        if (!validateForm()) return;
+    const kiemTraDangNhap = () => {
+        if (!kiemTraForm()) return;
 
-        const data = isValidEmail(emailVsPhone)
-            ? { email: emailVsPhone, phone: '', password: password }
-            : { email: '', phone: emailVsPhone, password: password };
+        const duLieu = kiemTraEmailHopLe(emailHoacDienThoai)
+            ? { email: emailHoacDienThoai, phone: '', password: matKhau }
+            : { email: '', phone: emailHoacDienThoai, password: matKhau };
 
-        onLogin(data);
+        thucHienDangNhap(duLieu);
     };
 
-    const onLogin = (data) => {
-
-        dispatch(loginWeb(data))
+    const thucHienDangNhap = (duLieu) => {
+        dispatch(loginWeb(duLieu))
             .unwrap()
-            .then((response) => {
-                //console.log(response);
-                //console.log("fcmToken login: " + fcmToken);
-                // setLoading(false);
-                //navigate('/home');
+            .then((phanHoi) => {
+                // navigate('/trang-chu');
             })
-            .catch((error) => {
-                // setErrorPassword(error);
-                // setLoading(false);
+            .catch((loi) => {
+                // setLoiMatKhau(loi);
             });
     };
-
-
 
     return (
         <div
@@ -95,7 +98,7 @@ const Login = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100vh',
-                backgroundColor: '#f0f2f5', // Màu nền xám nhạt giống trong hình
+                backgroundColor: '#f0f2f5',
             }}
         >
             <div
@@ -103,14 +106,14 @@ const Login = () => {
                     backgroundColor: 'white',
                     padding: '30px',
                     borderRadius: '10px',
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Đổ bóng nhẹ
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                     textAlign: 'center',
                     width: '300px',
                 }}
             >
                 <h1
                     style={{
-                        color: '#1e90ff', // Màu xanh dương đậm cho "Linkage"
+                        color: '#1e90ff',
                         fontSize: '36px',
                         margin: '0',
                     }}
@@ -124,13 +127,13 @@ const Login = () => {
                         margin: '5px 0 20px 0',
                     }}
                 >
-                    {/* Web clied */}
+                    {/* Ứng dụng web */}
                 </p>
                 <input
-                    type="email"
-                    value={emailVsPhone}
-                    onChange={(e) => setEmailVsPhone(e.target.value)}
-                    placeholder="Email or phone"
+                    type="text" // Đổi từ "email" sang "text" vì chấp nhận cả email và số điện thoại
+                    value={emailHoacDienThoai}
+                    onChange={(e) => setEmailHoacDienThoai(e.target.value)}
+                    placeholder="Email hoặc số điện thoại"
                     style={{
                         width: '100%',
                         padding: '10px',
@@ -138,20 +141,17 @@ const Login = () => {
                         border: '1px solid #d9d9d9',
                         borderRadius: '5px',
                         fontSize: '14px',
-                        backgroundColor: '#f5faff', // Màu nền nhạt cho input
+                        backgroundColor: '#f5faff',
                     }}
                 />
-                {errorEmailPhone ? <p
-                    style={{
-                        color: 'red',
-                        fontWeight: '400',
-                    }}
-                >{errorEmailPhone}</p> : null}
+                {loiEmailDienThoai && (
+                    <p style={{ color: 'red', fontWeight: '400' }}>{loiEmailDienThoai}</p>
+                )}
                 <input
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
+                    value={matKhau}
+                    onChange={(e) => setMatKhau(e.target.value)}
+                    placeholder="Mật khẩu"
                     style={{
                         width: '100%',
                         padding: '10px',
@@ -159,21 +159,24 @@ const Login = () => {
                         border: '1px solid #d9d9d9',
                         borderRadius: '5px',
                         fontSize: '14px',
-                        backgroundColor: '#f5faff', // Màu nền nhạt cho input
+                        backgroundColor: '#f5faff',
                     }}
                 />
-                {errorPassword ? <p
-                    style={{
-                        color: 'red',
-                        fontWeight: '400',
-                    }}
-                >{errorPassword}</p> : null}
+                {loiMatKhau && (
+                    <p style={{ color: 'red', fontWeight: '400' }}>{loiMatKhau}</p>
+                )}
+                <p 
+                    style={{ margin: '10px 0', fontSize: '14px', color: '#555', cursor: 'pointer' }} 
+                    onClick={() => setHienThiQR(true)}
+                >
+                    Đăng nhập bằng mã QR
+                </p>
                 <button
-                    onClick={checkLogin}
+                    onClick={kiemTraDangNhap}
                     style={{
                         width: '100%',
                         padding: '10px',
-                        backgroundColor: '#1e90ff', // Màu xanh dương cho nút
+                        backgroundColor: '#1e90ff',
                         color: 'white',
                         border: 'none',
                         borderRadius: '5px',
@@ -182,19 +185,43 @@ const Login = () => {
                         cursor: 'pointer',
                         transition: 'background-color 0.3s',
                     }}
-                    onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')} // Hiệu ứng hover
+                    onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')}
                     onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
                 >
-                    Log IN
+                    Đăng Nhập
                 </button>
-                {messageLogin && (
+                {thongBaoDangNhap && (
                     <p style={{ color: 'red', marginTop: '10px', fontSize: '14px' }}>
-                        {messageLogin}
+                        {thongBaoDangNhap}
                     </p>
                 )}
             </div>
+            {hienThiQR && (
+                <div className="modal-container">
+                    <div className="modal-content">
+                        <h1 style={{color:'#1e90ff',margin:0}}>Linkage</h1>
+                        <h3 className="modal-title">Quét mã QR để đăng nhập</h3>
+                        <QRCodeCanvas 
+                            value={`chatapp://login/${qrToken}`}
+                            size={180} 
+                        />
+                        <p style={{ fontSize: '14px', color: '#555' }}>
+                            Token: {qrToken} <br />
+                            1. Mở ứng dụng Linkage trên điện thoại của bạn.<br />
+                            2. Chọn "Quét mã QR". <br />
+                            3. Quét mã QR này để đăng nhập.  <br />
+                        </p>
+                        <button
+                            onClick={() => setHienThiQR(false)}
+                            className="close-button"
+                        >
+                            <span className="close-button-text">Đóng</span>
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-export default Login;
+export default DangNhap;
