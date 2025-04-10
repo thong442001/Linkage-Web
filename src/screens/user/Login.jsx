@@ -4,17 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loginWeb } from '../../rtk/API';
 import { QRCodeCanvas } from 'qrcode.react'; // Đã thay đổi từ QRCode sang QRCodeCanvas
-import './styles.css';
+import '../../styles/screens/user/LoginS.css';
 
-    // Hàm tạo token ngẫu nhiên
-    const taoTokenNgauNhien = (doDai = 16) => {
-        const kyTu = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let token = '';
-        for (let i = 0; i < doDai; i++) {
-            token += kyTu.charAt(Math.floor(Math.random() * kyTu.length));
-        }
-        return token;
-    };
+
+// Hàm tạo token ngẫu nhiên
+const taoTokenNgauNhien = (doDai = 16) => {
+    const kyTu = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let token = '';
+    for (let i = 0; i < doDai; i++) {
+        token += kyTu.charAt(Math.floor(Math.random() * kyTu.length));
+    }
+    return token;
+};
 const DangNhap = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -165,8 +166,8 @@ const DangNhap = () => {
                 {loiMatKhau && (
                     <p style={{ color: 'red', fontWeight: '400' }}>{loiMatKhau}</p>
                 )}
-                <p 
-                    style={{ margin: '10px 0', fontSize: '14px', color: '#555', cursor: 'pointer' }} 
+                <p
+                    style={{ margin: '10px 0', fontSize: '14px', color: '#555', cursor: 'pointer' }}
                     onClick={() => setHienThiQR(true)}
                 >
                     Đăng nhập bằng mã QR
@@ -199,11 +200,11 @@ const DangNhap = () => {
             {hienThiQR && (
                 <div className="modal-container">
                     <div className="modal-content">
-                        <h1 style={{color:'#1e90ff',margin:0}}>Linkage</h1>
+                        <h1 style={{ color: '#1e90ff', margin: 0 }}>Linkage</h1>
                         <h3 className="modal-title">Quét mã QR để đăng nhập</h3>
-                        <QRCodeCanvas 
+                        <QRCodeCanvas
                             value={`chatapp://login/${qrToken}`}
-                            size={180} 
+                            size={180}
                         />
                         <p style={{ fontSize: '14px', color: '#555' }}>
                             Token: {qrToken} <br />
