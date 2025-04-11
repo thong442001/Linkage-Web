@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { logout } from '../../rtk/Reducer'; // Import actions
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; // Thêm useNavigate
 import {
     FaHome, FaSearch, FaVideo, FaStore,
     FaUsers, FaPlusCircle, FaTh, FaBell,
@@ -12,6 +13,7 @@ import './../../css/Home.css'; // Import file CSS
 import MainContent from '../../component/items/MainContent';
 const Home = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate(); // Khởi tạo useNavigate
     const handleLogout = () => {
         dispatch(logout());
     };
@@ -64,7 +66,7 @@ const Home = () => {
                     </div>
                     <div
                         className={`icon-wrapper ${activeIcon === 'users' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('users')}
+                        onClick={() => navigate('/friend')}
                     >
                         <FaUsers className="nav-icon" />
                     </div>
@@ -79,7 +81,7 @@ const Home = () => {
                     <div className="icon-wrapper1">
                         <FaTh className="nav-icon1" />
                     </div>
-                    <div className="icon-wrapper1">
+                    <div className="icon-wrapper1" onClick={() => navigate('/chat')}>
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1">

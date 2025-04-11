@@ -1,0 +1,166 @@
+.app {
+    display: flex;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  .chat-list {
+    width: 25%;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  
+  .chat-list h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .search-bar {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+  }
+  
+  .chat-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+  
+  .chat-item.active {
+    background-color: #e6f0fa;
+  }
+  
+  .chat-item .avatar {
+    font-size: 30px;
+    margin-right: 10px;
+  }
+  
+  .chat-info {
+    flex: 1;
+  }
+  
+  .chat-name {
+    font-weight: bold;
+  }
+  
+  .last-message {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .chat-time {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .chat-content {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .chat-header .avatar {
+    font-size: 30px;
+    margin-right: 10px;
+  }
+  
+  .chat-header-info h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .chat-header-info p {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .chat-header-actions {
+    margin-left: auto;
+  }
+  
+  .chat-header-actions button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .message {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  
+  .message.other .avatar {
+    font-size: 20px;
+    margin-right: 10px;
+  }
+  
+  .message.me {
+    justify-content: flex-end;
+  }
+  
+  .message-content {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  .message.other .message-content {
+    background-color: #f1f0f0;
+  }
+  
+  .message.me .message-content {
+    background-color: #0084ff;
+    color: white;
+  }
+  
+  .message-time {
+    font-size: 12px;
+    color: #666;
+    display: block;
+    margin-top: 5px;
+  }
+  
+  .chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+  }
+  
+  .chat-input button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
