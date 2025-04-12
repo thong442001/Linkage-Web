@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { logout } from '../../rtk/Reducer'; // Import actions
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; // Thêm useNavigate
+import { Routes, Route, useNavigate } from 'react-router-dom'; // Import Routes and Route
 import {
     FaHome, FaSearch, FaVideo, FaStore,
     FaUsers, FaPlusCircle, FaTh, FaBell,
@@ -11,6 +11,9 @@ import {
 } from 'react-icons/fa';
 import './../../styles/screens/home/HomeS.css'; // Import file CSS
 import Post from '../../component/items/Post';
+import Friend from '../friend/Friend'; // Import the Friend component
+import Chat from '../chat/Chat'; // Import the Chat component
+
 const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate(); // Khởi tạo useNavigate
@@ -31,6 +34,7 @@ const Home = () => {
 
     return (
         <div className="home-container">
+            {/* Header remains fixed */}
             <div className="header-container">
                 <div className="logo-search-container">
                     <img src="/Logo_app.png" alt="Logo" className="logo" />
@@ -48,13 +52,19 @@ const Home = () => {
                 <div className='mid-header'>
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('home')}
+                        onClick={() => {
+                            setActiveIcon('home');
+                            navigate('/'); // Navigate to the home route
+                        }}
                     >
                         <FaHome className="nav-icon" />
                     </div>
                     <div
                         className={`icon-wrapper ${activeIcon === 'users' ? 'active' : ''}`}
-                        onClick={() => navigate('/friend')}
+                        onClick={() => {
+                            setActiveIcon('users');
+                            navigate('/friend'); // Navigate to the friend route
+                        }}
                     >
                         <FaUsers className="nav-icon" />
                     </div>
@@ -79,11 +89,11 @@ const Home = () => {
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1">
-                        <FaBell className="nav-icon1" onClick={() => navigate('/trash')}/>
+                        <FaBell className="nav-icon1" />
                     </div>
                     <div className="avatar-wrapper">
                         <img
-                            src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
+                            src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
                             alt="Profile"
                             className="avatar"
                         />
@@ -91,34 +101,18 @@ const Home = () => {
                 </div>
             </div>
 
+            {/* Content section switches based on the route */}
             <div className="body-container">
-                <div className="sidebar-left"></div> {/* Placeholder for left sidebar */}
                 <div className="main-content">
-                    <Post />
+                    <Routes>
+                        <Route path="/" element={<Post />} />
+                        <Route path="/friend" element={<Friend />} />
+                        <Route path="/chat" element={<Chat />} />
+                    </Routes>
                 </div>
-                <div className="sidebar-right"></div> {/* Placeholder for right sidebar */}
             </div>
         </div>
     );
 };
 
 export default Home;
-{/* <button
-                onClick={handleLogout}
-                style={{
-                    width: '100%',
-                    padding: '10px',
-                    backgroundColor: '#1e90ff', // Màu xanh dương cho nút
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s',
-                }}
-                onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')} // Hiệu ứng hover
-                onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
-            >
-                Log Out
-            </button> */}
