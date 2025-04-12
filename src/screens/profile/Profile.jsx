@@ -184,7 +184,7 @@ const Profile = () => {
           {/* Intro Section */}
           <div className="intro-section">
             <h2 className="section-title">Intro</h2>
-            <p className="intro-text">Kiếm lời, gà lành để ăn tiệc cuối</p>
+            <p className="intro-text">12345</p>
             <button className="edit-button">Edit Bio</button>
             <button className="edit-button">Edit details</button>
           </div>
@@ -276,8 +276,6 @@ const Profile = () => {
                   <div className="comment-icons">
                     <FaSmile className="comment-icon" />
                     <FaCamera className="comment-icon" />
-                    <span role="img" aria-label="gif">GIF</span>
-                    <span role="img" aria-label="sticker">😺</span>
                   </div>
                 </div>
               </div>
