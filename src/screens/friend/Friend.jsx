@@ -1,114 +1,287 @@
-// import React, { useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import '../../styles/screens/friend/FirendS.css'; // File CSS cho trang Friends
-// import { useDispatch, useSelector } from 'react-redux';
-// import {
-//   getAllLoiMoiKetBan,
-// } from '../../rtk/API';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import "../../styles/screens/friend/FirendS.css";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllLoiMoiKetBan,
+  chapNhanLoiMoiKetBan,
+  huyLoiMoiKetBan,
+  getGoiYBanBe,
+  getRelationshipAvsB,
+  guiLoiMoiKetBan,
+  getAllFriendOfID_user,
+} from "../../rtk/API";
+import FriendRequestItem from "../../component/items/FriendRequestItem";
+import FriendGoiYItem from "../../component/items/FriendGoiYItem";
+import FriendItem from "../../component/items/FriendItem";
+const Friend = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const me = useSelector((state) => state.app.user);
+  const token = useSelector((state) => state.app.token);
+  const [relationships, setRelationships] = useState([]);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [failedModalVisible, setFailedModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [activeTab, setActiveTab] = useState("home");
+  //time now
+  const [currentTime, setCurrentTime] = useState(Date.now());
+  //gợi ý bạn bè
+  const [listGoiY, setListGoiY] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [loading, setLoading] = useState(false);
+  console.log("me", friends);
 
-// const Friend = () => {
-//   const navigate = useNavigate();
-  
-//   useEffect(() => {
-//     // Call API khi lần đầu vào trang
-//     callGetAllLoiMoiKetBan();
+  //call api getAllFriendOfID_user
+  const callGetAllFriendOfID_user = async () => {
+    try {
+      await dispatch(getAllFriendOfID_user({ me: me._id, token: token }))
+        .unwrap()
+        .then((response) => {
+          //console.log(response.groups)
+          setFriends(response.relationships);
+        })
+        .catch((error) => {
+          console.log("Error1 getAllFriendOfID_user:", error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // gọi api gợi ý bạn bè
+  useEffect(() => {
+    callGetAllFriendOfID_user();
+    callGetAllFriendGoiYOfID_user();
+  }, []);
 
-//     // Thêm listener để gọi lại API khi quay lại trang
-//     const focusListener = navigation.addListener('focus', () => {
-//       callGetAllLoiMoiKetBan();
-//     });
+  const callGetAllFriendGoiYOfID_user = async () => {
+    try {
+      setLoading(true);
+      await dispatch(getGoiYBanBe({ me: me._id, token }))
+        .unwrap()
+        .then((response) => {
+          setListGoiY(response.data);
+        })
+        .catch((error) => {
+          console.log("Error1 getAllFriendOfID_user:", error);
+        });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//     // Cleanup listener khi component bị unmount
-//     return () => {
-//       focusListener();
-//     };
-//   }, [navigate]);
+  const handleThemBanBe = async (ID_user) => {
+    // Optimistic update: Ẩn user khỏi danh sách ngay lập tức
+    const userToRemove = listGoiY.find((item) => item.user._id === ID_user);
+    setListGoiY((prev) => prev.filter((item) => item.user._id !== ID_user));
 
-//   //getAllLoiMoiKetBan
-//   const callGetAllLoiMoiKetBan = async () => {
-//     try {
-//       await dispatch(getAllLoiMoiKetBan({ me: me._id, token: token }))
-//         .unwrap()
-//         .then(response => {
-//           //console.log(response);
-//           setRelationships(response.relationships);
-//           console.log(response.relationships);
-//         })
-//         .catch(error => {
-//           console.log('Error2 getAllLoiMoiKetBan:', error);
-//         });
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
-//   // Dữ liệu cứng cho danh sách lời mời kết bạn
-//   const friendRequests = [
-//     { id: 1, name: 'Tình Quốc Thái', mutualFriends: 2, avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 2, name: 'Nhật Trường', mutualFriends: 9, avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 3, name: 'Hồng Phúc', mutualFriends: 0, avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 4, name: 'Văn Phúc', mutualFriends: 0, avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 5, name: 'Tèo Hello', mutualFriends: 2, avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//   ];
+    try {
+      // Gọi hai API tuần tự (vì guiLoiMoiKetBan cần ID_relationship)
+      const relationshipResponse = await dispatch(
+        getRelationshipAvsB({ ID_user, me: me._id })
+      ).unwrap();
+      const ID_relationship = relationshipResponse.relationship._id;
+      await dispatch(guiLoiMoiKetBan({ ID_relationship, me: me._id })).unwrap();
 
-//   // Dữ liệu cứng cho danh sách bạn bè
-//   const friendsList = [
-//     { id: 6, name: 'Trần Hào Diễm', avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 7, name: 'Lê Nam', avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 8, name: 'Vũ Minh Châu', avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 9, name: 'Trần Tuấn Cảnh', avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//     { id: 10, name: 'Minh Quân', avatar: 'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg' },
-//   ];
+      console.log("Gửi lời mời kết bạn thành công:", ID_user);
+      // Hiển thị modal thành công
+      setSuccessModalVisible(true);
+      setTimeout(() => setSuccessModalVisible(false), 2000); // Ẩn sau 2 giây
+    } catch (error) {
+      // Nếu lỗi, thêm lại user vào danh sách
+      console.log("❌ Lỗi khi gửi lời mời kết bạn:", error);
+      setListGoiY((prev) =>
+        [...prev, userToRemove].sort((a, b) =>
+          a.user._id.localeCompare(b.user._id)
+        )
+      );
+      // Hiển thị modal thất bại
+      setFailedModalVisible(true);
+      setTimeout(() => setFailedModalVisible(false), 2000); // Ẩn sau 2 giây
+    }
+  };
 
-//   return (
-//     <div className="friends-container">
-//       {/* Sidebar trái */}
-//       <div className="sidebar-left">
-//         <h2>Bạn bè</h2>
-//         <div className="menu-item active">Trang chủ</div>
-//         <div className="menu-item">Lời mời kết bạn</div>
-//         <div className="menu-item">Gợi ý</div>
-//         <div className="menu-item">Tất cả bạn bè</div>
-//         <div className="menu-item">Sinh nhật</div>
-//         <div className="menu-item">Danh sách tùy chỉnh</div>
-//       </div>
+  useEffect(() => {
+    callGetAllLoiMoiKetBan();
+    setCurrentTime(Date.now());
+  }, [location]);
+  // gọi api lấy tất cả lời mời kết bạn
+  const callGetAllLoiMoiKetBan = async () => {
+    try {
+      const response = await dispatch(
+        getAllLoiMoiKetBan({ me: me._id, token })
+      ).unwrap();
+      setRelationships(response.relationships);
+    } catch (error) {
+      console.log("Error getAllLoiMoiKetBan:", error);
+    }
+  };
+  //api gửi lời mời kết bạn
+  const callChapNhanLoiMoiKetBan = async (ID_relationship) => {
+    try {
+      const paramsAPI = { ID_relationship };
+      await dispatch(chapNhanLoiMoiKetBan(paramsAPI))
+        .unwrap()
+        .then((response) => {
+          console.log(response?.message);
+          callGetAllLoiMoiKetBan();
+          setModalMessage("Đã chấp nhận lời mời kết bạn!");
+          setSuccessModalVisible(true);
+          setTimeout(() => setSuccessModalVisible(false), 2000);
+        })
+        .catch((error) => {
+          console.log("Error2 callChapNhanLoiMoiKetBan:", error);
+          setModalMessage("Chấp nhận lời mời thất bại!");
+          setFailedModalVisible(true);
+          setTimeout(() => setFailedModalVisible(false), 2000);
+        });
+    } catch (error) {
+      console.log(error);
+      setModalMessage("Có lỗi xảy ra. Vui lòng thử lại!");
+      setFailedModalVisible(true);
+      setTimeout(() => setFailedModalVisible(false), 2000);
+    }
+  };
+  //api hủy lời mời kết bạn
+  const callHuyLoiMoiKetBan = async (ID_relationship) => {
+    try {
+      const paramsAPI = { ID_relationship };
+      await dispatch(huyLoiMoiKetBan(paramsAPI))
+        .unwrap()
+        .then((response) => {
+          console.log(response?.message);
+          callGetAllLoiMoiKetBan();
+          setModalMessage("Đã xóa lời mời kết bạn!");
+          setSuccessModalVisible(true);
+          setTimeout(() => setSuccessModalVisible(false), 2000);
+        })
+        .catch((error) => {
+          console.log("Error2 callHuyLoiMoiKetBan:", error);
+          setModalMessage("Xóa lời mời thất bại!");
+          setFailedModalVisible(true);
+          setTimeout(() => setFailedModalVisible(false), 2000);
+        });
+    } catch (error) {
+      console.log(error);
+      setModalMessage("Có lỗi xảy ra. Vui lòng thử lại!");
+      setFailedModalVisible(true);
+      setTimeout(() => setFailedModalVisible(false), 2000);
+    }
+  };
+  return (
+    <div className="friends-container">
+      <div className="sidebar-left">
+        <h2>Bạn bè</h2>
+        <div
+          className={`menu-item ${activeTab === "home" ? "active" : ""}`}
+          onClick={() => setActiveTab("home")}
+        >
+          Trang chủ
+        </div>
+        <div
+          className={`menu-item ${activeTab === "requests" ? "active" : ""}`}
+          onClick={() => setActiveTab("requests")}
+        >
+          Lời mời kết bạn
+        </div>
+        <div
+          className={`menu-item ${activeTab === "suggestions" ? "active" : ""}`}
+          onClick={() => setActiveTab("suggestions")}
+        >
+          Gợi ý
+        </div>
+        <div
+          className={`menu-item ${activeTab === "all" ? "active" : ""}`}
+          onClick={() => setActiveTab("all")}
+        >
+          Tất cả bạn bè
+        </div>
+      </div>
 
-//       {/* Nội dung chính */}
-//       <div className="main-content">
-//         {/* Phần lời mời kết bạn */}
-//         <div className="friend-requests">
-//           <h3>Lời mời kết bạn</h3>
-//           <div className="friend-requests-list">
-//             {friendRequests.map((request) => (
-//               <div key={request.id} className="friend-request-item">
-//                 <img src={request.avatar} alt={request.name} className="friend-avatar" />
-//                 <div className="friend-info">
-//                   <h4>{request.name}</h4>
-//                   <p>{request.mutualFriends} bạn chung</p>
-//                   <div className="friend-actions">
-//                     <button className="confirm-btn">Xác nhận</button>
-//                     <button className="delete-btn">Xóa</button>
-//                   </div>
-//                 </div>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
+      <div className="main-content">
+        {activeTab === "home" && (
+          <div>
+            <div className="friend-requests">
+              <h3>Lời mời kết bạn</h3>
+              <div className="friend-requests-list">
+                {relationships.map((request) => (
+                  <FriendRequestItem
+                    key={request._id}
+                    data={request}
+                    me={me._id}
+                    currentTime={currentTime}
+                    onXacNhan={callChapNhanLoiMoiKetBan}
+                    onXoa={callHuyLoiMoiKetBan}
+                  />
+                ))}
+              </div>
+            </div>
 
-//         {/* Phần danh sách bạn bè */}
-//         <div className="friends-list">
-//           <h3>Xem tất cả</h3>
-//           <div className="friends-list-grid">
-//             {friendsList.map((friend) => (
-//               <div key={friend.id} className="friend-item">
-//                 <img src={friend.avatar} alt={friend.name} className="friend-avatar" />
-//                 <h4>{friend.name}</h4>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+            <div className="friends-list">
+              <h3>Những người bạn có thể biết</h3>
+              <div className="friends-list-grid">
+                {listGoiY.map((data) => (
+                  <FriendGoiYItem
+                    key={data._id}
+                    item={data}
+                    onThemBanBe={handleThemBanBe}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === "requests" && (
+          <div className="friend-requests">
+            <h3>Lời mời kết bạn</h3>
+            <div className="friend-requests-list">
+              {relationships.map((request) => (
+                <FriendRequestItem
+                  key={request._id}
+                  data={request}
+                  me={me._id}
+                  currentTime={currentTime}
+                  onXacNhan={callChapNhanLoiMoiKetBan}
+                  onXoa={callHuyLoiMoiKetBan}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        {activeTab === "suggestions" && (
+          <div className="friends-list">
+            <h3>Những người bạn có thể biết</h3>
+            <div className="friends-list-grid">
+              {listGoiY.map((data) => (
+                <FriendGoiYItem
+                  key={data._id}
+                  item={data}
+                  onThemBanBe={handleThemBanBe}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        {activeTab === "all" && (
+          <div className="friends-list">
+            <h3>Bạn bè của tôi</h3>
+            <div className="friends-list-grid">
+              {friends.map((data) => (
+                <FriendItem
+                  key={data._id}
+                  item={data}
+                  _id={me._id}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-// export default Friend;
+export default Friend;
