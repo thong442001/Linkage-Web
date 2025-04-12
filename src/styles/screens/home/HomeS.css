@@ -21,15 +21,10 @@ html, body {
     padding: 3px 20px;
     background-color: white;
     margin-bottom: 10px;
-    /* box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Div chứa logo và search bar */
-.logo-search-container {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-}
+
 
 /* Logo */
 .logo {
@@ -79,8 +74,8 @@ html, body {
     align-items: center;
     justify-content: space-around; /* Changed to space-around for even spacing */
     flex-direction: row;
-    width: 100%;
-    max-width: 600px; /* Match the max-width of main-content */
+    width: 800px;
+    max-width: 100%; /* Match the max-width of main-content */
     margin: 0 auto; /* Center the mid-header */
     gap: 20px; /* Khoảng cách giữa các icon */
 }
@@ -88,9 +83,19 @@ html, body {
 /* Mid-header1 (chứa các icon bên phải: Menu, Messenger, Notifications, Profile) */
 .mid-header1 {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 10px;
+    width: 200px;
     /* Khoảng cách giữa các icon */
+}
+
+
+/* Div chứa logo và search bar */
+.logo-search-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 200px;
 }
 
 /* Wrapper cho từng icon */

@@ -50,18 +50,6 @@ const Home = () => {
                     >
                         <FaHome className="nav-icon" />
                     </div>
-                    {/* <div
-                        className={`icon-wrapper ${activeIcon === 'video' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('video')}
-                    >
-                        <FaVideo className="nav-icon" />
-                    </div> */}
-                    {/* <div
-                        className={`icon-wrapper ${activeIcon === 'store' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('store')}
-                    >
-                        <FaStore className="nav-icon" />
-                    </div> */}
                     <div
                         className={`icon-wrapper ${activeIcon === 'users' ? 'active' : ''}`}
                         onClick={() => setActiveIcon('users')}
