@@ -163,14 +163,18 @@
     max-width: 1000px;
     margin: 0 auto;
     gap: 20px;
+    align-items: flex-start;
   }
-  
-  .left-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+
+.left-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky; /* Cố định khi cuộn */
+  top: 0; /* Cố định ở đỉnh viewport */
+  max-height: 100vh; /* Giới hạn chiều cao để không vượt quá viewport */
+}
   
   .right-column {
     flex: 2;
@@ -216,6 +220,10 @@
     padding: 10px;
     margin-bottom: 15px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .posts-section {
+    margin-top: 20px;
   }
   
   .small-profile-pic {
@@ -384,3 +392,85 @@
     color: #606770;
     cursor: pointer;
   }
+  .friends-section {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+  
+  .friends-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .friends-count {
+    font-size: 14px;
+    color: #606770;
+    margin: 5px 0;
+  }
+  
+  .see-all-button {
+    background: none;
+    border: none;
+    color: #1877f2;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+  }
+  
+  .friends-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .friend-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .friend-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-bottom: 5px;
+  }
+  
+  .friend-name {
+    font-size: 14px;
+    color: #1c1e21;
+    text-align: center;
+    margin: 0;
+  }
+
+  .icon-wrapper1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .nav-button {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+  }
+  
+  .nav-button:hover {
+    background-color: #f0f2f5; /* Màu nền khi hover */
+  }
+
+
+  

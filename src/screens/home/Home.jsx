@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Thêm useLocation
-import { logout } from '../../rtk/Reducer';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { logout } from '../../rtk/Reducer'; // Import actions
 import { useDispatch } from 'react-redux';
 import {
   FaHome,
@@ -12,26 +12,35 @@ import {
   FaTh,
   FaBell,
   FaFacebookMessenger,
-  FaUser, // Thêm icon cho trang Profile
+  FaChevronDown,
+  FaUserFriends,
+  FaUsers as FaGroups,
+  FaClock,
+  FaBookmark,
+  FaPlayCircle,
+  FaShoppingBag,
 } from 'react-icons/fa';
-import './../../css/Home.css';
+import './../../css/Home.css'; // Import file CSS
 import MainContent from '../../component/items/MainContent';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation(); // Sử dụng useLocation để lấy đường dẫn hiện tại
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
+  // Khai báo state để lưu giá trị của input
   const [inputValue, setInputValue] = useState('');
-  const [activeIcon, setActiveIcon] = useState(location.pathname === '/' ? 'home' : 'profile');
 
+  // State để theo dõi icon đang được chọn
+  const [activeIcon, setActiveIcon] = useState('home');
+
+  // Hàm xử lý khi người dùng nhập
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    setInputValue(e.target.value); // Cập nhật giá trị state
   };
 
+  // Hàm xử lý khi nhấn vào avatar để chuyển đến trang profile
   const handleAvatarClick = () => {
-    setActiveIcon('profile');
-    navigate('/profile');
+    navigate('/profile'); // Navigate to the profile page
   };
 
   const handleLogout = () => {
@@ -57,10 +66,7 @@ const Home = () => {
         <div className="mid-header">
           <div
             className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveIcon('home');
-              navigate('/');
-            }}
+            onClick={() => setActiveIcon('home')}
           >
             <FaHome className="nav-icon" />
           </div>
@@ -82,7 +88,6 @@ const Home = () => {
           >
             <FaUsers className="nav-icon" />
           </div>
-       
           <div
             className={`icon-wrapper ${activeIcon === 'menu' ? 'active' : ''}`}
             onClick={() => setActiveIcon('menu')}
@@ -105,8 +110,8 @@ const Home = () => {
               src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
               alt="Profile"
               className="avatar"
-              onClick={handleAvatarClick}
-              style={{ cursor: 'pointer' }}
+              onClick={handleAvatarClick} // Add onClick handler to navigate
+              style={{ cursor: 'pointer' }} // Add cursor pointer for better UX
             />
           </div>
         </div>
