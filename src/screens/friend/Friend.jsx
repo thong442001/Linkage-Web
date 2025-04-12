@@ -14,6 +14,8 @@ import {
 import FriendRequestItem from "../../component/items/FriendRequestItem";
 import FriendGoiYItem from "../../component/items/FriendGoiYItem";
 import FriendItem from "../../component/items/FriendItem";
+import "../../styles/screens/friend/FirendS.css";
+
 const Friend = () => {
   const navigate = useNavigate();
   const location = useLocation();

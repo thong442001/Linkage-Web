@@ -9,8 +9,8 @@ import {
     FaUserFriends, FaUsers as FaGroups, FaClock,
     FaBookmark, FaPlayCircle, FaShoppingBag
 } from 'react-icons/fa';
-import './../../css/Home.css'; // Import file CSS
-import MainContent from '../../component/items/MainContent';
+import './../../styles/screens/home/HomeS.css'; // Import file CSS
+import Post from '../../component/items/Post';
 const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate(); // Khởi tạo useNavigate
@@ -31,7 +31,7 @@ const Home = () => {
 
     return (
         <div className="home-container">
-            <div className="header">
+            <div className="header-container">
                 <div className="logo-search-container">
                     <img src="/Logo_app.png" alt="Logo" className="logo" />
                     <div className="search-bar">
@@ -53,18 +53,6 @@ const Home = () => {
                         <FaHome className="nav-icon" />
                     </div>
                     <div
-                        className={`icon-wrapper ${activeIcon === 'video' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('video')}
-                    >
-                        <FaVideo className="nav-icon" />
-                    </div>
-                    <div
-                        className={`icon-wrapper ${activeIcon === 'store' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('store')}
-                    >
-                        <FaStore className="nav-icon" />
-                    </div>
-                    <div
                         className={`icon-wrapper ${activeIcon === 'users' ? 'active' : ''}`}
                         onClick={() => navigate('/friend')}
                     >
@@ -75,6 +63,12 @@ const Home = () => {
                         onClick={() => setActiveIcon('menu')}
                     >
                         <FaPlusCircle className="nav-icon" />
+                    </div>
+                    <div
+                        className={`icon-wrapper ${activeIcon === 'bell' ? 'active' : ''}`}
+                        onClick={() => setActiveIcon('bell')}
+                    >
+                        <FaBell className="nav-icon" />
                     </div>
                 </div>
                 <div className='mid-header1'>
@@ -97,119 +91,9 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* Body: Chia thành 3 phần bằng Grid */}
             <div className="body-container">
-                {/* Sidebar trái */}
-                <div className="sidebar-left">
-                    {/* <div className="menu-item">
-                        <img
-                            src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
-                            alt="Profile"
-                            className="menu-avatar"
-                        />
-                        <span>Nguyen Anh Dien Do</span>
-                    </div>
-                    <div className="menu-item">
-                        <FaUserFriends className="menu-icon" />
-                        <span>Friends</span>
-                    </div>
-                    <div className="menu-item">
-                        <FaGroups className="menu-icon" />
-                        <span>Groups</span>
-                    </div>
-                    <div className="menu-item">
-                        <FaClock className="menu-icon" />
-                        <span>Memories</span>
-                    </div>
-                    <div className="menu-item">
-                        <FaBookmark className="menu-icon" />
-                        <span>Saved</span>
-                    </div>
-                    <div className="menu-item">
-                        <FaPlayCircle className="menu-icon" />
-                        <span>Video</span>
-                    </div>
-                    <div className="menu-item">
-                        <FaShoppingBag className="menu-icon" />
-                        <span>Marketplace</span>
-                    </div>
-                    <div className="menu-item">
-                        <FaVideo className="menu-icon" />
-                        <span>Feeds</span>
-                    </div>
-                    <div className="menu-item see-more">
-                        <span>See more</span>
-                    </div> */}
-                </div>
-
-                {/* Nội dung chính (giữa) */}
-                <MainContent />
-
-                {/* Sidebar phải */}
-                <div className="sidebar-right">
-                    <div className="contacts">
-                        {/* <h3>Contacts</h3>
-                        <div className="contact-item">
-                            <img
-                                src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
-                                alt="Contact"
-                                className="contact-avatar"
-                            />
-                            <span>Nguyễn Văn A</span>
-                        </div>
-                        <div className="contact-item">
-                            <img
-                                src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
-                                alt="Contact"
-                                className="contact-avatar"
-                            />
-                            <span>Nguyễn Văn A</span>
-                        </div>
-                        <div className="contact-item">
-                            <img
-                                src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
-                                alt="Contact"
-                                className="contact-avatar"
-                            />
-                            <span>Nguyễn Văn A</span>
-                        </div>
-                        <div className="contact-item">
-                            <img
-                                src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
-                                alt="Contact"
-                                className="contact-avatar"
-                            />
-                            <span>Nguyễn Văn A</span>
-                        </div>
-                        <div className="contact-item">
-                            <img
-                                src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
-                                alt="Contact"
-                                className="contact-avatar"
-                            />
-                            <span>Nguyễn Văn A</span>
-                        </div> */}
-
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                width: '100%',
-                                padding: '10px',
-                                backgroundColor: '#1e90ff', // Màu xanh dương cho nút
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                transition: 'background-color 0.3s',
-                            }}
-                            onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')} // Hiệu ứng hover
-                            onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
-                        >
-                            Log Out
-                        </button>
-                    </div>
+                <div className="main-content">
+                    <Post />
                 </div>
             </div>
         </div>
