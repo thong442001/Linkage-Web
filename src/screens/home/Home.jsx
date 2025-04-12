@@ -106,10 +106,12 @@ const Home = () => {
                 <div className="main-content">
                     <Routes>
                         <Route path="/" element={<Post />} />
-                        <Route path="/friend" element={<Friend />} />
-                        <Route path="/chat" element={<Chat />} />
                     </Routes>
                 </div>
+                <Routes>
+                    <Route path="/friend" element={<Friend />} />
+                    <Route path="/chat" element={<Chat />} />
+                </Routes>
             </div>
         </div>
     );

@@ -171,7 +171,7 @@ const Friend = () => {
     }
   };
   return (
-<div className={styles.friendsContainer}>
+    <div className={styles.friendsContainer}>
       <div className={styles.sidebarLeft}>
         <h2 className={styles.sidebarLeftTitle}>Bạn bè</h2>
         <div
