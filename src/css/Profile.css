@@ -472,5 +472,15 @@
     background-color: #f0f2f5; /* Màu nền khi hover */
   }
 
-
+.header {
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
   
