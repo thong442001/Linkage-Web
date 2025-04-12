@@ -29,7 +29,7 @@ const Home = () => {
 
     return (
         <div className="home-container">
-            <div className="header">
+            <div className="header-container">
                 <div className="logo-search-container">
                     <img src="/Logo_app.png" alt="Logo" className="logo" />
                     <div className="search-bar">

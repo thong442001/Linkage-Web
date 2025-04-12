@@ -31,6 +31,9 @@ const Post = () => {
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const reactionRef = useRef(null);
 
+
+  const [typeClick, setTypeClick] = useState(""); // Khởi tạo typeClick từ params
+
   const status = [
     { status: 1, name: 'Công khai' },
     { status: 2, name: 'Bạn bè' },
@@ -98,34 +101,44 @@ const Post = () => {
     }
   };
 
-  // Hàm kiểm tra video
-  const isVideo = (uri) => uri?.endsWith('.mp4') || uri?.endsWith('.mov');
+  const getMediaStyle = (count, index) => {
+    if (count === 1) {
+      return 'single-media';
+    } else if (count === 2) {
+      return 'double-media';
+    } else if (count === 3) {
+      return index === 0 ? 'triple-media-first' : 'triple-media-second';
+    } else if (count === 4) {
+      return 'quad-media';
+    } else {
+      // 5+ media
+      if (index < 2) return 'five-plus-media-first-row';
+      else if (index === 2) return 'five-plus-media-second-row-left';
+      else if (index === 3) return 'five-plus-media-second-row-middle';
+      else return 'five-plus-media-second-row-right';
+    }
+  };
 
-  // Hàm render media grid
-  const renderMediaGrid = (medias, postId) => {
-    if (!medias || medias.length === 0) return null;
+  const isVideo = (uri) => {
+    // Hàm kiểm tra xem media có phải là video hay không
+    // Bạn có thể điều chỉnh logic này dựa trên định dạng file hoặc thuộc tính media
+    return uri.endsWith('.mp4') || uri.endsWith('.mov') || uri.endsWith('.avi');
+  };
+
+  const renderMediaGrid = (medias, setSelectedImage, setImageModalVisible, setTypeClick) => {
     const mediaCount = medias.length;
-
-    const getMediaStyle = (count, index) => {
-      if (count === 1) return { width: '100%', height: 300 };
-      if (count === 2) return { width: '50%', height: 200 };
-      if (count === 3) return index === 0 ? { width: '100%', height: 200 } : { width: '50%', height: 100 };
-      if (count === 4) return { width: '50%', height: 150 };
-      return { width: '33.33%', height: 100 };
-    };
+    if (mediaCount === 0) return null;
 
     return (
-      <div className={`media-grid media-grid-${mediaCount}`}>
+      <div className="media-container">
         {medias.slice(0, 5).map((uri, index) => (
           <div
             key={index}
-            className="media-item"
-            style={getMediaStyle(mediaCount, index)}
+            className={`media-item ${getMediaStyle(mediaCount, index)}`}
             onClick={() => {
               setSelectedImage(uri);
               if (mediaCount > 5) {
-                // Điều hướng sang trang chi tiết bài viết
-                console.log('Navigate to PostDetail:', postId);
+                setTypeClick('image');
               } else {
                 setImageModalVisible(true);
               }
@@ -133,14 +146,19 @@ const Post = () => {
           >
             {isVideo(uri) ? (
               <div className="video-wrapper">
-                <video src={uri} className="media-video" />
-                <span className="play-icon">▶</span>
+                <video src={uri} className="video" />
+                <div className="play-button">
+                  {/* <FaPlayCircle size={40} color="white" /> */}
+                </div>
               </div>
             ) : (
-              <img src={uri} alt="Media" className="media-image" />
+              <img src={uri} alt="Post Media" className="image" />
             )}
+
             {index === 4 && mediaCount > 5 && (
-              <div className="media-overlay">+{mediaCount - 5}</div>
+              <div className="overlay-container">
+                <span className="overlay-text">+{mediaCount - 5}</span>
+              </div>
             )}
           </div>
         ))}
@@ -178,12 +196,12 @@ const Post = () => {
             prevPosts.map((p) =>
               p._id === postId
                 ? {
-                    ...p,
-                    post_reactions: [
-                      ...p.post_reactions,
-                      { ID_user: me, ID_reaction: { _id: ID_reaction, name, icon }, _id: response.post_reaction._id },
-                    ],
-                  }
+                  ...p,
+                  post_reactions: [
+                    ...p.post_reactions,
+                    { ID_user: me, ID_reaction: { _id: ID_reaction, name, icon }, _id: response.post_reaction._id },
+                  ],
+                }
                 : p
             )
           );
@@ -205,9 +223,9 @@ const Post = () => {
             prevPosts.map((p) =>
               p._id === postId
                 ? {
-                    ...p,
-                    post_reactions: p.post_reactions.filter((r) => r._id !== reactionId),
-                  }
+                  ...p,
+                  post_reactions: p.post_reactions.filter((r) => r._id !== reactionId),
+                }
                 : p
             )
           );
@@ -305,96 +323,8 @@ const Post = () => {
             <div key={post._id} className="post-container">
               {/* Header share */}
               {post.ID_post_shared && (
-                <div className="header-share">
-                  <div className="user-info">
-                    <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}>
-                      <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
-                    </a>
-                    <div className="user-details">
-                      <a
-                        href="#"
-                        onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}
-                        className="name"
-                      >
-                        {post.ID_user?.first_name} {post.ID_user?.last_name}
-                      </a>
-                      <div className="box-name">
-                        <span className="time">{timeAgo}</span>
-                        {getIcon(post.status)}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    className="options-button"
-                    onClick={() => {
-                      const rect = reactionRef.current?.getBoundingClientRect();
-                      setMenuPosition({ top: rect?.top || 0, left: rect?.left || 0 });
-                      setModalVisible(true);
-                    }}
-                  >
-                    <FaEllipsisH size={22} />
-                  </button>
-                  {hasCaption && <p className="caption">{post.caption}</p>}
-                </div>
-              )}
-
-              {/* Header gốc */}
-              <div className={post.ID_post_shared ? 'header-shared' : 'header-original'}>
-                <div className="header">
-                  {post.ID_post_shared ? (
-                    <div className="user-info">
-                      <a
-                        href="#"
-                        onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}
-                      >
-                        <img
-                          src={post.ID_post_shared.ID_user?.avatar}
-                          className="avatar"
-                          alt="User Avatar"
-                        />
-                      </a>
-                      <div className="user-details">
-                        <a
-                          href="#"
-                          onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}
-                          className="name"
-                        >
-                          {post.ID_post_shared.ID_user.first_name} {post.ID_post_shared.ID_user.last_name}
-                          {post.ID_post_shared.tags?.length > 0 && (
-                            <span>
-                              <span style={{ color: 'gray' }}> cùng với </span>
-                              <a
-                                href="#"
-                                onClick={() =>
-                                  console.log('Navigate to Profile:', post.ID_post_shared.tags[0]?._id)
-                                }
-                                className="name"
-                              >
-                                {post.ID_post_shared.tags[0]?.first_name}{' '}
-                                {post.ID_post_shared.tags[0]?.last_name}
-                              </a>
-                              {post.ID_post_shared.tags.length > 1 && (
-                                <>
-                                  <span style={{ color: 'gray' }}> và </span>
-                                  <a
-                                    href="#"
-                                    onClick={() => console.log('Navigate to ListTag')}
-                                    className="name"
-                                  >
-                                    {post.ID_post_shared.tags.length - 1} người khác
-                                  </a>
-                                </>
-                              )}
-                            </span>
-                          )}
-                        </a>
-                        <div className="box-name">
-                          <span className="time">{timeAgoShare}</span>
-                          {getIcon(post.ID_post_shared?.status)}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
+                <div>
+                  <div className="header-share">
                     <div className="user-info">
                       <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}>
                         <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
@@ -406,30 +336,6 @@ const Post = () => {
                           className="name"
                         >
                           {post.ID_user?.first_name} {post.ID_user?.last_name}
-                          {post.tags?.length > 0 && (
-                            <span>
-                              <span style={{ color: 'gray' }}> cùng với </span>
-                              <a
-                                href="#"
-                                onClick={() => console.log('Navigate to Profile:', post.tags[0]?._id)}
-                                className="name"
-                              >
-                                {post.tags[0]?.first_name} {post.tags[0]?.last_name}
-                              </a>
-                              {post.tags.length > 1 && (
-                                <>
-                                  <span style={{ color: 'gray' }}> và </span>
-                                  <a
-                                    href="#"
-                                    onClick={() => console.log('Navigate to ListTag')}
-                                    className="name"
-                                  >
-                                    {post.tags.length - 1} người khác
-                                  </a>
-                                </>
-                              )}
-                            </span>
-                          )}
                         </a>
                         <div className="box-name">
                           <span className="time">{timeAgo}</span>
@@ -437,8 +343,6 @@ const Post = () => {
                         </div>
                       </div>
                     </div>
-                  )}
-                  {!post.ID_post_shared && (
                     <button
                       className="options-button"
                       onClick={() => {
@@ -449,11 +353,131 @@ const Post = () => {
                     >
                       <FaEllipsisH size={22} />
                     </button>
-                  )}
+                  </div>
+                  <div>
+                    {hasCaption && <p className="caption">{post.caption}</p>}
+                  </div>
                 </div>
-                <p className="caption">
-                  {post.ID_post_shared ? post.ID_post_shared.caption : hasCaption && post.caption}
-                </p>
+              )}
+
+              {/* Header gốc */}
+              <div className={post.ID_post_shared ? 'header-shared' : 'header-original'}>
+                <div className='box-header'>
+                  <div className="header-content">
+                    {post.ID_post_shared ? (
+                      <div className="user-info">
+                        <a
+                          href="#"
+                          onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}
+                        >
+                          <img
+                            src={post.ID_post_shared.ID_user?.avatar}
+                            className="avatar"
+                            alt="User Avatar"
+                          />
+                        </a>
+                        <div className="user-details">
+                          <a
+                            href="#"
+                            onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}
+                            className="name"
+                          >
+                            {post.ID_post_shared.ID_user.first_name} {post.ID_post_shared.ID_user.last_name}
+                            {post.ID_post_shared.tags?.length > 0 && (
+                              <span>
+                                <span style={{ color: 'gray' }}> cùng với </span>
+                                <a
+                                  href="#"
+                                  onClick={() =>
+                                    console.log('Navigate to Profile:', post.ID_post_shared.tags[0]?._id)
+                                  }
+                                  className="name"
+                                >
+                                  {post.ID_post_shared.tags[0]?.first_name}{' '}
+                                  {post.ID_post_shared.tags[0]?.last_name}
+                                </a>
+                                {post.ID_post_shared.tags.length > 1 && (
+                                  <>
+                                    <span style={{ color: 'gray' }}> và </span>
+                                    <a
+                                      href="#"
+                                      onClick={() => console.log('Navigate to ListTag')}
+                                      className="name"
+                                    >
+                                      {post.ID_post_shared.tags.length - 1} người khác
+                                    </a>
+                                  </>
+                                )}
+                              </span>
+                            )}
+                          </a>
+                          <div className="box-name">
+                            <span className="time">{timeAgoShare}</span>
+                            {getIcon(post.ID_post_shared?.status)}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="user-info">
+                        <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}>
+                          <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
+                        </a>
+                        <div className="user-details">
+                          <a
+                            href="#"
+                            onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}
+                            className="name"
+                          >
+                            {post.ID_user?.first_name} {post.ID_user?.last_name}
+                            {post.tags?.length > 0 && (
+                              <span>
+                                <span style={{ color: 'gray' }}> cùng với </span>
+                                <a
+                                  href="#"
+                                  onClick={() => console.log('Navigate to Profile:', post.tags[0]?._id)}
+                                  className="name"
+                                >
+                                  {post.tags[0]?.first_name} {post.tags[0]?.last_name}
+                                </a>
+                                {post.tags.length > 1 && (
+                                  <>
+                                    <span style={{ color: 'gray' }}> và </span>
+                                    <a
+                                      href="#"
+                                      onClick={() => console.log('Navigate to ListTag')}
+                                      className="name"
+                                    >
+                                      {post.tags.length - 1} người khác
+                                    </a>
+                                  </>
+                                )}
+                              </span>
+                            )}
+                          </a>
+                          <div className="box-name">
+                            <span className="time">{timeAgo}</span>
+                            {getIcon(post.status)}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {!post.ID_post_shared && (
+                      <button
+                        className="options-button"
+                        onClick={() => {
+                          const rect = reactionRef.current?.getBoundingClientRect();
+                          setMenuPosition({ top: rect?.top || 0, left: rect?.left || 0 });
+                          setModalVisible(true);
+                        }}
+                      >
+                        <FaEllipsisH size={22} />
+                      </button>
+                    )}
+                  </div>
+                  <p className="caption">
+                    {post.ID_post_shared ? post.ID_post_shared.caption : hasCaption && post.caption}
+                  </p>
+                </div>
               </div>
 
               {/* Media */}
@@ -507,11 +531,11 @@ const Post = () => {
                       userReaction
                         ? callDeletePost_reaction(post._id, userReaction._id)
                         : callAddPost_Reaction(
-                            reactions[0]?._id,
-                            reactions[0]?.name,
-                            reactions[0]?.icon,
-                            post._id
-                          )
+                          reactions[0]?._id,
+                          reactions[0]?.name,
+                          reactions[0]?.icon,
+                          post._id
+                        )
                     }
                   >
                     <span>{userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={20} />}</span>
