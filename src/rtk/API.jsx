@@ -35,3 +35,21 @@ export const loginWeb = createAsyncThunk(
     }
   }
 );
+
+export const getAllLoiMoiKetBan = createAsyncThunk(
+  'relationship/getAllLoiMoiKetBan',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`relationship/getAllLoiMoiKetBan?me=${data.me}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
