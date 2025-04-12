@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllGroupOfUser, getMessagesGroup } from '../../rtk/API';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from '../../context/socketContext';
-import Groupcomponent from '../../component/items/Groupcomponent';
+import Groupcomponent from '../../components/items/Groupcomponent';
 const Chat = () => {
 
   const dispatch = useDispatch();

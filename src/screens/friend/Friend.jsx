@@ -10,9 +10,9 @@ import {
   guiLoiMoiKetBan,
   getAllFriendOfID_user,
 } from "../../rtk/API";
-import FriendRequestItem from "../../component/items/FriendRequestItem";
-import FriendGoiYItem from "../../component/items/FriendGoiYItem";
-import FriendItem from "../../component/items/FriendItem";
+import FriendRequestItem from "../../components/items/FriendRequestItem";
+import FriendGoiYItem from "../../components/items/FriendGoiYItem";
+import FriendItem from "../../components/items/FriendItem";
 import styles from "../../styles/screens/friend/FriendS.module.css";
 const Friend = () => {
   const navigate = useNavigate();
@@ -171,7 +171,7 @@ const Friend = () => {
     }
   };
   return (
-<div className={styles.friendsContainer}>
+    <div className={styles.friendsContainer}>
       <div className={styles.sidebarLeft}>
         <h2 className={styles.sidebarLeftTitle}>Bạn bè</h2>
         <div

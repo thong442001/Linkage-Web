@@ -10,10 +10,11 @@ import {
     FaBookmark, FaPlayCircle, FaShoppingBag
 } from 'react-icons/fa';
 import './../../styles/screens/home/HomeS.css'; // Import file CSS
-import Post from '../../component/items/Post';
+import Post from '../../components/items/Post';
 const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate(); // Khởi tạo useNavigate
+
     const handleLogout = () => {
         dispatch(logout());
     };
@@ -27,6 +28,11 @@ const Home = () => {
     // Hàm xử lý khi người dùng nhập
     const handleInputChange = (e) => {
         setInputValue(e.target.value); // Cập nhật giá trị state
+    };
+
+    // Hàm xử lý khi nhấn vào avatar để chuyển đến trang profile
+    const handleAvatarClick = () => {
+        navigate('/profile'); // Navigate to the profile page
     };
 
     return (
@@ -79,13 +85,14 @@ const Home = () => {
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1">
-                        <FaBell className="nav-icon1" onClick={() => navigate('/trash')}/>
+                        <FaBell className="nav-icon1" onClick={() => navigate('/trash')} />
                     </div>
                     <div className="avatar-wrapper">
                         <img
                             src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
                             alt="Profile"
                             className="avatar"
+                            onClick={handleAvatarClick} // Add onClick handler to navigate
                         />
                     </div>
                 </div>
