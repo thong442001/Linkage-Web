@@ -79,7 +79,7 @@ const Home = () => {
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1">
-                        <FaBell className="nav-icon1" />
+                        <FaBell className="nav-icon1" onClick={() => navigate('/trash')}/>
                     </div>
                     <div className="avatar-wrapper">
                         <img
@@ -92,9 +92,11 @@ const Home = () => {
             </div>
 
             <div className="body-container">
+                <div className="sidebar-left"></div> {/* Placeholder for left sidebar */}
                 <div className="main-content">
                     <Post />
                 </div>
+                <div className="sidebar-right"></div> {/* Placeholder for right sidebar */}
             </div>
         </div>
     );

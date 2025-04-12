@@ -178,32 +178,32 @@ const Friend = () => {
       <div className="sidebar-left">
         <h2>Bạn bè</h2>
         <div
-          className={`menu-item ${activeTab === "home" ? "active" : ""}`}
+          className={`menu-item-friend ${activeTab === "home" ? "active" : ""}`}
           onClick={() => setActiveTab("home")}
         >
           Trang chủ
         </div>
         <div
-          className={`menu-item ${activeTab === "requests" ? "active" : ""}`}
+          className={`menu-item-friend ${activeTab === "requests" ? "active" : ""}`}
           onClick={() => setActiveTab("requests")}
         >
           Lời mời kết bạn
         </div>
         <div
-          className={`menu-item ${activeTab === "suggestions" ? "active" : ""}`}
+          className={`menu-item-friend ${activeTab === "suggestions" ? "active" : ""}`}
           onClick={() => setActiveTab("suggestions")}
         >
           Gợi ý
         </div>
         <div
-          className={`menu-item ${activeTab === "all" ? "active" : ""}`}
+          className={`menu-item-friend ${activeTab === "all" ? "active" : ""}`}
           onClick={() => setActiveTab("all")}
         >
           Tất cả bạn bè
         </div>
       </div>
 
-      <div className="main-content">
+      <div className="main-content-container">
         {activeTab === "home" && (
           <div>
             <div className="friend-requests">

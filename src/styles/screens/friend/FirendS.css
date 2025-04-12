@@ -16,7 +16,7 @@
     margin-bottom: 20px;
   }
   
-  .menu-item {
+  .menu-item-friend {
     padding: 10px;
     font-size: 16px;
     cursor: pointer;
@@ -29,7 +29,7 @@
     font-weight: bold;
   }
   
-  .main-content {
+  .main-content-container {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
