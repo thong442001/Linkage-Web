@@ -11,7 +11,7 @@ export const SocketProvider = ({ children }) => {
     const user = useSelector(state => state.app.user);
 
     useEffect(() => {
-        //if (!user || !user._id) return; // Chỉ khởi tạo khi có user
+        if (!user || !user._id) return; // Chỉ khởi tạo khi có user
 
         console.log("🔄 Khởi tạo socket...");
         const newSocket = io(
@@ -32,16 +32,16 @@ export const SocketProvider = ({ children }) => {
 
         setSocket(newSocket);
 
-        // newSocket.on("online_users", (userList) => {
-        //     console.log("🟢 Danh sách user online:", userList);
-        //     setOnlineUsers([...userList]); // Tạo mảng mới để re-render
-        // });
+        newSocket.on("online_users", (userList) => {
+            console.log("🟢 Danh sách user online:", userList);
+            setOnlineUsers([...userList]); // Tạo mảng mới để re-render
+        });
 
         return () => {
-            //newSocket.off("online_users");
+            newSocket.off("online_users");
             newSocket.disconnect();
         };
-    }, []); // Chạy lại khi user thay đổi
+    }, [user]); // Chạy lại khi user thay đổi
 
 
     useEffect(() => {

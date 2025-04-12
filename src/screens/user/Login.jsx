@@ -136,14 +136,6 @@ const DangNhap = () => {
             });
     };
 
-    const handle_login_QR = (data) => {
-        dispatch(loginQR({
-            user: data.user,
-            token: data.token,
-            refreshToken: data.refreshToken
-        }));
-    };
-
     return (
         <div
             style={{
