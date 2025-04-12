@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../../styles/screens/friend/FirendS.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllLoiMoiKetBan,
@@ -14,8 +13,7 @@ import {
 import FriendRequestItem from "../../component/items/FriendRequestItem";
 import FriendGoiYItem from "../../component/items/FriendGoiYItem";
 import FriendItem from "../../component/items/FriendItem";
-import "../../styles/screens/friend/FirendS.css";
-
+import styles from "../../styles/screens/friend/FriendS.module.css";
 const Friend = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,7 +31,6 @@ const Friend = () => {
   const [listGoiY, setListGoiY] = useState([]);
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(false);
-  console.log("me", friends);
 
   //call api getAllFriendOfID_user
   const callGetAllFriendOfID_user = async () => {
@@ -174,41 +171,41 @@ const Friend = () => {
     }
   };
   return (
-    <div className="friends-container">
-      <div className="sidebar-left">
-        <h2>Bạn bè</h2>
+<div className={styles.friendsContainer}>
+      <div className={styles.sidebarLeft}>
+        <h2 className={styles.sidebarLeftTitle}>Bạn bè</h2>
         <div
-          className={`menu-item-friend ${activeTab === "home" ? "active" : ""}`}
+          className={`${styles.menuItemFriend} ${activeTab === "home" ? styles.active : ""}`}
           onClick={() => setActiveTab("home")}
         >
           Trang chủ
         </div>
         <div
-          className={`menu-item-friend ${activeTab === "requests" ? "active" : ""}`}
+          className={`${styles.menuItemFriend} ${activeTab === "requests" ? styles.active : ""}`}
           onClick={() => setActiveTab("requests")}
         >
           Lời mời kết bạn
         </div>
         <div
-          className={`menu-item-friend ${activeTab === "suggestions" ? "active" : ""}`}
+          className={`${styles.menuItemFriend} ${activeTab === "suggestions" ? styles.active : ""}`}
           onClick={() => setActiveTab("suggestions")}
         >
           Gợi ý
         </div>
         <div
-          className={`menu-item-friend ${activeTab === "all" ? "active" : ""}`}
+          className={`${styles.menuItemFriend} ${activeTab === "all" ? styles.active : ""}`}
           onClick={() => setActiveTab("all")}
         >
           Tất cả bạn bè
         </div>
       </div>
 
-      <div className="main-content-container">
+      <div className={styles.mainContentContainer}>
         {activeTab === "home" && (
           <div>
-            <div className="friend-requests">
-              <h3>Lời mời kết bạn</h3>
-              <div className="friend-requests-list">
+            <div className={styles.friendRequests}>
+              <h3 className={styles.friendRequestsTitle}>Lời mời kết bạn</h3>
+              <div className={styles.friendRequestsList}>
                 {relationships.map((request) => (
                   <FriendRequestItem
                     key={request._id}
@@ -222,9 +219,9 @@ const Friend = () => {
               </div>
             </div>
 
-            <div className="friends-list">
-              <h3>Những người bạn có thể biết</h3>
-              <div className="friends-list-grid">
+            <div className={styles.friendsList}>
+              <h3 className={styles.friendsListTitle}>Những người bạn có thể biết</h3>
+              <div className={styles.friendsListGrid}>
                 {listGoiY.map((data) => (
                   <FriendGoiYItem
                     key={data._id}
@@ -237,9 +234,9 @@ const Friend = () => {
           </div>
         )}
         {activeTab === "requests" && (
-          <div className="friend-requests">
-            <h3>Lời mời kết bạn</h3>
-            <div className="friend-requests-list">
+          <div className={styles.friendRequests}>
+            <h3 className={styles.friendRequestsTitle}>Lời mời kết bạn</h3>
+            <div className={styles.friendRequestsList}>
               {relationships.map((request) => (
                 <FriendRequestItem
                   key={request._id}
@@ -254,9 +251,9 @@ const Friend = () => {
           </div>
         )}
         {activeTab === "suggestions" && (
-          <div className="friends-list">
-            <h3>Những người bạn có thể biết</h3>
-            <div className="friends-list-grid">
+          <div className={styles.friendsList}>
+            <h3 className={styles.friendsListTitle}>Những người bạn có thể biết</h3>
+            <div className={styles.friendsListGrid}>
               {listGoiY.map((data) => (
                 <FriendGoiYItem
                   key={data._id}
@@ -268,9 +265,9 @@ const Friend = () => {
           </div>
         )}
         {activeTab === "all" && (
-          <div className="friends-list">
-            <h3>Bạn bè của tôi</h3>
-            <div className="friends-list-grid">
+          <div className={styles.friendsList}>
+            <h3 className={styles.friendsListTitle}>Bạn bè của tôi</h3>
+            <div className={styles.friendsListGrid}>
               {friends.map((data) => (
                 <FriendItem
                   key={data._id}
