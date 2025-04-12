@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { loginWeb } from '../../rtk/API';
 import { QRCodeCanvas } from 'qrcode.react'; // Đã thay đổi từ QRCode sang QRCodeCanvas
 import '../../styles/screens/user/LoginS.css';
-
+import { loginQR } from '../../rtk/Reducer';
+import { io } from 'socket.io-client';
 
 // Hàm tạo token ngẫu nhiên
 const taoTokenNgauNhien = (doDai = 16) => {
@@ -19,7 +20,8 @@ const taoTokenNgauNhien = (doDai = 16) => {
 const DangNhap = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { nguoiDung, thongBaoDangNhap } = useSelector((state) => state.app);
+
+    const { messageLogin } = useSelector((state) => state.app);
 
     const [emailHoacDienThoai, setEmailHoacDienThoai] = useState('');
     const [matKhau, setMatKhau] = useState('');
@@ -27,6 +29,48 @@ const DangNhap = () => {
     const [loiMatKhau, setLoiMatKhau] = useState('');
     const [hienThiQR, setHienThiQR] = useState(false);
     const [qrToken, setQrToken] = useState(''); // State để lưu token cho QR
+
+    const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+        // Kết nối tới server
+        const newSocket = io(
+            'https://linkage.id.vn',
+            {
+                transports: ['websocket'],
+                reconnection: true,
+                reconnectionAttempts: 10,
+                reconnectionDelay: 3000,
+                reconnectionDelayMax: 10000,
+                timeout: 10000,
+                autoConnect: true,
+                forceNew: false,
+                withCredentials: true,
+                upgrade: true,
+            });
+        setSocket(newSocket);
+        if (qrToken) {
+            newSocket.emit('join_login_QR', qrToken);
+            console.log(`📡 Tham gia phòng QR: ${qrToken}`);
+        }
+
+        newSocket.on('lang_nghe_login_QR', (data) => {
+            console.log('📨 Nhận lang_nghe_login_QR:', data);
+            if (data.user) {
+                dispatch(loginQR({
+                    user: data.user,
+                    token: data.token || '', // Backend cần gửi token
+                    refreshToken: data.refreshToken || '' // Backend cần gửi refreshToken
+                }));
+            } else {
+                console.log('Lỗi lang_nghe_login_QR: user ko có');
+            }
+        });
+
+        return () => {
+            newSocket.off('lang_nghe_login_QR');
+        };
+    }, [qrToken]);
 
     // Tạo token mới mỗi khi modal QR được mở
     useEffect(() => {
@@ -90,6 +134,14 @@ const DangNhap = () => {
             .catch((loi) => {
                 // setLoiMatKhau(loi);
             });
+    };
+
+    const handle_login_QR = (data) => {
+        dispatch(loginQR({
+            user: data.user,
+            token: data.token,
+            refreshToken: data.refreshToken
+        }));
     };
 
     return (
@@ -191,9 +243,9 @@ const DangNhap = () => {
                 >
                     Đăng Nhập
                 </button>
-                {thongBaoDangNhap && (
+                {messageLogin && (
                     <p style={{ color: 'red', marginTop: '10px', fontSize: '14px' }}>
-                        {thongBaoDangNhap}
+                        {messageLogin}
                     </p>
                 )}
             </div>
