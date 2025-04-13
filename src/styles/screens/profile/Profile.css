@@ -244,10 +244,45 @@
   margin-top: 20px;
 }
 
+
 .friends-header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.friends-row {
+  display: flex;
+  justify-content: space-between; /* Các bạn bè phân bố đều trong hàng */
+  gap: 10px; /* Khoảng cách giữa các bạn bè trong cùng một hàng */
+}
+
+.friend-item {
+  flex: 1; /* Mỗi bạn bè chiếm đều không gian */
+  display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  align-items: center;
+  text-align: center;
+}
+
+.friend-pic {
+  width: 80px; /* Kích thước ảnh bạn bè */
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+
+
+.friend-name {
+  font-size: 14px;
+  margin: 0;
+  color: #333;
+}
+
+.friend-name:hover {
+  text-decoration: underline; /* Hiệu ứng khi hover vào tên */
 }
 
 .friends-count {
@@ -492,10 +527,6 @@
   transition: background-color 0.3s;
 }
 
-.nav-button:hover {
-  background-color: #f0f2f5; /* Màu nền khi hover */
-}
-
 /* Snackbar */
 .snackbar {
   position: fixed;
@@ -515,12 +546,12 @@
 }
 
 /* Modal */
-.modal-container {
+.post-modal-container {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw; /* Chiều rộng toàn màn hình */
+  height: 100vh; /* Chiều cao toàn màn hình */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -530,9 +561,10 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100vw; /* Chiều rộng toàn màn hình (viewport width) */
+  height: 100vh; /* Chiều cao toàn màn hình (viewport height) */
+  background: rgba(0, 0, 0, 0.9); /* Dark background with slight transparency */
+  z-index: 1;
 }
 .modal-dialog {
   background-color: white;
@@ -566,16 +598,25 @@
   background-color: #ccc;
 }
 .full-image {
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain; /* Ensure the image scales properly without cropping */
+  z-index: 2;
 }
-.close-button {
+.close-button-full-image {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 20px;
+  left: 20px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 24px;
+  color: #fff;
   cursor: pointer;
-  color: white;
+  z-index: 3;
+  border-radius: 5px;
+  padding: 30px 30x;
+}
+
+.close-button-full-image:hover {
+  background-color: #ff0000; /* Màu nền khi hover */
 }

@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, changeAvatar, changeBackground } from "../../rtk/Reducer";
 import {
   FaVideo,
   FaPhotoVideo,
   FaFlag,
-  FaEllipsisH,
   FaCamera,
-  FaThumbsUp,
-  FaComment,
-  FaShare,
   FaSmile,
   FaHome,
   FaSearch,
@@ -40,16 +36,20 @@ import {
 } from "../../rtk/API";
 import "../../styles/screens/profile/Profile.css";
 import axios from "axios";
+import PostProfile from "../../components/items/PostProfile";
 
 const Profile = () => {
+  const { id } = useParams(); // Lấy ID từ URL
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const me = useSelector((state) => state.app.user); // Lấy thông tin user từ Redux
+  const me = useSelector((state) => state.app.user);
 
-  // State quản lý giao diện và dữ liệu
+  // State
   const [inputValue, setInputValue] = useState("");
-  const [activeIcon, setActiveIcon] = useState(location.pathname === "/" ? "home" : "profile");
+  const [activeIcon, setActiveIcon] = useState(
+    location.pathname === "/" ? "home" : "profile"
+  );
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [friends, setFriends] = useState([]);
@@ -62,13 +62,22 @@ const Profile = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [stories, setStories] = useState(null);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // Cập nhật thời gian mỗi 10 giây
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Hàm xử lý input tìm kiếm
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
 
-  // Hàm xử lý nhấn avatar
+  // Hàm nhấn avatar
   const handleAvatarClick = () => {
     setActiveIcon("profile");
     navigate("/profile");
@@ -274,7 +283,11 @@ const Profile = () => {
       dispatch(changeDestroyPost({ _id: postId }))
         .unwrap()
         .then(() => {
-          setPosts((prev) => prev.filter((post) => post.id !== postId));
+          setPosts((prev) =>
+            prev.map((post) =>
+              post._id === postId ? { ...post, _destroy: true } : post
+            )
+          );
           setSuccessMessage("Đã xóa bài đăng!");
         })
         .catch((err) => {
@@ -285,47 +298,125 @@ const Profile = () => {
     }
   };
 
+  // Hàm xóa vĩnh viễn bài đăng
+  const handleDeletePermanently = async (postId) => {
+    try {
+      dispatch(changeDestroyPost({ _id: postId, permanent: true }))
+        .unwrap()
+        .then(() => {
+          setPosts((prev) => prev.filter((post) => post._id !== postId));
+          setSuccessMessage("Đã xóa vĩnh viễn bài đăng!");
+        })
+        .catch((err) => {
+          setErrorMessage("Lỗi khi xóa vĩnh viễn bài đăng!");
+        });
+    } catch (error) {
+      setErrorMessage("Lỗi khi xử lý!");
+    }
+  };
+
+  // Hàm cập nhật reaction
+  const updatePostReaction = (postId, reaction, reactionId) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              post_reactions: [
+                ...post.post_reactions,
+                {
+                  _id: reactionId,
+                  ID_user: {
+                    _id: me._id,
+                    first_name: me.first_name,
+                    last_name: me.last_name,
+                    avatar: me.avatar,
+                  },
+                  ID_reaction: reaction,
+                  quantity: 1,
+                },
+              ],
+            }
+          : post
+      )
+    );
+  };
+
+  // Hàm xóa reaction
+  const deletePostReaction = (postId, reactionId) => {
+    setPosts((prev) =>
+      prev.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              post_reactions: post.post_reactions.filter(
+                (reaction) => reaction._id !== reactionId
+              ),
+            }
+          : post
+      )
+    );
+  };
+
   // Hàm sao chép liên kết
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(`https://linkage.id.vn/deeplink?url=linkage://profile?ID_user=${me?._id}`);
+    navigator.clipboard.writeText(
+      `https://linkage.id.vn/deeplink?url=linkage://profile?ID_user=${me?._id}`
+    );
     setSuccessMessage("Đã sao chép liên kết!");
   };
 
   // Hàm lấy dữ liệu profile
-  const fetchProfileData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const paramsAPI = { ID_user: me._id, me: me._id };
-      dispatch(allProfile(paramsAPI))
-        .unwrap()
-        .then((response) => {
-          // console.log("API khi trả về post", response.posts); // Log posts từ response
-          setUser(response.user);
-          setPosts(response.posts);
-          // console.log("API sau khi set state:", response.posts); // Log posts sau khi set state
-          setRelationship(response.relationship);
-          setFriends(response.friends);
-          setBio(response.user.bio || "");
-          setStories({
-            user: {
-              _id: response.user._id,
-              avatar: response.user.avatar,
-              first_name: response.user.first_name,
-              last_name: response.user.last_name,
-            },
-            stories: response.stories || [],
-          });
-          setLoading(false);
-        })
-        .catch((err) => {
-          setErrorMessage("Lỗi khi tải dữ liệu profile!");
-          setLoading(false);
+// Hàm lấy dữ liệu profile
+const fetchProfileData = useCallback(async () => {
+  try {
+    setLoading(true);
+    // Sử dụng id từ URL, nếu không có thì dùng me._id
+    const profileId = id || me._id;
+    const paramsAPI = { ID_user: profileId, me: me._id };
+    dispatch(allProfile(paramsAPI))
+      .unwrap()
+      .then((response) => {
+        setUser(response.user);
+        setPosts(response.posts);
+        setRelationship(response.relationship);
+
+        // Biến đổi friends để lấy thông tin của người kia
+        const transformedFriends = response.friends.map((relationship) => {
+          const otherUser =
+            relationship.ID_userA._id === profileId
+              ? relationship.ID_userB
+              : relationship.ID_userA;
+
+          return {
+            id: otherUser._id,
+            image: otherUser.avatar,
+            name: `${otherUser.first_name} ${otherUser.last_name}`,
+          };
         });
-    } catch (error) {
-      setErrorMessage("Lỗi khi xử lý!");
-      setLoading(false);
-    }
-  }, [dispatch, me]);
+
+        setFriends(transformedFriends);
+        setBio(response.user.bio || "");
+        setStories({
+          user: {
+            _id: response.user._id,
+            avatar: response.user.avatar,
+            first_name: response.user.first_name,
+            last_name: response.user.last_name,
+          },
+          stories: response.stories || [],
+        });
+        setLoading(false);
+      })
+      .catch((err) => {
+        setErrorMessage("Lỗi khi tải dữ liệu profile!");
+        setLoading(false);
+      });
+  } catch (error) {
+    setErrorMessage("Lỗi khi xử lý!");
+    setLoading(false);
+  }
+}, [dispatch, me, id]);
 
   // Gọi dữ liệu khi component mount
   useEffect(() => {
@@ -350,9 +441,7 @@ const Profile = () => {
       {successMessage && (
         <div className="snackbar success">{successMessage}</div>
       )}
-      {errorMessage && (
-        <div className="snackbar error">{errorMessage}</div>
-      )}
+      {errorMessage && <div className="snackbar error">{errorMessage}</div>}
 
       {/* Header */}
       <div className="header-container">
@@ -413,7 +502,10 @@ const Profile = () => {
           </div>
           <div className="avatar-wrapper">
             <img
-              src={user?.avatar || "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"}
+              src={
+                me?.avatar ||
+                "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
+              }
               alt="Profile"
               className="avatar"
               onClick={handleAvatarClick}
@@ -425,7 +517,10 @@ const Profile = () => {
       {/* Ảnh bìa */}
       <div className="cover-photo-container">
         <img
-          src={user?.background || "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"}
+          src={
+            user?.background ||
+            "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
+          }
           alt="Cover Photo"
           className="cover-photo"
           onClick={() => openImageModal(user?.background)}
@@ -433,7 +528,12 @@ const Profile = () => {
         {user?._id === me._id && (
           <label className="cover-photo-button">
             <FaCamera /> Edit cover photo
-            <input type="file" accept="image/*" hidden onChange={onChangeBackground} />
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={onChangeBackground}
+            />
           </label>
         )}
       </div>
@@ -442,7 +542,10 @@ const Profile = () => {
       <div className="profile-info-container">
         <div className="profile-pic-wrapper">
           <img
-            src={user?.avatar || "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"}
+            src={
+              user?.avatar ||
+              "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
+            }
             alt="Profile"
             className="profile-pic"
             onClick={() => openImageModal(user?.avatar)}
@@ -450,29 +553,45 @@ const Profile = () => {
           {user?._id === me._id && (
             <label className="camera-icon">
               <FaCamera />
-              <input type="file" accept="image/*" hidden onChange={onChangeAvatar} />
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={onChangeAvatar}
+              />
             </label>
           )}
         </div>
         <div className="profile-details">
           <div className="name-and-friends">
-            <h1 className="name">{`${user?.first_name } ${user?.last_name }`}</h1>
+            <h1 className="name">{`${user?.first_name || ""} ${
+              user?.last_name || ""
+            }`}</h1>
             <p className="friends-count">{friends.length} friends</p>
           </div>
           <div className="action-buttons">
             {user?._id === me._id ? (
               <>
-                <button className="story-button" onClick={() => navigate("/post-story")}>
-                  + Add to story
+                <button
+                  className="story-button"
+                  onClick={() => navigate("/post-story")}
+                >
+                  + Thêm vào tin
                 </button>
-                <button className="edit-profile-button" onClick={() => setIsEditBio(true)}>
-                  Edit profile
+                <button
+                  className="edit-profile-button"
+                  onClick={() => setIsEditBio(true)}
+                >
+                  Chỉnh sửa trang cá nhân
                 </button>
               </>
             ) : (
               <>
                 {relationship?.relation === "Người lạ" && (
-                  <button className="story-button" onClick={handleSendFriendRequest}>
+                  <button
+                    className="story-button"
+                    onClick={handleSendFriendRequest}
+                  >
                     + Thêm bạn bè
                   </button>
                 )}
@@ -481,17 +600,28 @@ const Profile = () => {
                     Hủy bạn bè
                   </button>
                 )}
-                {(relationship?.relation === "A gửi lời kết bạn B" || relationship?.relation === "B gửi lời kết bạn A") && (
-                  <button className="story-button" onClick={handleCancelFriendRequest}>
+                {(relationship?.relation === "A gửi lời kết bạn B" ||
+                  relationship?.relation === "B gửi lời kết bạn A") && (
+                  <button
+                    className="story-button"
+                    onClick={handleCancelFriendRequest}
+                  >
                     Hủy lời mời
                   </button>
                 )}
-                {(relationship?.relation === "B gửi lời kết bạn A" || relationship?.relation === "A gửi lời kết bạn B") && (
-                  <button className="story-button" onClick={handleAcceptFriendRequest}>
+                {(relationship?.relation === "B gửi lời kết bạn A" ||
+                  relationship?.relation === "A gửi lời kết bạn B") && (
+                  <button
+                    className="story-button"
+                    onClick={handleAcceptFriendRequest}
+                  >
                     + Phản hồi
                   </button>
                 )}
-                <button className="edit-profile-button" onClick={() => navigate("/chat")}>
+                <button
+                  className="edit-profile-button"
+                  onClick={() => navigate("/chat")}
+                >
                   Nhắn tin
                 </button>
               </>
@@ -505,14 +635,10 @@ const Profile = () => {
 
       {/* Modal xem ảnh lớn */}
       {isImageModalVisible && (
-        <div className="modal-container">
+        <div className="post-modal-container">
           <div className="modal-background" onClick={closeImageModal}></div>
-          <img
-            src={selectedImage}
-            alt="Full Image"
-            className="full-image"
-          />
-          <button className="close-button" onClick={closeImageModal}>
+          <img src={selectedImage} alt="Full Image" className="full-image" />
+          <button className="close-button-full-image" onClick={closeImageModal}>
             ✕
           </button>
         </div>
@@ -520,8 +646,11 @@ const Profile = () => {
 
       {/* Modal chỉnh sửa bio */}
       {isEditBio && (
-        <div className="modal-container">
-          <div className="modal-background" onClick={() => setIsEditBio(false)}></div>
+        <div className="post-modal-container">
+          {/* <div
+            className="modal-background"
+            onClick={() => setIsEditBio(false)}
+          ></div> */}
           <div className="modal-dialog">
             <h3>Chỉnh sửa Bio</h3>
             <textarea
@@ -554,11 +683,9 @@ const Profile = () => {
       {/* Thanh tab */}
       <div className="tabs-container">
         <button className="tab active-tab">Posts</button>
-        <button className="tab">About</button>
-        <button className="tab" onClick={() => navigate("/friend")}>Friends</button>
-        <button className="tab">Photos</button>
-        <button className="tab">Videos</button>
-        <button className="tab">Check-ins</button>
+        <button className="tab" onClick={() => navigate("/friend")}>
+          Friends
+        </button>
         <button className="tab">More ▼</button>
       </div>
 
@@ -567,129 +694,97 @@ const Profile = () => {
         {/* Cột trái */}
         <div className="left-column">
           <div className="intro-section">
-            <h2 className="section-title">Intro</h2>
+            <h2 className="section-title">Giới thiệu</h2>
             <p className="intro-text">{bio || "Chưa có bio"}</p>
-            {user?._id === me._id && (
-              <button className="edit-button" onClick={() => setIsEditBio(true)}>
-                Edit Bio
-              </button>
-            )}
           </div>
           <div className="friends-section">
-            <div className="friends-header">
-              <h2 className="section-title">Friends</h2>
-              <p className="friends-count">{friends.length} friends</p>
-              <button className="see-all-button" onClick={() => navigate("/friend")}>
-                See all friends
-              </button>
-            </div>
-            <div className="friends-list">
-              {friends.slice(0, 6).map((friend) => (
-                <div key={friend.id} className="friend-item">
-                  <img
-                    src={friend.image}
-                    alt={friend.name}
-                    className="friend-pic"
-                  />
-                  <p className="friend-name">{friend.name}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+  <div className="friends-header">
+    <h2 className="section-title">Bạn bè</h2>
+    <p className="friends-count">{friends.length} Bạn bè</p>
+    <button
+      className="see-all-button"
+      onClick={() => navigate("/friend")}
+    >
+      Xem tất cả bạn bè
+    </button>
+  </div>
+  <div className="friends-grid">
+    {/* Hàng 1: 3 người bạn đầu tiên */}
+    <div className="friends-row">
+      {friends.slice(0, 3).map((friend) => (
+        <div key={friend.id} className="friend-item">
+          <img
+            src={friend.image}
+            alt={friend.name}
+            className="friend-pic"
+            onClick={() => navigate(`/profile/${friend.id}`)}
+            style={{ cursor: "pointer" }}
+          />
+          <p
+            className="friend-name"
+            onClick={() => navigate(`/profile/${friend.id}`)}
+            style={{ cursor: "pointer" }}
+          >
+            {friend.name}
+          </p>
+        </div>
+      ))}
+    </div>
+    {/* Hàng 2: 3 người bạn tiếp theo */}
+    <div className="friends-row">
+      {friends.slice(3, 6).map((friend) => (
+        <div key={friend.id} className="friend-item">
+          <img
+            src={friend.image}
+            alt={friend.name}
+            className="friend-pic"
+            onClick={() => navigate(`/profile/${friend.id}`)}
+            style={{ cursor: "pointer" }}
+          />
+          <p
+            className="friend-name"
+            onClick={() => navigate(`/profile/${friend.id}`)}
+            style={{ cursor: "pointer" }}
+          >
+            {friend.name}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
         </div>
 
         {/* Cột phải */}
         <div className="right-column">
-          {user?._id === me._id && (
-            <div className="post-input-container">
-              <img
-                src={user?.avatar || "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"}
-                alt="Profile"
-                className="small-profile-pic"
-              />
-              <button className="post-input" onClick={() => navigate("/up-post")}>
-                Bạn đang nghĩ gì?
-              </button>
-            </div>
-          )}
-          <div className="post-actions">
-            <button className="post-action-button" onClick={() => navigate("/host-live")}>
-              <FaVideo style={{ color: "red", marginRight: "5px" }} />
-              Live video
-            </button>
-            <button className="post-action-button">
-              <FaPhotoVideo style={{ color: "green", marginRight: "5px" }} />
-              Photo/video
-            </button>
-            <button className="post-action-button">
-              <FaFlag style={{ color: "blue", marginRight: "5px" }} />
-              Life event
-            </button>
-          </div>
-
           <div className="posts-section">
             <div className="posts-header">
-              <h2 className="section-title">Posts</h2>
+              <h2 className="section-title">Bài viết</h2>
               <div className="posts-options">
-                <button className="filter-button">Filters</button>
-                <button className="manage-posts-button" onClick={() => navigate("/trash")}>
-                  Manage posts
+                <button
+                  className="manage-posts-button"
+                  onClick={() => navigate("/trash")}
+                >
+                  Quản lý bài viết
                 </button>
               </div>
             </div>
-            {console.log("Posts before render:", posts)} {/* Log trước khi render */}
-            {posts.map((post) => (
-              <div key={post.id} className="post">
-                <div className="post-header">
-                  <img
-                    src={post.ID_user?.avatar || "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"}
-                    alt="Profile"
-                    className="small-profile-pic"
-                  />
-                  <div className="post-info">
-                    <h3 className="post-author">{post.author}</h3>
-                    <p className="post-meta">{post.date} · 🌐</p>
-                  </div>
-                  <button
-                    className="post-options"
-                    onClick={() => handleDeletePost(post.id)}
-                  >
-                    <FaEllipsisH />
-                  </button>
-                </div>
-                <p className="post-content">{post.content}</p>
-                <img src={post.image} alt="Post Image" className="post-image" />
-                <div className="post-interactions">
-                  <button className="interaction-button">
-                    <FaThumbsUp style={{ marginRight: "5px" }} /> Like
-                  </button>
-                  <button className="interaction-button">
-                    <FaComment style={{ marginRight: "5px" }} /> Comment
-                  </button>
-                  <button className="interaction-button">
-                    <FaShare style={{ marginRight: "5px" }} /> Share
-                  </button>
-                </div>
-                <div className="comment-section">
-                  <img
-                    src={user?.avatar || "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"}
-                    alt="Profile"
-                    className="small-profile-pic"
-                  />
-                  <div className="comment-input-container">
-                    <input
-                      type="text"
-                      placeholder={`Comment as ${user?.first_name } ${user?.last_name }`}
-                      className="comment-input"
-                    />
-                    <div className="comment-icons">
-                      <FaSmile className="comment-icon" />
-                      <FaCamera className="comment-icon" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <PostProfile
+                  key={post._id}
+                  post={post}
+                  ID_user={me._id}
+                  currentTime={currentTime}
+                  onDelete={() => handleDeletePost(post._id)}
+                  onDeleteVinhVien={() => handleDeletePermanently(post._id)}
+                  updatePostReaction={updatePostReaction}
+                  deletPostReaction={deletePostReaction}
+                />
+              ))
+            ) : (
+              <p>Chưa có bài đăng nào.</p>
+            )}
           </div>
         </div>
       </div>
