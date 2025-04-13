@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { logout } from '../../rtk/Reducer'; // Import actions
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; // Thêm useNavigate
+import { Routes, Route, useNavigate } from 'react-router-dom'; // Import Routes and Route
 import {
     FaHome, FaSearch, FaVideo, FaStore,
     FaUsers, FaPlusCircle, FaTh, FaBell,
@@ -10,11 +10,14 @@ import {
     FaBookmark, FaPlayCircle, FaShoppingBag
 } from 'react-icons/fa';
 import './../../styles/screens/home/HomeS.css'; // Import file CSS
-import Post from '../../components/items/Post';
+import Post from '../../components/items/Post'; // Import the Post component
+import Friend from '../friend/Friend'; // Import the Friend component
+import Chat from '../chat/Chat'; // Import the Chat component
+import Profile from '../profile/Profile';
+
 const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate(); // Khởi tạo useNavigate
-
     const handleLogout = () => {
         dispatch(logout());
     };
@@ -30,13 +33,28 @@ const Home = () => {
         setInputValue(e.target.value); // Cập nhật giá trị state
     };
 
-    // Hàm xử lý khi nhấn vào avatar để chuyển đến trang profile
-    const handleAvatarClick = () => {
-        navigate('/profile'); // Navigate to the profile page
-    };
-
     return (
         <div className="home-container">
+            {/* Header remains fixed */}
+            <button
+                onClick={handleLogout}
+                style={{
+                    width: '100%',
+                    padding: '10px',
+                    backgroundColor: '#1e90ff', // Màu xanh dương cho nút
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s',
+                }}
+                onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')} // Hiệu ứng hover
+                onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
+            >
+                Log Out
+            </button>
             <div className="header-container">
                 <div className="logo-search-container">
                     <img src="/Logo_app.png" alt="Logo" className="logo" />
@@ -54,13 +72,19 @@ const Home = () => {
                 <div className='mid-header'>
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('home')}
+                        onClick={() => {
+                            setActiveIcon('home');
+                            navigate('/'); // Navigate to the home route
+                        }}
                     >
                         <FaHome className="nav-icon" />
                     </div>
                     <div
                         className={`icon-wrapper ${activeIcon === 'users' ? 'active' : ''}`}
-                        onClick={() => navigate('/friend')}
+                        onClick={() => {
+                            setActiveIcon('users');
+                            navigate('/friend'); // Navigate to the friend route
+                        }}
                     >
                         <FaUsers className="nav-icon" />
                     </div>
@@ -85,47 +109,36 @@ const Home = () => {
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1">
-                        <FaBell className="nav-icon1" onClick={() => navigate('/trash')} />
+                        <FaBell className="nav-icon1" />
                     </div>
-                    <div className="avatar-wrapper">
+                    <div className="avatar-wrapper"
+                        onClick={() => {
+                            setActiveIcon('');
+                            navigate('/profile'); // Navigate to the friend route
+                        }}
+                    >
                         <img
-                            src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg" // Thay bằng URL ảnh đại diện thực tế
+                            src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
                             alt="Profile"
                             className="avatar"
-                            onClick={handleAvatarClick} // Add onClick handler to navigate
                         />
                     </div>
                 </div>
             </div>
 
+            {/* Content section switches based on the route */}
             <div className="body-container">
-                <div className="sidebar-left"></div> {/* Placeholder for left sidebar */}
-                <div className="main-content">
-                    <Post />
-                </div>
-                <div className="sidebar-right"></div> {/* Placeholder for right sidebar */}
+                <Routes>
+                    <Route path="/" element={<Post />} />
+                </Routes>
+                <Routes>
+                    <Route path="/friend" element={<Friend />} />
+                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/profile" element={<Profile />} />
+                </Routes>
             </div>
         </div>
     );
 };
 
 export default Home;
-{/* <button
-                onClick={handleLogout}
-                style={{
-                    width: '100%',
-                    padding: '10px',
-                    backgroundColor: '#1e90ff', // Màu xanh dương cho nút
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s',
-                }}
-                onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')} // Hiệu ứng hover
-                onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
-            >
-                Log Out
-            </button> */}

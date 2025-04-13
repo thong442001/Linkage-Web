@@ -22,7 +22,7 @@ import {
   FaFacebookMessenger,
   FaUser,
 } from "react-icons/fa";
-import "../../styles/screens/profile/Profile.css"; // Import file CSS
+import styles from "../../styles/screens/profile/Profile.module.css";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -128,92 +128,15 @@ const Profile = () => {
   ];
 
   return (
-    <div className="profile-container">
-      {/* Header Section */}
-      <div className="header">
-        <div className="logo-search-container">
-          <img src="/Logo_app.png" alt="Logo" className="logo" />
-          <div className="search-bar">
-            <FaSearch className="search-icon" />
-            <input
-              className="search-input"
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-              placeholder="Search..."
-            />
-          </div>
-        </div>
-        <div className="mid-header">
-          <div
-            className={`icon-wrapper ${activeIcon === "home" ? "active" : ""}`}
-            onClick={() => {
-              setActiveIcon("home");
-              navigate("/");
-            }}
-          >
-            <FaHome className="nav-icon" />
-          </div>
-          <div
-            className={`icon-wrapper ${activeIcon === "video" ? "active" : ""}`}
-            onClick={() => setActiveIcon("video")}
-          >
-            <FaVideo className="nav-icon" />
-          </div>
-          <div
-            className={`icon-wrapper ${activeIcon === "store" ? "active" : ""}`}
-            onClick={() => setActiveIcon("store")}
-          >
-            <FaStore className="nav-icon" />
-          </div>
-          <div
-            className={`icon-wrapper ${activeIcon === "users" ? "active" : ""}`}
-            onClick={() => setActiveIcon("users")}
-          >
-            <FaUsers className="nav-icon" />
-          </div>
-          <div
-            className={`icon-wrapper ${activeIcon === "menu" ? "active" : ""}`}
-            onClick={() => setActiveIcon("menu")}
-          >
-            <FaPlusCircle className="nav-icon" />
-          </div>
-        </div>
-        <div className="mid-header1">
-          <div className="icon-wrapper1">
-            <FaTh className="nav-icon1" />
-          </div>
-          <div className="icon-wrapper1">
-            <FaFacebookMessenger className="nav-icon1" />
-          </div>
-          <div className="icon-wrapper1">
-            <button
-              className="nav-button"
-              onClick={() => console.log("Bell clicked")}
-            >
-              <FaBell className="nav-icon1" />
-            </button>
-          </div>
-          <div className="avatar-wrapper">
-            <img
-              src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
-              alt="Profile"
-              className="avatar"
-              onClick={handleAvatarClick}
-              style={{ cursor: "pointer" }}
-            />
-          </div>
-        </div>
-      </div>
-
+    <div className={styles.profileContainer}>
       {/* Cover Photo Section */}
-      <div className="cover-photo-container">
+      <div className={styles.coverPhotoContainer}>
         <img
-          src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
+          src="https://cdn.pixabay.com/photo/2017/05/09/03/46/alberta-2297204_640.jpg"
           alt="Cover Photo"
-          className="cover-photo"
+          className={styles.coverPhoto}
         />
-        <button className="cover-photo-button">
+        <button className={styles.coverPhotoButton}>
           <span role="img" aria-label="camera">
             📷
           </span>{" "}
@@ -222,26 +145,26 @@ const Profile = () => {
       </div>
 
       {/* Profile Picture and Info */}
-      <div className="profile-info-container">
-        <div className="profile-pic-wrapper">
+      <div className={styles.profileInfoContainer}>
+        <div className={styles.profilePicWrapper}>
           <img
             src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
             alt="Profile"
-            className="profile-pic"
+            className={styles.profilePic}
           />
-          <div className="camera-icon">
+          <div className={styles.cameraIcon}>
             <FaCamera />
           </div>
         </div>
-        <div className="profile-details">
-          <div className="name-and-friends">
-            <h1 className="name">Quảng Thông</h1>
-            <p className="friends-count">75 friends</p>
+        <div className={styles.profileDetails}>
+          <div className={styles.nameAndFriends}>
+            <h1 className={styles.name}>Quảng Thông</h1>
+            <p className={styles.friendsCount}>75 friends</p>
           </div>
-          <div className="action-buttons">
-            <button className="story-button">+ Add to story</button>
-            <button className="edit-profile-button">Edit profile</button>
-            <button className="more-button">
+          <div className={styles.actionButtons}>
+            <button className={styles.storyButton}>+ Add to story</button>
+            <button className={styles.editProfileButton}>Edit profile</button>
+            <button className={styles.moreButton}>
               <FaEllipsisH />
             </button>
           </div>
@@ -249,14 +172,14 @@ const Profile = () => {
       </div>
 
       {/* Tabs (Posts, About, Friends, etc.) */}
-      <div className="tabs-container">
-        <button className="tab active-tab">Posts</button>
-        <button className="tab">About</button>
-        <button className="tab">Friends</button>
-        <button className="tab">Photos</button>
-        <button className="tab">Videos</button>
-        <button className="tab">Check-ins</button>
-        <button className="tab">
+      <div className={styles.tabsContainer}>
+        <button className={`${styles.tab} ${styles.activeTab}`}>Posts</button>
+        <button className={styles.tab}>About</button>
+        <button className={styles.tab}>Friends</button>
+        <button className={styles.tab}>Photos</button>
+        <button className={styles.tab}>Videos</button>
+        <button className={styles.tab}>Check-ins</button>
+        <button className={styles.tab}>
           More{" "}
           <span role="img" aria-label="dropdown">
             ▼
@@ -265,32 +188,32 @@ const Profile = () => {
       </div>
 
       {/* Main Content */}
-      <div className="content-container">
+      <div className={styles.contentContainer}>
         {/* Left Column: Intro */}
-        <div className="left-column">
+        <div className={styles.leftColumn}>
           {/* Intro Section */}
-          <div className="intro-section">
-            <h2 className="section-title">Intro</h2>
-            <p className="intro-text">12345</p>
-            <button className="edit-button">Edit Bio</button>
-            <button className="edit-button">Edit details</button>
+          <div className={styles.introSection}>
+            <h2 className={styles.sectionTitle}>Intro</h2>
+            <p className={styles.introText}>12345</p>
+            <button className={styles.editButton}>Edit Bio</button>
+            <button className={styles.editButton}>Edit details</button>
           </div>
           {/* Friends Section */}
-          <div className="friends-section">
-            <div className="friends-header">
-              <h2 className="section-title">Friends</h2>
-              <p className="friends-count">75 friends</p>
-              <button className="see-all-button">See all friends</button>
+          <div className={styles.friendsSection}>
+            <div className={styles.friendsHeader}>
+              <h2 className={styles.sectionTitle}>Friends</h2>
+              <p className={styles.friendsCount}>75 friends</p>
+              <button className={styles.seeAllButton}>See all friends</button>
             </div>
-            <div className="friends-list">
+            <div className={styles.friendsList}>
               {friends.map((friend) => (
-                <div key={friend.id} className="friend-item">
+                <div key={friend.id} className={styles.friendItem}>
                   <img
                     src={friend.image}
                     alt={friend.name}
-                    className="friend-pic"
+                    className={styles.friendPic}
                   />
-                  <p className="friend-name">{friend.name}</p>
+                  <p className={styles.friendName}>{friend.name}</p>
                 </div>
               ))}
             </div>
@@ -298,89 +221,89 @@ const Profile = () => {
         </div>
 
         {/* Right Column: Posts */}
-        <div className="right-column">
+        <div className={styles.rightColumn}>
           {/* Post Input */}
-          <div className="post-input-container">
+          <div className={styles.postInputContainer}>
             <img
               src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
               alt="Profile"
-              className="small-profile-pic"
+              className={styles.smallProfilePic}
             />
-            <button className="post-input">What's on your mind?</button>
+            <button className={styles.postInput}>What's on your mind?</button>
           </div>
-          <div className="post-actions">
-            <button className="post-action-button">
+          <div className={styles.postActions}>
+            <button className={styles.postActionButton}>
               <FaVideo style={{ color: "red", marginRight: "5px" }} />
               Live video
             </button>
-            <button className="post-action-button">
+            <button className={styles.postActionButton}>
               <FaPhotoVideo style={{ color: "green", marginRight: "5px" }} />
               Photo/video
             </button>
-            <button className="post-action-button">
+            <button className={styles.postActionButton}>
               <FaFlag style={{ color: "blue", marginRight: "5px" }} />
               Life event
             </button>
           </div>
 
           {/* Posts Section */}
-          <div className="posts-section">
-            <div className="posts-header">
-              <h2 className="section-title">Posts</h2>
-              <div className="posts-options">
-                <button className="filter-button">Filters</button>
-                <button className="manage-posts-button">Manage posts</button>
+          <div className={styles.postsSection}>
+            <div className={styles.postsHeader}>
+              <h2 className={styles.sectionTitle}>Posts</h2>
+              <div className={styles.postsOptions}>
+                <button className={styles.filterButton}>Filters</button>
+                <button className={styles.managePostsButton}>Manage posts</button>
               </div>
             </div>
             {posts.map((post) => (
-              <div key={post.id} className="post">
-                <div className="post-header">
+              <div key={post.id} className={styles.post}>
+                <div className={styles.postHeader}>
                   <img
                     src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
                     alt="Profile"
-                    className="small-profile-pic"
+                    className={styles.smallProfilePic}
                   />
-                  <div className="post-info">
-                    <h3 className="post-author">{post.author}</h3>
-                    <p className="post-meta">
+                  <div className={styles.postInfo}>
+                    <h3 className={styles.postAuthor}>{post.author}</h3>
+                    <p className={styles.postMeta}>
                       {post.date} ·{" "}
                       <span role="img" aria-label="public">
                         🌐
                       </span>
                     </p>
                   </div>
-                  <button className="post-options">
+                  <button className={styles.postOptions}>
                     <FaEllipsisH />
                   </button>
                 </div>
-                <p className="post-content">{post.content}</p>
-                <img src={post.image} alt="Post Image" className="post-image" />
-                <div className="post-interactions">
-                  <button className="interaction-button">
+                <p className={styles.postContent}>{post.content}</p>
+                <img src={post.image} alt="Post Image" className={styles.postImage} />
+                <div className={styles.postInteractions}>
+                  <button className={styles.interactionButton}>
                     <FaThumbsUp style={{ marginRight: "5px" }} /> Like
                   </button>
-                  <button className="interaction-button">
+                  <button className={styles.interactionButton}>
                     <FaComment style={{ marginRight: "5px" }} /> Comment
                   </button>
-                  <button className="interaction-button">
+                  <button className={styles.interactionButton}>
                     <FaShare style={{ marginRight: "5px" }} /> Share
                   </button>
                 </div>
-                <div className="comment-section">
+                <div className={styles.commentSection}>
                   <img
                     src="https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
                     alt="Profile"
-                    className="small-profile-pic"
+                    className={styles.smallProfilePic}
                   />
-                  <div className="comment-input-container">
+                  <div className={styles.commentInputContainer}>
                     <input
                       type="text"
                       placeholder="Comment as Quảng Thông"
-                      className="comment-input"
+                      className={styles.commentInput}
                     />
-                    <div className="comment-icons">
-                      <FaSmile className="comment-icon" />
-                      <FaCamera className="comment-icon" />
+                    <div className={styles.commentIcons}>
+                      <FaSmile className={styles.commentIcon} />
+                      <FaCamera className={styles.commentIcon} />
                     </div>
                   </div>
                 </div>

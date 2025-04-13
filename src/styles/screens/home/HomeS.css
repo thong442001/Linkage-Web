@@ -1,9 +1,12 @@
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
-    height: 100%; /* Ensure the body takes up the full viewport height */
-    background-color: #f8f9fb; /* Set the background color (match your app's background) */
-  }
+    height: 100%;
+    /* Ensure the body takes up the full viewport height */
+    background-color: #f8f9fb;
+    /* Set the background color (match your app's background) */
+}
 
 /* Container chính */
 .home-container {
@@ -38,8 +41,9 @@ html, body {
     align-items: center;
     background-color: #f0f2f5;
     border-radius: 20px;
-    padding: 0 10px;
+    /* padding: 10px 10px; */
     margin-left: 10px;
+    margin-top: 10px;
     width: fit-content;
 }
 
@@ -55,7 +59,7 @@ html, body {
     border: none;
     outline: none;
     background-color: transparent;
-    min-height: 40px;
+    min-height: 30px;
     padding: 0;
     font-size: 16px;
     color: #1c1e21;
@@ -72,12 +76,16 @@ html, body {
 .mid-header {
     display: flex;
     align-items: center;
-    justify-content: space-around; /* Changed to space-around for even spacing */
+    justify-content: space-around;
+    /* Changed to space-around for even spacing */
     flex-direction: row;
     width: 800px;
-    max-width: 100%; /* Match the max-width of main-content */
-    margin: 0 auto; /* Center the mid-header */
-    gap: 20px; /* Khoảng cách giữa các icon */
+    max-width: 100%;
+    /* Match the max-width of main-content */
+    margin: 0 auto;
+    /* Center the mid-header */
+    gap: 20px;
+    /* Khoảng cách giữa các icon */
 }
 
 /* Mid-header1 (chứa các icon bên phải: Menu, Messenger, Notifications, Profile) */
@@ -173,11 +181,14 @@ html, body {
 
 /* Body container (chia thành 3 phần bằng Grid) */
 .body-container {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr; /* Three columns: left sidebar, main content, right sidebar */
-    gap: 20px; /* Space between columns */
-    padding: 0 20px; /* Add some padding to the sides */
-    min-height: calc(100vh - 70px); /* Adjust height to account for header */
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    /* Space between columns */
+    padding: 0 20px;
+    /* Add some padding to the sides */
+    min-height: calc(100vh - 70px);
+    /* Adjust height to account for header */
 }
 
 /* Nội dung chính (giữa) */
@@ -186,8 +197,10 @@ html, body {
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    max-width: 600px; /* Fixed width for the main content */
-    margin: 0 auto; /* Center the content within the middle column */
+    max-width: 600px;
+    /* Fixed width for the main content */
+    margin: 0 auto;
+    /* Center the content within the middle column */
 }
 
 /* Sidebar trái */
