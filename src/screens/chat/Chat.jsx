@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import '../../styles/screens/chat/ChatS.css'; // Import file CSS
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllGroupOfUser, getMessagesGroup } from '../../rtk/API';
-import { useNavigate } from 'react-router-dom';
-import { useSocket } from '../../context/socketContext';
-import Groupcomponent from '../../components/items/Groupcomponent';
+import React, { useState, useEffect,useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllGroupOfUser, getMessagesGroup } from "../../rtk/API";
+import { useNavigate } from "react-router-dom";
+import { useSocket } from "../../context/socketContext";
+import Groupcomponent from "../../components/items/Groupcomponent";
+import styles from "../../styles/screens/chat/ChatS.module.css";
 const Chat = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -14,41 +13,84 @@ const Chat = () => {
   const { socket, onlineUsers } = useSocket();
   const [groups, setGroups] = useState([]);
   const [filteredGroups, setFilteredGroups] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
 
-  //chat 
+  //chat
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
+  const messageRef = useRef(null); // ref để tham chiếu tới tin nhắn
+  // const message.sender._id === user._id = messages.sender._id === user._id; // Kiểm tra tin nhắn có phải của user hiện tại không
+  console.log(messages);
 
-  const normalizeText = text =>
+  //check nó là link gg map
+  const isGoogleMapsLink = text => {
+    return /^https:\/\/www\.google\.com\/maps\?q=/.test(text);
+  };
+
+  //check nó là link 
+  const isLink = (text) => {
+    // Loại bỏ khoảng trắng đầu cuối
+    const trimmedText = text.trim();
+
+    // Biểu thức chính quy cho URL, hỗ trợ query string lồng nhau
+    const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=:+]*)*$|^[\w-]+:\/\/[\w-./?%&=:+]*$/i;
+
+    return urlPattern.test(trimmedText);
+  };
+//tách link và non link
+const renderStyledMessage = (text) => {
+  const parts = text.split(/(https?:\/\/[^\s]+)/g); // Tách link và non-link
+
+  return parts.map((part, index) => {
+    if (isLink(part)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`linkStyle ${messages.sender._id === user._id ? 'currentUserTextLink' : ''}`}
+        >
+          {part}
+        </a>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+};
+  const normalizeText = (text) =>
     text
       .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/Đ/g, 'D');
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
 
   useEffect(() => {
     if (!searchText.trim()) {
       setFilteredGroups(groups || []);
     } else {
       const lowerSearch = normalizeText(searchText);
-      const filtered = (groups || []).filter(group => {
+      const filtered = (groups || []).filter((group) => {
         if (group.isPrivate) {
-          const otherUser = group.members.find(member => member._id !== user._id);
+          const otherUser = group.members.find(
+            (member) => member._id !== user._id
+          );
           if (otherUser) {
             const fullName = `${otherUser.first_name} ${otherUser.last_name}`;
             return normalizeText(fullName).includes(lowerSearch);
           }
           return false;
         }
-        const groupName = group.name || '';
+        const groupName = group.name || "";
         if (normalizeText(groupName).includes(lowerSearch)) return true;
         const memberNames = group.members
-          .filter(member => member._id !== user._id)
-          .map(member => `${member.first_name} ${member.last_name}`);
-        return memberNames.some(name => normalizeText(name).includes(lowerSearch));
+          .filter((member) => member._id !== user._id)
+          .map((member) => `${member.first_name} ${member.last_name}`);
+        return memberNames.some((name) =>
+          normalizeText(name).includes(lowerSearch)
+        );
       });
       setFilteredGroups(filtered);
     }
@@ -58,39 +100,39 @@ const Chat = () => {
     callGetAllGroupOfUser(user._id);
   }, [user]);
 
-  const callGetAllGroupOfUser = async ID_user => {
+  const callGetAllGroupOfUser = async (ID_user) => {
     try {
       await dispatch(getAllGroupOfUser({ ID_user, token }))
         .unwrap()
-        .then(response => {
+        .then((response) => {
           setGroups(response.groups || []);
           handleSelectGroup(response.groups[0] || null);
           //setSelectedGroup(response.groups[0] || null);
           //console.log('🚀 ~ file: Chat.jsx:20 ~ callGetAllGroupOfUser ~ response:', response.groups);
         });
     } catch (error) {
-      console.log('Error:', error);
+      console.log("Error:", error);
     }
   };
 
   useEffect(() => {
     if (!socket) return;
-    socket.on('new_group', ({ group }) => {
-      setGroups(prevGroups => {
+    socket.on("new_group", ({ group }) => {
+      setGroups((prevGroups) => {
         if (!prevGroups) return [group];
-        if (!prevGroups.some(g => g._id === group._id)) {
+        if (!prevGroups.some((g) => g._id === group._id)) {
           return [group, ...prevGroups];
         }
         return prevGroups;
       });
     });
 
-    socket.on('new_message', ({ ID_group, message }) => {
-      setGroups(prevGroups => {
+    socket.on("new_message", ({ ID_group, message }) => {
+      setGroups((prevGroups) => {
         // console.log('🚀 ~ file: Chat.jsx:40 ~ socket.on ~ prevGroups:', prevGroups);
         //console.log("type:" + message.type)
         return prevGroups
-          .map(group => {
+          .map((group) => {
             if (group._id === ID_group) {
               return {
                 ...group,
@@ -118,19 +160,23 @@ const Chat = () => {
       });
     });
 
-    socket.on('group_deleted', ({ ID_group }) => {
-      setGroups(prevGroups => (prevGroups ? prevGroups.filter(group => group._id !== ID_group) : []));
+    socket.on("group_deleted", ({ ID_group }) => {
+      setGroups((prevGroups) =>
+        prevGroups ? prevGroups.filter((group) => group._id !== ID_group) : []
+      );
     });
 
-    socket.on('kicked_from_group', ({ ID_group }) => {
-      setGroups(prevGroups => prevGroups.filter(group => group._id !== ID_group));
+    socket.on("kicked_from_group", ({ ID_group }) => {
+      setGroups((prevGroups) =>
+        prevGroups.filter((group) => group._id !== ID_group)
+      );
     });
 
     return () => {
-      socket.off('new_group');
-      socket.off('new_message');
-      socket.off('group_deleted');
-      socket.off('kicked_from_group');
+      socket.off("new_group");
+      socket.off("new_message");
+      socket.off("group_deleted");
+      socket.off("kicked_from_group");
     };
   }, [socket]);
 
@@ -139,11 +185,13 @@ const Chat = () => {
 
     //chat
     // Lắng nghe tin nhắn từ server
-    socket.on('receive_message', (data) => {
+    socket.on("receive_message", (data) => {
       //setIsMessNew(true);
-      setMessages(prevMessages => {
+      setMessages((prevMessages) => {
         // Thay thế tin nhắn tạm thời nếu đã tồn tại
-        const tempIndex = prevMessages.findIndex(msg => msg.isLoading && msg.type === data.type);
+        const tempIndex = prevMessages.findIndex(
+          (msg) => msg.isLoading && msg.type === data.type
+        );
         if (tempIndex !== -1) {
           const newMessages = [...prevMessages];
           newMessages[tempIndex] = {
@@ -158,7 +206,11 @@ const Chat = () => {
             content: data.content,
             type: data.type,
             ID_message_reply: data.ID_message_reply
-              ? { _id: data.ID_message_reply._id, content: data.ID_message_reply.content || 'Tin nhắn không tồn tại' }
+              ? {
+                  _id: data.ID_message_reply._id,
+                  content:
+                    data.ID_message_reply.content || "Tin nhắn không tồn tại",
+                }
               : null,
             message_reactionList: [],
             updatedAt: data.updatedAt,
@@ -180,7 +232,11 @@ const Chat = () => {
             content: data.content,
             type: data.type,
             ID_message_reply: data.ID_message_reply
-              ? { _id: data.ID_message_reply._id, content: data.ID_message_reply.content || 'Tin nhắn không tồn tại' }
+              ? {
+                  _id: data.ID_message_reply._id,
+                  content:
+                    data.ID_message_reply.content || "Tin nhắn không tồn tại",
+                }
               : null,
             message_reactionList: [],
             updatedAt: data.updatedAt,
@@ -193,10 +249,10 @@ const Chat = () => {
     });
 
     // Lắng nghe tin nhắn từ server bị thu hồi
-    socket.on('message_revoked', (data) => {
+    socket.on("message_revoked", (data) => {
       //console.log("🔥 Đã nhận được message_revoked:");
-      setMessages(prevMessages => {
-        const updatedMessages = prevMessages?.map(msg =>
+      setMessages((prevMessages) => {
+        const updatedMessages = prevMessages?.map((msg) =>
           msg._id === data.ID_message ? { ...msg, _destroy: true } : msg
         );
         //console.log("📌 Danh sách tin nhắn sau khi thu hồi:", updatedMessages);
@@ -205,9 +261,9 @@ const Chat = () => {
     });
 
     // Lắng nghe tin nhắn từ server biểu cảm
-    socket.on('receive_message_reation', (data) => {
+    socket.on("receive_message_reation", (data) => {
       //console.log("🔥 Đã nhận được receive_message_reation:" + data);
-      setMessages(prevMessages => {
+      setMessages((prevMessages) => {
         return prevMessages?.map((msg) => {
           if (msg._id === data.ID_message) {
             // Copy danh sách cũ
@@ -221,7 +277,7 @@ const Chat = () => {
               // Nếu reaction đã tồn tại, tăng quantity
               updatedReactions[reactionIndex] = {
                 ...updatedReactions[reactionIndex],
-                quantity: updatedReactions[reactionIndex].quantity + 1
+                quantity: updatedReactions[reactionIndex].quantity + 1,
               };
             } else {
               // Nếu reaction chưa có, thêm mới vào danh sách
@@ -245,12 +301,12 @@ const Chat = () => {
                 createdAt: data.createdAt,
                 _destroy: data._destroy,
               });
-              console.log(data.ID_reaction.icon,);
+              console.log(data.ID_reaction.icon);
             }
 
             return {
               ...msg,
-              message_reactionList: updatedReactions
+              message_reactionList: updatedReactions,
             };
           }
           return msg; // Nếu không phải message cần cập nhật, giữ nguyên
@@ -280,7 +336,6 @@ const Chat = () => {
     //   setTypingUsers((prev) => prev.filter((id) => id !== ID_user)); // Xóa user khỏi danh sách
     // });
 
-
     return () => {
       socket.off("receive_message_reation");
       socket.off("message_revoked");
@@ -303,39 +358,33 @@ const Chat = () => {
           setMessages(response.messages);
         })
         .catch((error) => {
-          console.log('Error2:', error);
+          console.log("Error2:", error);
         });
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleSelectGroup = (group) => {
-
     if (!socket) return;
     socket.emit("joinGroup", group._id);
     getMessagesOld(group._id);
-    console.log('📌 Chọn nhóm:', group._id);
+    console.log("📌 Chọn nhóm:", group._id);
 
     setSelectedGroup(group);
   };
 
   return (
-    <div className="app">
+    <div className={styles.app}>
       {/* Phần danh sách đoạn chat bên trái */}
-      <div className="chat-list">
+      <div className={styles.chatList}>
         <h2>Đoạn chat</h2>
-        <input type="text" placeholder="Tìm kiếm trên Messenger" className="search-bar" />
-        {groups.map((item, index) => (
-          // <div key={index} className={`chat-item ${chat.name === 'Ngọc Nhân' ? 'active' : ''}`}>
-          //   <img src={chat.avatar} alt="Profile" className='avatar' />
-          //   <div className="chat-info">
-          //     <div className="chat-name">{chat.name}</div>
-          //     <div className="last-message">{chat.lastMessage}</div>
-          //   </div>
-          //   <div className="chat-time">{chat.time}</div>
-          // </div>
+        <input
+          type="text"
+          placeholder="Tìm kiếm trên Messenger"
+          className={styles.searchBar}
+        />
+        {groups.map((item) => (
           <Groupcomponent
             key={item._id}
             item={item}
@@ -347,114 +396,236 @@ const Chat = () => {
       </div>
 
       {/* Phần nội dung đoạn chat bên phải */}
-      <div className="chat-content">
+      <div className={styles.chatContent}>
         {selectedGroup ? (
           <>
-            <div className="chat-header">
+            <div className={styles.chatHeader}>
               <img
                 src={
                   selectedGroup.isPrivate
-                    ? selectedGroup.members.find((m) => m._id !== user._id)?.avatar ||
-                    'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg'
+                    ? selectedGroup.members.find((m) => m._id !== user._id)
+                        ?.avatar ||
+                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
                     : selectedGroup.avatar ||
-                    'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg'
+                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
                 }
                 alt="Profile"
-                className="avatar"
+                className={styles.avatar}
               />
-              <div className="chat-header-info">
+              <div className={styles.chatHeaderInfo}>
                 <h3>
                   {selectedGroup.isPrivate
-                    ? `${selectedGroup.members.find((m) =>
-                      m._id !== user._id)?.first_name} ${selectedGroup.members.find((m) =>
-                        m._id !== user._id)?.last_name}`
-                    : (selectedGroup.name)
-                      ? `${selectedGroup.name}`
-                      : `${selectedGroup.members.filter(m => m._id !== user._id)
-                        .map(m => `${m.first_name} ${m.last_name}`)
-                        .join(", ")}`
-                  }
+                    ? `${
+                        selectedGroup.members.find((m) => m._id !== user._id)
+                          ?.first_name
+                      } ${
+                        selectedGroup.members.find((m) => m._id !== user._id)
+                          ?.last_name
+                      }`
+                    : selectedGroup.name
+                    ? selectedGroup.name
+                    : selectedGroup.members
+                        .filter((m) => m._id !== user._id)
+                        .map((m) => `${m.first_name} ${m.last_name}`)
+                        .join(", ")}
                 </h3>
                 <p>Được mã hóa đầu cuối</p>
               </div>
-              <div className="chat-header-actions">
+              <div className={styles.chatHeaderActions}>
                 <button>📞</button>
                 <button>🔕</button>
                 <button>🔍</button>
               </div>
             </div>
 
-            <div className="chat-messages">
+            <div className={styles.chatMessages}>
               {messages.length > 0 ? (
-                messages.map((message) => (
-                  <div key={message._id} className={`message ${message.isMe ? 'me' : 'other'}`}>
-                    {!message.isMe && (
-                      <img
-                        src={
-                          message.sender.avatar ||
-                          'https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg'
-                        }
-                        alt="Profile"
-                        className="avatar"
-                      />
-                    )}
-                    <div className="message-content">
-                      <p>{message.content}</p>
-                      <span className="message-time">
-                        {new Date(message.createdAt).toLocaleTimeString()}
-                      </span>
+                messages
+                  .slice() // Tạo bản sao của mảng
+                  .reverse() // Đảo ngược mảng sao chép
+                  .map((message) => (
+                    <div
+                      key={message._id}
+                      className={`${styles.message} ${
+                        message.sender._id === user._id
+                          ? styles.me
+                          : styles.other
+                      }`}
+                    >
+                      {message.sender._id !== user._id && (
+                        <img
+                          src={
+                            message.sender.avatar ||
+                            "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                          }
+                          alt="Profile"
+                          className={styles.avatar}
+                        />
+                      )}
+                      <div className={styles.messageContent}>
+                        <div
+                          ref={messageRef}
+                          className={`messageWrapper ${
+                            message.sender._id === user._id ? "currentUserMessage" : ""
+                          }`}
+                        >
+                          {/* Hiển thị tin nhắn trả lời nếu có */}
+                          {/* {message.ID_message_reply &&
+                            message._destroy === false && (
+                              <div className="replyContainer">
+                                <p className="replyText">
+                                  {message.ID_message_reply.content ||
+                                    "Tin nhắn không tồn tại"}
+                                </p>
+                              </div>
+                            )} */}
+
+                          {/* Nội dung chính */}
+                          {message._destroy === true ? (
+                            <p className="messageTextThuHoi">
+                              Tin nhắn đã được thu hồi
+                            </p>
+                          ) : message.type === "text" ? (
+                            isGoogleMapsLink(message.content) ? (
+                              <div style={{ textAlign: "center" }}>
+                                <div
+                                  style={{
+                                    width: "200px",
+                                    height: "120px",
+                                    borderRadius: "10px",
+                                    backgroundColor: "#ccc",
+                                    marginBottom: "5px",
+                                  }}
+                                >
+                                  <p style={{ paddingTop: "45px" }}>
+                                    Google Maps Preview
+                                  </p>
+                                </div>
+                                {/* <button
+                                  // onClick={() =>
+                                  //   handlePressLocation(message.content)
+                                  // }
+                                  style={{
+                                    backgroundColor: "#2196F3",
+                                    color: "#fff",
+                                    padding: "6px 12px",
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  Mở Google Maps
+                                </button> */}
+                              </div>
+                            ) : isLink(message.content) ? (
+                              <a
+                                href={message.content}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`messageTextIsLink ${
+                                  message.sender._id === user._id ? "currentUserTextLink" : ""
+                                }`}
+                              >
+                                {message.content}
+                              </a>
+                            ) : (
+                              <p
+                                className={`messageText ${
+                                  message.sender._id === user._id ? "currentUserText" : ""
+                                }`}
+                              >
+                                {renderStyledMessage(message.content)}
+                              </p>
+                            )
+                          ) : message.type === "image" ? (
+                            <img
+                              src={message.content}
+                              alt="image"
+                              className="messageImage"
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "200px",
+                                borderRadius: "10px",
+                              }}
+                            />
+                          ) : message.type === "video" ? (
+                            <video
+                              src={message.content}
+                              controls
+                              className={`messageVideo ${
+                                message.sender._id === user._id ? "currentUserText" : ""
+                              }`}
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "200px",
+                                borderRadius: "10px",
+                              }}
+                            />
+                          ) : null}
+
+                          {/* Thời gian gửi */}
+                          <p className={message.sender._id !== user._id ? styles.messageTime : styles.messageTimeMe}>
+                          {new Date(message.createdAt).toLocaleTimeString()}
+                          </p>
+                        </div>
+                      </div>
+                      {/* <div className={styles.messageContent}>
+                        <p>{message.content}</p>
+                        <span className={styles.messageTime}>
+                          {new Date(message.createdAt).toLocaleTimeString()}
+                        </span>
+                      </div> */}
                     </div>
-                  </div>
-                ))
+                  ))
               ) : (
                 <p>Chưa có tin nhắn nào</p>
               )}
             </div>
 
-            <div className="chat-input">
+            <div className={styles.chatInput}>
               <input
                 type="text"
                 placeholder="Nhắn tin..."
                 value={newMessage}
-              //onChange={(e) => setNewMessage(e.target.value)}
-              //onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                // onChange={(e) => setNewMessage(e.target.value)}
+                // onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               />
               <button
-              //onClick={handleSendMessage}
-              >👍</button>
+              // onClick={handleSendMessage}
+              >
+                👍
+              </button>
             </div>
           </>
         ) : (
           <>
-            <div className="chat-header">
+            <div className={styles.chatHeader}>
               <img
                 src="https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
                 alt="Profile"
-                className="avatar"
+                className={styles.avatar}
               />
-              <div className="chat-header-info">
+              <div className={styles.chatHeaderInfo}>
                 <h3>Chọn một nhóm để xem tin nhắn</h3>
                 <p>Được mã hóa đầu cuối</p>
               </div>
-              <div className="chat-header-actions">
+              <div className={styles.chatHeaderActions}>
                 <button disabled>📞</button>
                 <button disabled>🔕</button>
                 <button disabled>🔍</button>
               </div>
             </div>
 
-            <div className="chat-messages">
+            <div className={styles.chatMessages}>
               <p>Vui lòng chọn một nhóm để xem tin nhắn.</p>
             </div>
 
-            <div className="chat-input">
+            <div className={styles.chatInput}>
               <input type="text" placeholder="Nhắn tin..." disabled />
               <button disabled>👍</button>
             </div>
           </>
         )}
       </div>
-
     </div>
   );
 };

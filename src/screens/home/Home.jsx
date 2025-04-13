@@ -20,6 +20,7 @@ const Home = () => {
     const navigate = useNavigate(); // Khởi tạo useNavigate
     const handleLogout = () => {
         dispatch(logout());
+        navigate('/'); // Navigate to the login route after logout
     };
 
     // Khai báo state để lưu giá trị của input
@@ -133,7 +134,6 @@ const Home = () => {
                 </Routes>
                 <Routes>
                     <Route path="/friend" element={<Friend />} />
-                    <Route path="/chat" element={<Chat />} />
                     <Route path="/profile" element={<Profile />} />
                 </Routes>
             </div>

@@ -1,0 +1,200 @@
+
+.app {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.chatList {
+  width: 25%;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chatList h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.searchBar {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+}
+
+.chatItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.active {
+  background-color: #e6f0fa;
+}
+
+.avatar {
+  font-size: 30px;
+  margin-right: 10px;
+}
+
+.chatInfo {
+  flex: 1;
+}
+
+.chatName {
+  font-weight: 550;
+  font-size: 14px;
+}
+.chatcontent{
+  font-size: 12px;
+  color: #666;
+}
+
+.lastMessage {
+  color: #666;
+  font-size: 14px;
+}
+
+.chatTime {
+  font-size: 12px;
+  color: #666;
+}
+
+.chatContent {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.chatHeaderInfo h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.chatHeaderInfo p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.chatHeaderActions {
+  margin-left: auto;
+}
+
+.chatHeaderActions button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.message.other .avatar {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.message.me {
+  justify-content: flex-end;
+}
+
+.messageContent {
+  max-width: 60%;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.message.other .messageContent {
+  background-color: #f1f0f0;
+}
+
+.message.me .messageContent {
+  background-color: #0084ff;
+  color: white;
+}
+
+.messageTime {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-top: 5px;
+}
+
+.chatInput {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.chatInput input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+}
+
+.chatInput button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.groupItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.groupItemActive {
+  background-color: #e6f0fa;
+}
+
+.groupAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.groupInfo {
+  flex: 1;
+}
+
+.groupName {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.groupTime {
+  color: #999;
+  font-size: 12px;
+}
