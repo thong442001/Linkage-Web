@@ -31,6 +31,7 @@ const Home = () => {
 
     const handleLogout = () => {
         dispatch(logout());
+        navigate('/'); // Navigate to the login route after logout
     };
 
     const handleInputChange = (e) => {
@@ -324,7 +325,6 @@ const Home = () => {
                 <Routes>
                     <Route path="/" element={<Post />} />
                     <Route path="/friend" element={<Friend />} />
-                    <Route path="/chat" element={<Chat />} />
                     <Route path="/profile" element={<Profile />} />
                 </Routes>
             </div>
