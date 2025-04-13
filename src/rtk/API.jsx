@@ -258,3 +258,22 @@ export const getMessagesGroup = createAsyncThunk(
     }
   }
 );
+
+// params : me(ID_user)
+export const getAllNotificationOfUser = createAsyncThunk(
+  'notification/getAllNotificationOfUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`notification/getAllNotificationOfUser?me=${data.me}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
