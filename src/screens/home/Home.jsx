@@ -9,7 +9,7 @@ import {
     FaUserFriends, FaUsers as FaGroups, FaClock,
     FaBookmark, FaPlayCircle, FaShoppingBag
 } from 'react-icons/fa';
-import { getAllNotificationOfUser,getAllUsers } from '../../rtk/API';
+import { getAllNotificationOfUser, getAllUsers } from '../../rtk/API';
 import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
 import Friend from '../friend/Friend';
@@ -43,43 +43,43 @@ const Home = () => {
     //search
     useEffect(() => {
         getData();
-      }, []);
-    
-      const getData = async () => {
-        try {
-          const response = await dispatch(getAllUsers({ token })).unwrap();
-          setData(response.users);
-        //   console.log('Users:', response.users);
-        } catch (error) {
-          console.log('Error:', error);
-        }
-      };
+    }, []);
 
-      const normalizeText = (text) => {
+    const getData = async () => {
+        try {
+            const response = await dispatch(getAllUsers({ token })).unwrap();
+            setData(response.users);
+            //   console.log('Users:', response.users);
+        } catch (error) {
+            console.log('Error:', error);
+        }
+    };
+
+    const normalizeText = (text) => {
         return text
-          .toLowerCase()
-          .normalize('NFD') // Tách dấu ra khỏi chữ
-          .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
-          .replace(/đ/g, 'd')
-          .replace(/Đ/g, 'D');
-      };
-      const handleInputChange = query => {
+            .toLowerCase()
+            .normalize('NFD') // Tách dấu ra khỏi chữ
+            .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D');
+    };
+    const handleInputChange = query => {
         setIsSearchOpen(!isSearchOpen)
         setSearchQuery(query.target.value);
         if (query.target.value === '') {
-          setFilteredProducts([]);
-          setIsSearching(false);
+            setFilteredProducts([]);
+            setIsSearching(false);
         } else {
-          setIsSearching(true);
-          setFilteredProducts(
-            data.filter(user =>
-              normalizeText((user.first_name + ' ' + user.last_name))
-                .toLowerCase()
-                .includes(normalizeText(query.target.value).toLowerCase()),
-            ),
-          );
+            setIsSearching(true);
+            setFilteredProducts(
+                data.filter(user =>
+                    normalizeText((user.first_name + ' ' + user.last_name))
+                        .toLowerCase()
+                        .includes(normalizeText(query.target.value).toLowerCase()),
+                ),
+            );
         }
-      };
+    };
 
     const calculateTimeAgo = (updatedAt) => {
         const now = Date.now();
@@ -287,7 +287,7 @@ const Home = () => {
                             />
                         )}
                     </div>
-                </div>  
+                </div>
                 <div className='mid-header'>
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
@@ -320,14 +320,15 @@ const Home = () => {
                         <FaBell className="nav-icon" />
                     </div>
                 </div>
-                
+
                 <div className="mid-header1">
                     <div className="icon-wrapper1" onClick={handleLogout}>
                         <FaTh className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1" onClick={() => {
-                         setIsNotificationOpen(false);
-                        navigate('/chat')}}>
+                        setIsNotificationOpen(false);
+                        navigate('/chat')
+                    }}>
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>

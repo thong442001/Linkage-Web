@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGroupOfUser, getMessagesGroup } from "../../rtk/API";
 import { useNavigate } from "react-router-dom";
@@ -16,8 +16,6 @@ const Chat = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageModalVisible, setImageModalVisible] = useState(false);
-  
-  
 
   //chat
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -25,7 +23,14 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const messageRef = useRef(null); // ref để tham chiếu tới tin nhắn
   // const message.sender._id === user._id = messages.sender._id === user._id; // Kiểm tra tin nhắn có phải của user hiện tại không
-  console.log(messages);
+  //console.log(messages);
+  const [message, setMessage] = useState('');
+  const [reply, setReply] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const typingUsersInfo = selectedGroup?.members?.filter(member => typingUsers.includes(member._id));
+  const hasSentLocation = useRef(false); // Biến ref để theo dõi trạng thái gửi
 
   //check nó là link gg map
   const isGoogleMapsLink = text => {
@@ -42,27 +47,27 @@ const Chat = () => {
 
     return urlPattern.test(trimmedText);
   };
-//tách link và non link
-const renderStyledMessage = (text) => {
-  const parts = text.split(/(https?:\/\/[^\s]+)/g); // Tách link và non-link
+  //tách link và non link
+  const renderStyledMessage = (text) => {
+    const parts = text.split(/(https?:\/\/[^\s]+)/g); // Tách link và non-link
 
-  return parts.map((part, index) => {
-    if (isLink(part)) {
-      return (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`linkStyle ${messages.sender._id === user._id ? 'currentUserTextLink' : ''}`}
-        >
-          {part}
-        </a>
-      );
-    }
-    return <span key={index}>{part}</span>;
-  });
-};
+    return parts.map((part, index) => {
+      if (isLink(part)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`linkStyle ${messages.sender._id === user._id ? 'currentUserTextLink' : ''}`}
+          >
+            {part}
+          </a>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
   const normalizeText = (text) =>
     text
       .toLowerCase()
@@ -211,10 +216,10 @@ const renderStyledMessage = (text) => {
             type: data.type,
             ID_message_reply: data.ID_message_reply
               ? {
-                  _id: data.ID_message_reply._id,
-                  content:
-                    data.ID_message_reply.content || "Tin nhắn không tồn tại",
-                }
+                _id: data.ID_message_reply._id,
+                content:
+                  data.ID_message_reply.content || "Tin nhắn không tồn tại",
+              }
               : null,
             message_reactionList: [],
             updatedAt: data.updatedAt,
@@ -237,10 +242,10 @@ const renderStyledMessage = (text) => {
             type: data.type,
             ID_message_reply: data.ID_message_reply
               ? {
-                  _id: data.ID_message_reply._id,
-                  content:
-                    data.ID_message_reply.content || "Tin nhắn không tồn tại",
-                }
+                _id: data.ID_message_reply._id,
+                content:
+                  data.ID_message_reply.content || "Tin nhắn không tồn tại",
+              }
               : null,
             message_reactionList: [],
             updatedAt: data.updatedAt,
@@ -374,7 +379,8 @@ const renderStyledMessage = (text) => {
     socket.emit("joinGroup", group._id);
     getMessagesOld(group._id);
     console.log("📌 Chọn nhóm:", group._id);
-
+    setMessage('');
+    setReply(null);
     setSelectedGroup(group);
   };
   // Hiển thị ảnh lớn
@@ -389,6 +395,7 @@ const renderStyledMessage = (text) => {
     setImageModalVisible(false);
     setSelectedImage(null);
   };
+
   const getFileExtension = (url) => {
     try {
       const pathname = new URL(url).pathname; // Lấy phần đường dẫn từ URL
@@ -399,6 +406,49 @@ const renderStyledMessage = (text) => {
       return null;
     }
   };
+
+  // đang soan tin
+  // const handleTyping = (text) => {
+  //   setMessage(text);
+
+  //   if (!isTyping) {
+  //     //console.log("typing: " + text)
+  //     socket.emit("typing", { ID_group: params?.ID_group, ID_user: me._id }); // Gửi sự kiện lên server
+  //     setIsTyping(true);
+  //   }
+
+  //   // Dừng typing sau 1.5s nếu không nhập tiếp
+  //   clearTimeout(typingTimeoutRef.current);
+  //   typingTimeoutRef.current = setTimeout(() => {
+  //     //console.log("stop_typing: " + text)
+  //     socket.emit("stop_typing", { ID_group: params?.ID_group, ID_user: me._id }); // Gửi sự kiện stop typing
+  //     setIsTyping(false);
+  //   }, 1500);
+  // };
+
+  // gửi tin nhắn
+  const sendMessage = (type, content) => {
+    if (socket == null || (message == null && type === 'text') || selectedGroup == null) {
+      console.log("socket null or message null");
+      return;
+    }
+    const payload = {
+      ID_group: selectedGroup._id,
+      sender: user._id,
+      content: content,
+      type: type,
+      ID_message_reply: reply
+        ? {
+          _id: reply._id,
+          content: reply.content || "Tin nhắn không tồn tại", // Đảm bảo không bị undefined
+        }
+        : null,
+    };
+    socket.emit('send_message', payload);
+    setMessage('');
+    setReply(null); // Xóa tin nhắn trả lời sau khi gửi
+  };
+
   return (
     <div className={styles.app}>
       {/* Phần danh sách đoạn chat bên trái */}
@@ -406,7 +456,7 @@ const renderStyledMessage = (text) => {
         <h2>Đoạn chat</h2>
         <input
           type="text"
-          placeholder="Tìm kiếm trên Messenger"
+          placeholder="Tìm kiếm trên đoạn chat"
           className={styles.searchBar}
         />
         {groups.map((item) => (
@@ -429,10 +479,10 @@ const renderStyledMessage = (text) => {
                 src={
                   selectedGroup.isPrivate
                     ? selectedGroup.members.find((m) => m._id !== user._id)
-                        ?.avatar ||
-                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                      ?.avatar ||
+                    "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
                     : selectedGroup.avatar ||
-                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                    "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
                 }
                 alt="Profile"
                 className={styles.avatar}
@@ -440,16 +490,14 @@ const renderStyledMessage = (text) => {
               <div className={styles.chatHeaderInfo}>
                 <h3>
                   {selectedGroup.isPrivate
-                    ? `${
-                        selectedGroup.members.find((m) => m._id !== user._id)
-                          ?.first_name
-                      } ${
-                        selectedGroup.members.find((m) => m._id !== user._id)
-                          ?.last_name
-                      }`
+                    ? `${selectedGroup.members.find((m) => m._id !== user._id)
+                      ?.first_name
+                    } ${selectedGroup.members.find((m) => m._id !== user._id)
+                      ?.last_name
+                    }`
                     : selectedGroup.name
-                    ? selectedGroup.name
-                    : selectedGroup.members
+                      ? selectedGroup.name
+                      : selectedGroup.members
                         .filter((m) => m._id !== user._id)
                         .map((m) => `${m.first_name} ${m.last_name}`)
                         .join(", ")}
@@ -466,11 +514,10 @@ const renderStyledMessage = (text) => {
                   .map((message) => (
                     <div
                       key={message._id}
-                      className={`${styles.message} ${
-                        message.sender._id === user._id
-                          ? styles.me
-                          : styles.other
-                      }`}
+                      className={`${styles.message} ${message.sender._id === user._id
+                        ? styles.me
+                        : styles.other
+                        }`}
                     >
                       {message.sender._id !== user._id && (
                         <img
@@ -485,9 +532,8 @@ const renderStyledMessage = (text) => {
                       <div className={styles.messageContent}>
                         <div
                           ref={messageRef}
-                          className={`messageWrapper ${
-                            message.sender._id === user._id ? "currentUserMessage" : ""
-                          }`}
+                          className={`messageWrapper ${message.sender._id === user._id ? "currentUserMessage" : ""
+                            }`}
                         >
                           {/* Hiển thị tin nhắn trả lời nếu có */}
                           {/* {message.ID_message_reply &&
@@ -541,17 +587,15 @@ const renderStyledMessage = (text) => {
                                 href={message.content}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`messageTextIsLink ${
-                                  message.sender._id === user._id ? "currentUserTextLink" : ""
-                                }`}
+                                className={`messageTextIsLink ${message.sender._id === user._id ? "currentUserTextLink" : ""
+                                  }`}
                               >
                                 {message.content}
                               </a>
                             ) : (
                               <p
-                                className={`messageText ${
-                                  message.sender._id === user._id ? "currentUserText" : ""
-                                }`}
+                                className={`messageText ${message.sender._id === user._id ? "currentUserText" : ""
+                                  }`}
                               >
                                 {renderStyledMessage(message.content)}
                               </p>
@@ -566,27 +610,26 @@ const renderStyledMessage = (text) => {
                                 maxHeight: "200px",
                                 borderRadius: "10px",
                               }}
-                              onClick={() => {openImageModal(message.content) }}
+                              onClick={() => { openImageModal(message.content) }}
                             />
                           ) : message.type === "video" ? (
                             <video
                               src={message.content}
                               controls
-                              className={`messageVideo ${
-                                message.sender._id === user._id ? "currentUserText" : ""
-                              }`}
+                              className={`messageVideo ${message.sender._id === user._id ? "currentUserText" : ""
+                                }`}
                               style={{
                                 maxWidth: "100%",
                                 maxHeight: "200px",
                                 borderRadius: "10px",
                               }}
-                              onClick={() => {openImageModal(message.content) }}
+                              onClick={() => { openImageModal(message.content) }}
                             />
                           ) : null}
 
                           {/* Thời gian gửi */}
                           <p className={message.sender._id !== user._id ? styles.messageTime : styles.messageTimeMe}>
-                          {new Date(message.createdAt).toLocaleTimeString()}
+                            {new Date(message.createdAt).toLocaleTimeString()}
                           </p>
                         </div>
                       </div>
@@ -605,16 +648,17 @@ const renderStyledMessage = (text) => {
 
             <div className={styles.chatInput}>
               <input
-                type="text"
-                placeholder="Nhắn tin..."
-                value={newMessage}
-                // onChange={(e) => setNewMessage(e.target.value)}
-                // onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                //type="text"
+                placeholder="Type a message"
+                placeholderTextColor={'grey'}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              //onChangeText={handleTyping}
               />
               <button
-              // onClick={handleSendMessage}
+                onClick={() => sendMessage('text', message)}
               >
-                👍
+                Gửi
               </button>
             </div>
           </>
@@ -647,7 +691,7 @@ const renderStyledMessage = (text) => {
       {isImageModalVisible && (
         <div className={styles.post_modal_container}>
           <div className={styles.modal_background} onClick={closeImageModal}></div>
-          {getFileExtension(selectedImage)=== "mp4" ? (
+          {getFileExtension(selectedImage) === "mp4" ? (
             <video
               src={selectedImage}
               alt="Full Image"
