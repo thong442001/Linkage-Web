@@ -9,7 +9,22 @@ import {
     FaUserFriends, FaUsers as FaGroups, FaClock,
     FaBookmark, FaPlayCircle, FaShoppingBag
 } from 'react-icons/fa';
-import { getAllNotificationOfUser,getAllUsers } from '../../rtk/API';
+import {
+    getAllNotificationOfUser,
+    getAllUsers,
+    getAllPostsInHome,
+    editAvatarOfUser,
+    editBackgroundOfUser,
+    editBioOfUser,
+    guiLoiMoiKetBan,
+    chapNhanLoiMoiKetBan,
+    huyLoiMoiKetBan,
+    huyBanBe,
+    changeDestroyPost,
+    addPost_Reaction,
+    deletePost_reaction,
+    getAllFriendOfID_user,
+} from '../../rtk/API';
 import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
 import Friend from '../friend/Friend';
@@ -29,7 +44,14 @@ const Home = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [formattedNotifications, setFormattedNotifications] = useState([]);
-
+    const [posts, setPosts] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [stories, setStories] = useState([]);
+    const [liveSessions, setLiveSessions] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [currentTime, setCurrentTime] = useState(Date.now());
+    const [successMessage, setSuccessMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     //search
     const [data, setData] = useState([]);
@@ -40,46 +62,157 @@ const Home = () => {
         dispatch(logout());
         navigate('/'); // Navigate to the login route after logout
     };
+
+    // Gọi API
+    const callGetAllPostsInHome = async (ID_user) => {
+        try {
+            if (!refreshing) setLoading(true);
+            await dispatch(getAllPostsInHome({ me: ID_user, token, timestamp: Date.now() }))
+                .unwrap()
+                .then((response) => {
+                    setPosts(response.posts || []);
+                    setStories(response.stories || []);
+                    setLiveSessions([]);
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.log('Error getAllPostsInHome:: ', error);
+                    setPosts([]);
+                    setStories([]);
+                    setLiveSessions([]);
+                    setLoading(false);
+                });
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        callGetAllPostsInHome(me._id);
+    }, [me._id]);
+
     //search
     useEffect(() => {
         getData();
-      }, []);
-    
-      const getData = async () => {
-        try {
-          const response = await dispatch(getAllUsers({ token })).unwrap();
-          setData(response.users);
-        //   console.log('Users:', response.users);
-        } catch (error) {
-          console.log('Error:', error);
-        }
-      };
+    }, []);
 
-      const normalizeText = (text) => {
+    const getData = async () => {
+        try {
+            const response = await dispatch(getAllUsers({ token })).unwrap();
+            setData(response.users);
+            //   console.log('Users:', response.users);
+        } catch (error) {
+            console.log('Error:', error);
+        }
+    };
+
+    const normalizeText = (text) => {
         return text
-          .toLowerCase()
-          .normalize('NFD') // Tách dấu ra khỏi chữ
-          .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
-          .replace(/đ/g, 'd')
-          .replace(/Đ/g, 'D');
-      };
-      const handleInputChange = query => {
+            .toLowerCase()
+            .normalize('NFD') // Tách dấu ra khỏi chữ
+            .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D');
+    };
+    const handleInputChange = query => {
         setIsSearchOpen(!isSearchOpen)
         setSearchQuery(query.target.value);
         if (query.target.value === '') {
-          setFilteredProducts([]);
-          setIsSearching(false);
+            setFilteredProducts([]);
+            setIsSearching(false);
         } else {
-          setIsSearching(true);
-          setFilteredProducts(
-            data.filter(user =>
-              normalizeText((user.first_name + ' ' + user.last_name))
-                .toLowerCase()
-                .includes(normalizeText(query.target.value).toLowerCase()),
-            ),
-          );
+            setIsSearching(true);
+            setFilteredProducts(
+                data.filter(user =>
+                    normalizeText((user.first_name + ' ' + user.last_name))
+                        .toLowerCase()
+                        .includes(normalizeText(query.target.value).toLowerCase()),
+                ),
+            );
         }
-      };
+    };
+
+    // Hàm cập nhật reaction
+    const updatePostReaction = (postId, reaction, reactionId) => {
+        setPosts((prev) =>
+            prev.map((post) =>
+                post._id === postId
+                    ? {
+                        ...post,
+                        post_reactions: [
+                            ...post.post_reactions,
+                            {
+                                _id: reactionId,
+                                ID_user: {
+                                    _id: me._id,
+                                    first_name: me.first_name,
+                                    last_name: me.last_name,
+                                    avatar: me.avatar,
+                                },
+                                ID_reaction: reaction,
+                                quantity: 1,
+                            },
+                        ],
+                    }
+                    : post
+            )
+        );
+    };
+
+    // Hàm xóa reaction
+    const deletePostReaction = (postId, reactionId) => {
+        setPosts((prev) =>
+            prev.map((post) =>
+                post._id === postId
+                    ? {
+                        ...post,
+                        post_reactions: post.post_reactions.filter(
+                            (reaction) => reaction._id !== reactionId
+                        ),
+                    }
+                    : post
+            )
+        );
+    };
+
+    // Hàm xóa bài đăng
+    const handleDeletePost = async (postId) => {
+        try {
+            dispatch(changeDestroyPost({ _id: postId }))
+                .unwrap()
+                .then(() => {
+                    setPosts((prev) =>
+                        prev.map((post) =>
+                            post._id === postId ? { ...post, _destroy: true } : post
+                        )
+                    );
+                    setSuccessMessage("Đã xóa bài đăng!");
+                })
+                .catch((err) => {
+                    setErrorMessage("Lỗi khi xóa bài đăng!");
+                });
+        } catch (error) {
+            setErrorMessage("Lỗi khi xử lý!");
+        }
+    };
+
+    // Hàm xóa vĩnh viễn bài đăng
+    const handleDeletePermanently = async (postId) => {
+        try {
+            dispatch(changeDestroyPost({ _id: postId, permanent: true }))
+                .unwrap()
+                .then(() => {
+                    setPosts((prev) => prev.filter((post) => post._id !== postId));
+                    setSuccessMessage("Đã xóa vĩnh viễn bài đăng!");
+                })
+                .catch((err) => {
+                    setErrorMessage("Lỗi khi xóa vĩnh viễn bài đăng!");
+                });
+        } catch (error) {
+            setErrorMessage("Lỗi khi xử lý!");
+        }
+    };
 
     const calculateTimeAgo = (updatedAt) => {
         const now = Date.now();
@@ -287,7 +420,7 @@ const Home = () => {
                             />
                         )}
                     </div>
-                </div>  
+                </div>
                 <div className='mid-header'>
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
@@ -320,14 +453,15 @@ const Home = () => {
                         <FaBell className="nav-icon" />
                     </div>
                 </div>
-                
+
                 <div className="mid-header1">
                     <div className="icon-wrapper1" onClick={handleLogout}>
                         <FaTh className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1" onClick={() => {
-                         setIsNotificationOpen(false);
-                        navigate('/chat')}}>
+                        setIsNotificationOpen(false);
+                        navigate('/chat')
+                    }}>
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
@@ -355,32 +489,28 @@ const Home = () => {
                 </div>
             </div>
             <div className="body-container">
+                {posts.length > 0 ? (
+                    posts.map((post) => (
+                        <Post
+                            key={post._id}
+                            post={post}
+                            ID_user={me._id}
+                            currentTime={currentTime}
+                            onDelete={() => handleDeletePost(post._id)}
+                            onDeleteVinhVien={() => handleDeletePermanently(post._id)}
+                            updatePostReaction={updatePostReaction}
+                            deletPostReaction={deletePostReaction}
+                        />
+                    ))
+                ) : (
+                    <p>Chưa có bài đăng nào.</p>
+                )}
                 <Routes>
-                    <Route path="/" element={<Post />} />
                     <Route path="/friend" element={<Friend />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path='/chat' element={<Chat />} />
                 </Routes>
             </div>
-            {/* <button
-                onClick={handleLogout}
-                style={{
-                    width: '100%',
-                    padding: '10px',
-                    backgroundColor: '#1e90ff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s',
-                }}
-                onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')}
-                onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
-            >
-                Log Out
-            </button> */}
         </div>
     );
 };
