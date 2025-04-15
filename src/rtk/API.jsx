@@ -397,4 +397,21 @@ export const changeDestroyPost = createAsyncThunk(
     }
   }
 );
+export const getPostsUserIdDestroyTrue = createAsyncThunk(
+  'post/getPostsUserIdDestroyTrue',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`post/getPostsUserIdDestroyTrue?me=${data.me}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 

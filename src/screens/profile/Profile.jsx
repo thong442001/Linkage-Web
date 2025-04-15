@@ -516,27 +516,30 @@ const Profile = () => {
 
       {/* Ảnh bìa */}
       <div className="cover-photo-container">
-        <img
-          src={
-            user?.background ||
-            "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
-          }
-          alt="Cover Photo"
-          className="cover-photo"
-          onClick={() => openImageModal(user?.background)}
-        />
-        {user?._id === me._id && (
-          <label className="cover-photo-button">
-            <FaCamera /> Edit cover photo
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={onChangeBackground}
-            />
-          </label>
-        )}
-      </div>
+  {user?.background ? (
+    <img
+      src={user?.background}
+      alt="Cover Photo"
+      className="cover-photo"
+      onClick={() => openImageModal(user?.background)}
+    />
+  ) : (
+    <div
+      className="cover-photo"
+    />
+  )}
+  {user?._id === me._id && (
+    <label className="cover-photo-button">
+      <FaCamera /> Chỉnh sửa ảnh bìa
+      <input
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={onChangeBackground}
+      />
+    </label>
+  )}
+</div>
 
       {/* Thông tin hồ sơ */}
       <div className="profile-info-container">
@@ -599,8 +602,8 @@ const Profile = () => {
                     Hủy bạn bè
                   </button>
                 )}
-                {(relationship?.relation === "A gửi lời kết bạn B" ||
-                  relationship?.relation === "B gửi lời kết bạn A") && (
+                {( relationship?.ID_userA == me?._id &&  relationship?.relation === "A gửi lời kết bạn B" ||
+                  relationship?.ID_userB == me?._id &&  relationship?.relation === "B gửi lời kết bạn A") && (
                     <button
                       className="story-button"
                       onClick={handleCancelFriendRequest}
@@ -608,8 +611,8 @@ const Profile = () => {
                       Hủy lời mời
                     </button>
                   )}
-                {(relationship?.relation === "B gửi lời kết bạn A" ||
-                  relationship?.relation === "A gửi lời kết bạn B") && (
+                {( relationship?.ID_userA == me?._id &&  relationship?.relation === "B gửi lời kết bạn A" ||
+                  relationship?.ID_userB == me?._id &&  relationship?.relation === "A gửi lời kết bạn B") && (
                     <button
                       className="story-button"
                       onClick={handleAcceptFriendRequest}
