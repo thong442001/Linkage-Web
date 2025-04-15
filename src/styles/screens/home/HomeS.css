@@ -182,8 +182,7 @@ body {
 .body-container {
     flex: 1;
     gap: 20px;
-    min-height: calc(vh - 70px);
-    /* Adjust height to account for header */
+    min-height: calc(100vh - 70px);
 }
 
 /* Nội dung chính (giữa) */
