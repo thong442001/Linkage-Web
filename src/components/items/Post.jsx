@@ -284,7 +284,7 @@ const Post = () => {
         />
         <input
           type="text"
-          placeholder={`What's on your mind, ${me?.first_name || 'User'}?`}
+          placeholder={`Bạn đang nghĩ gì, ${me?.first_name } ?`}
           className="post-input"
         />
       </div>

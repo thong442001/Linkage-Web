@@ -27,8 +27,6 @@ body {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-
-
 /* Logo */
 .logo {
     width: 45px;
@@ -96,7 +94,6 @@ body {
     width: 200px;
     /* Khoảng cách giữa các icon */
 }
-
 
 /* Div chứa logo và search bar */
 .logo-search-container {
@@ -179,13 +176,14 @@ body {
     object-fit: cover;
 }
 
+
 /* Body container (chia thành 3 phần bằng Grid) */
 .body-container {
     display: flex;
     flex: 1;
     gap: 20px;
     /* Space between columns */
-    padding: 0 20px;
+    /* padding: 0 20px; */
     /* Add some padding to the sides */
     min-height: calc(100vh - 70px);
     /* Adjust height to account for header */
@@ -254,124 +252,4 @@ body {
 .see-more {
     color: #65676b;
     font-weight: 500;
-}
-
-/* Create post section */
-.create-post {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.post-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background-color: #f0f2f5;
-    padding: 10px;
-    border-radius: 20px;
-    font-size: 16px;
-    margin-left: 10px;
-}
-
-.post-input::placeholder {
-    color: #65676b;
-}
-
-.post-actions {
-    display: flex;
-    justify-content: space-between;
-    background-color: white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.action-button {
-    flex: 1;
-    background: none;
-    border: none;
-    padding: 10px;
-    font-size: 14px;
-    color: #65676b;
-    cursor: pointer;
-    text-align: center;
-}
-
-.action-button:hover {
-    background-color: #e4e6eb;
-    border-radius: 8px;
-}
-
-.post {
-    background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.post-author {
-    font-weight: 600;
-    color: #050505;
-}
-
-.post-time {
-    font-size: 14px;
-    color: #65676b;
-}
-
-.post-info {
-    flex-direction: column;
-    margin-left: 10px;
-}
-
-.post p {
-    margin: 10px 0;
-    color: #050505;
-}
-
-.post-image {
-    width: 100%;
-    border-radius: 8px;
-    margin-top: 10px;
-}
-
-/* Contacts (for sidebar-right) */
-.contacts h3 {
-    font-size: 16px;
-    color: #65676b;
-    margin-bottom: 10px;
-}
-
-.contact-item {
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.contact-item:hover {
-    background-color: #e4e6eb;
-}
-
-.contact-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.contact-item span {
-    font-size: 16px;
-    color: #050505;
 }

@@ -2,11 +2,17 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  background-color: #f0f2f5;
   min-height: 100vh;
-  color: #1c1e21;
+  /* color: #1c1e21; */
   padding-bottom: 20px;
-  
+}
+
+.boxContainer {
+  background-color: #fff;
+}
+
+.boxAll {
+  background-color: #d9d9d960;
 }
 
 .coverPhotoContainer {

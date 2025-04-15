@@ -258,3 +258,143 @@ export const getMessagesGroup = createAsyncThunk(
     }
   }
 );
+
+// params : me(ID_user)
+export const getAllNotificationOfUser = createAsyncThunk(
+  'notification/getAllNotificationOfUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`notification/getAllNotificationOfUser?me=${data.me}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Lấy toàn bộ thông tin profile (bao gồm user, posts, relationship, friends, stories)
+export const allProfile = createAsyncThunk(
+  'post/allProfile',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('post/allProfile', data);
+      if (response.status === true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Chỉnh sửa avatar của người dùng
+export const editAvatarOfUser = createAsyncThunk(
+  'user/editAvatarOfUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('user/editAvatarOfUser', data);
+      if (response.status === true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Chỉnh sửa ảnh bìa của người dùng
+export const editBackgroundOfUser = createAsyncThunk(
+  'user/editBackgroundOfUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('user/editBackgroundOfUser', data);
+      if (response.status === true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Chỉnh sửa bio của người dùng
+export const editBioOfUser = createAsyncThunk(
+  'user/editBioOfUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('user/editBioOfUser', data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Hủy bạn bè
+export const huyBanBe = createAsyncThunk(
+  'relationship/huyBanBe',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post(`relationship/huyBanBe`, data);
+      if (response.status === true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+
+// Tham gia hoặc tạo nhóm chat riêng tư
+export const joinGroupPrivate = createAsyncThunk(
+  'group/joinGroupPrivate',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('group/joinGroupPrivate', data);
+      if (response.status === true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Xóa bài đăng (đặt _destroy = true)
+export const changeDestroyPost = createAsyncThunk(
+  'post/changeDestroyPost',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('post/changeDestroyPost', data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
