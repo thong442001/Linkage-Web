@@ -178,6 +178,7 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  width: 1000px;
 }
 
 /* Single Media (1 ảnh/video) */

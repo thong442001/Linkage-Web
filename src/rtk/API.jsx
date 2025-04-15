@@ -416,3 +416,34 @@ export const getAllUsers = createAsyncThunk(
     }
   }
 );
+
+export const getPostsUserIdDestroyTrue = createAsyncThunk(
+  'post/getPostsUserIdDestroyTrue',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`post/getPostsUserIdDestroyTrue?me=${data.me}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const deletePost = createAsyncThunk(
+  'post/deletePost',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('post/deletePost', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
