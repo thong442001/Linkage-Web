@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
+    width: 100%;
     /* Ensure the body takes up the full viewport height */
     background-color: #f8f9fb;
     /* Set the background color (match your app's background) */
@@ -181,7 +182,7 @@ body {
 .body-container {
     flex: 1;
     gap: 20px;
-    min-height: calc(100vh - 70px);
+    min-height: calc(vh - 70px);
     /* Adjust height to account for header */
 }
 
