@@ -10,7 +10,7 @@ const ProfileNavigation = () => {
   return (
     <Routes>
       <Route path="/*" element={<Home />} />
-      <Route path="/chat" element={<Chat />} />
+      {/* <Route path="/chat" element={<Chat />} /> */}
       {/* <Route path="/friend" element={<Friend />} /> */}
       {/* <Route path="/trash" element={<Trash />} />  */}
       {/* Thêm các route khác nếu cần */}

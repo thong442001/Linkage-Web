@@ -398,3 +398,21 @@ export const changeDestroyPost = createAsyncThunk(
   }
 );
 
+/// test token
+export const getAllUsers = createAsyncThunk(
+  'user/getAllUsers',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get('user/getAllUsers', data);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

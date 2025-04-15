@@ -38,6 +38,7 @@ import "../../styles/screens/profile/Profile.css";
 import axios from "axios";
 import PostProfile from "../../components/items/PostProfile";
 
+
 const Profile = () => {
   const { id } = useParams(); // Lấy ID từ URL
   const dispatch = useDispatch();

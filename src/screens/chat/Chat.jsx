@@ -14,6 +14,10 @@ const Chat = () => {
   const [groups, setGroups] = useState([]);
   const [filteredGroups, setFilteredGroups] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isImageModalVisible, setImageModalVisible] = useState(false);
+  
+  
 
   //chat
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -373,7 +377,28 @@ const renderStyledMessage = (text) => {
 
     setSelectedGroup(group);
   };
+  // Hiển thị ảnh lớn
+  const openImageModal = (imageUrl) => {
+    console.log("🚀 ~ file: Chat.jsx:1 ~ openImageModal ~ imageUrl:", imageUrl);
+    setSelectedImage(imageUrl);
+    setImageModalVisible(true);
+  };
 
+  // Đóng modal ảnh
+  const closeImageModal = () => {
+    setImageModalVisible(false);
+    setSelectedImage(null);
+  };
+  const getFileExtension = (url) => {
+    try {
+      const pathname = new URL(url).pathname; // Lấy phần đường dẫn từ URL
+      const parts = pathname.split('.');
+      return parts.length > 1 ? parts.pop().toLowerCase() : null;
+    } catch (error) {
+      console.error("URL không hợp lệ:", error);
+      return null;
+    }
+  };
   return (
     <div className={styles.app}>
       {/* Phần danh sách đoạn chat bên trái */}
@@ -430,11 +455,6 @@ const renderStyledMessage = (text) => {
                         .join(", ")}
                 </h3>
                 <p>Được mã hóa đầu cuối</p>
-              </div>
-              <div className={styles.chatHeaderActions}>
-                <button>📞</button>
-                <button>🔕</button>
-                <button>🔍</button>
               </div>
             </div>
 
@@ -546,6 +566,7 @@ const renderStyledMessage = (text) => {
                                 maxHeight: "200px",
                                 borderRadius: "10px",
                               }}
+                              onClick={() => {openImageModal(message.content) }}
                             />
                           ) : message.type === "video" ? (
                             <video
@@ -559,6 +580,7 @@ const renderStyledMessage = (text) => {
                                 maxHeight: "200px",
                                 borderRadius: "10px",
                               }}
+                              onClick={() => {openImageModal(message.content) }}
                             />
                           ) : null}
 
@@ -608,11 +630,6 @@ const renderStyledMessage = (text) => {
                 <h3>Chọn một nhóm để xem tin nhắn</h3>
                 <p>Được mã hóa đầu cuối</p>
               </div>
-              <div className={styles.chatHeaderActions}>
-                <button disabled>📞</button>
-                <button disabled>🔕</button>
-                <button disabled>🔍</button>
-              </div>
             </div>
 
             <div className={styles.chatMessages}>
@@ -626,6 +643,28 @@ const renderStyledMessage = (text) => {
           </>
         )}
       </div>
+      {/* Modal xem ảnh lớn */}
+      {isImageModalVisible && (
+        <div className={styles.post_modal_container}>
+          <div className={styles.modal_background} onClick={closeImageModal}></div>
+          {getFileExtension(selectedImage)=== "mp4" ? (
+            <video
+              src={selectedImage}
+              alt="Full Image"
+              className={styles.full_image}
+              controls
+            />
+          ) : (
+            <img src={selectedImage} alt="Full Image" className={styles.full_image} />
+          )}
+          {/* <img src={selectedImage} alt="Full Image" className={styles.full_image} /> */}
+          {/* <video src={selectedImage} alt="Full Image" className={styles.full_image} controls /> */}
+          {/* <img src={selectedImage} alt="Full Image" className={styles.full_image} /> */}
+          <button className={styles.close_button_full_image} onClick={closeImageModal}>
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   );
 };

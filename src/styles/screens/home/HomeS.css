@@ -179,12 +179,8 @@ body {
 
 /* Body container (chia thành 3 phần bằng Grid) */
 .body-container {
-    display: flex;
     flex: 1;
     gap: 20px;
-    /* Space between columns */
-    /* padding: 0 20px; */
-    /* Add some padding to the sides */
     min-height: calc(100vh - 70px);
     /* Adjust height to account for header */
 }
