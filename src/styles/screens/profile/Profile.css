@@ -7,22 +7,6 @@
   padding-top: 60px; /* Khoảng cách trên để tránh header cố định che nội dung */
 }
 
-/* Header cố định ở đầu trang */
-.header-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between; /* Căn đều các phần tử */
-  padding: 3px 20px; /* Đệm trong header */
-  background-color: white; /* Nền trắng */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng đổ */
-  position: fixed; /* Cố định header khi cuộn */
-  top: 0; /* Đặt ở đỉnh trang */
-  left: 0;
-  right: 0; /* Mở rộng toàn chiều ngang */
-  z-index: 1000; /* Đảm bảo header nằm trên các phần tử khác */
-}
-
 /* Container cho ảnh bìa */
 .cover-photo-container {
   height: 350px; /* Chiều cao cố định */
