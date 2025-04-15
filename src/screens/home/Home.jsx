@@ -17,6 +17,7 @@ import Chat from '../chat/Chat';
 import Profile from '../profile/Profile';
 import NotificationDialog from '../../components/items/NotificationDialog';
 import SearchDialog from '../../components/items/SearchDialog';
+import { addSearch, removeSearch, clearHistory } from "../../rtk/Reducer";
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -29,7 +30,24 @@ const Home = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [formattedNotifications, setFormattedNotifications] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
+  // lấy lịch sử tìm kiếm
+  const searchHistory = useSelector((state) => state.app.history) || [];
+  console.log("canh",searchHistory);
+  //thêm làm lịch sử tìm kiếm
+  const saveSearch = (user) => {
+    dispatch(addSearch(user));
+  };
+  //xóa người tìm kiếm được chọn
+  const deleteSearchItem = (userID) => {
+    dispatch(removeSearch(userID));
+  };
+  // xóa tất cả lịch sử
+  const clearHistorySearch = () => {
+    setModalVisible(true);
+  };
 
     //search
     const [data, setData] = useState([]);
@@ -43,13 +61,13 @@ const Home = () => {
     //search
     useEffect(() => {
         getData();
-      }, []);
+    }, []);
     
       const getData = async () => {
         try {
           const response = await dispatch(getAllUsers({ token })).unwrap();
           setData(response.users);
-        //   console.log('Users:', response.users);
+        console.log('Users:', response.users._id);
         } catch (error) {
           console.log('Error:', error);
         }
@@ -63,20 +81,24 @@ const Home = () => {
           .replace(/đ/g, 'd')
           .replace(/Đ/g, 'D');
       };
-      const handleInputChange = query => {
-        setIsSearchOpen(!isSearchOpen)
-        setSearchQuery(query.target.value);
-        if (query.target.value === '') {
+      const handleInputChange = (e) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+      
+        if (!isSearchOpen) setIsSearchOpen(true);
+      
+        if (value.trim() === '') {
           setFilteredProducts([]);
           setIsSearching(false);
         } else {
           setIsSearching(true);
+          const normalizedValue = normalizeText(value).toLowerCase();
           setFilteredProducts(
             data.filter(user =>
-              normalizeText((user.first_name + ' ' + user.last_name))
+              normalizeText(user.first_name + ' ' + user.last_name)
                 .toLowerCase()
-                .includes(normalizeText(query.target.value).toLowerCase()),
-            ),
+                .includes(normalizedValue)
+            )
           );
         }
       };
@@ -281,10 +303,22 @@ const Home = () => {
                             placeholder="Search..."
                         />
                         {isSearchOpen && (
-                            <SearchDialog
+                            <div>
+                            {!isSearching && searchHistory.length > 0 ? (
+                                <SearchDialog
+                                item={searchHistory}
+                                onClose={() => setIsSearchOpen(false)}
+                                saveSearch={saveSearch}
+                            />
+                            ) : (
+                                <SearchDialog
                                 item={filteredProducts}
                                 onClose={() => setIsSearchOpen(false)}
+                                saveSearch={saveSearch}
                             />
+                            )}
+
+                            </div>
                         )}
                     </div>
                 </div>  
@@ -294,6 +328,7 @@ const Home = () => {
                         onClick={() => {
                             setActiveIcon('home');
                             navigate('/');
+                            setIsSearchOpen(false)
                         }}
                     >
                         <FaHome className="nav-icon" />
@@ -303,34 +338,45 @@ const Home = () => {
                         onClick={() => {
                             setActiveIcon('users');
                             navigate('/friend');
+                            setIsSearchOpen(false)
                         }}
                     >
                         <FaUsers className="nav-icon" />
                     </div>
                     <div
                         className={`icon-wrapper ${activeIcon === 'menu' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('menu')}
+                        onClick={() => {setActiveIcon('menu')
+                            setIsSearchOpen(false)
+                        }}
                     >
                         <FaPlusCircle className="nav-icon" />
                     </div>
                     <div
                         className={`icon-wrapper ${activeIcon === 'bell' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('bell')}
+                        onClick={() => {
+                            setActiveIcon('bell') 
+                            setIsSearchOpen(false)}}
                     >
                         <FaBell className="nav-icon" />
                     </div>
                 </div>
                 
                 <div className="mid-header1">
-                    <div className="icon-wrapper1" onClick={handleLogout}>
+                    <div className="icon-wrapper1" onClick={() => {
+                        handleLogout()
+                        setIsSearchOpen(false)
+                    }}>
                         <FaTh className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1" onClick={() => {
                          setIsNotificationOpen(false);
+                         setIsSearchOpen(false)
                         navigate('/chat')}}>
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
-                    <div className="icon-wrapper1" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
+                    <div className="icon-wrapper1" onClick={() => {
+                        setIsNotificationOpen(!isNotificationOpen) 
+                        setIsSearchOpen(false)}}>
                         <FaBell className="nav-icon1" />
                         {isNotificationOpen && (
                             <NotificationDialog
@@ -343,6 +389,7 @@ const Home = () => {
                         className="avatar-wrapper"
                         onClick={() => {
                             setIsNotificationOpen(false);
+                            setIsSearchOpen(false)
                             navigate('/profile');
                         }}
                     >

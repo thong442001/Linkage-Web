@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../context/socketContext";
 import Groupcomponent from "../../components/items/Groupcomponent";
 import styles from "../../styles/screens/chat/ChatS.module.css";
+import {
+  FaPenAlt,
+} from 'react-icons/fa';
 const Chat = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -456,6 +459,10 @@ const renderStyledMessage = (text) => {
                 </h3>
                 <p>Được mã hóa đầu cuối</p>
               </div>
+              <div className={styles.chatHeaderActions}>
+              
+                <button><FaPenAlt /></button>
+              </div>
             </div>
 
             <div className={styles.chatMessages}>
@@ -608,9 +615,7 @@ const renderStyledMessage = (text) => {
                 type="text"
                 placeholder="Nhắn tin..."
                 value={newMessage}
-                // onChange={(e) => setNewMessage(e.target.value)}
-                // onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              />
+                onChange={(e) => setNewMessage(e.target.value)}/>
               <button
               // onClick={handleSendMessage}
               >
