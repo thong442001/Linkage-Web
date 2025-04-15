@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from 'react-icons/fa';
 import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-icons/ai';
-import { getAllPostsInHome, addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
+import { getAllPostsInHome, addPost_Reaction, deletePost_reaction, addPost, changeDestroyPost } from '../../rtk/API';
 import './../../styles/components/items/PostS.css';
 
 const Post = () => {
@@ -71,6 +71,21 @@ const Post = () => {
     }
   }, [me?._id]);
 
+  const callChangeDestroyPost = async ID_post => {
+    try {
+      await dispatch(changeDestroyPost({ _id: ID_post }))
+        .unwrap()
+        .then(response => {
+          setPosts(prevPosts => prevPosts.filter(post => post._id !== ID_post));
+        })
+        .catch(error => {
+          console.log('Lỗi khi xóa bài viết:', error);
+        });
+    } catch (error) {
+      console.log('Lỗi trong callChangeDestroyPost:', error);
+    }
+  };
+
   // Hàm tính thời gian đăng bài
   const getTimeAgo = (createdAt) => {
     if (!createdAt) return 'Không xác định';
@@ -124,6 +139,11 @@ const Post = () => {
     // Bạn có thể điều chỉnh logic này dựa trên định dạng file hoặc thuộc tính media
     return uri.endsWith('.mp4') || uri.endsWith('.mov') || uri.endsWith('.avi');
   };
+  // Hiển thị ảnh lớn
+  const openImageModal = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setImageModalVisible(true);
+  };
 
   const renderMediaGrid = (medias, setSelectedImage, setImageModalVisible, setTypeClick) => {
     const mediaCount = medias.length;
@@ -136,12 +156,7 @@ const Post = () => {
             key={index}
             className={`media-item ${getMediaStyle(mediaCount, index)}`}
             onClick={() => {
-              setSelectedImage(uri);
-              if (mediaCount > 5) {
-                setTypeClick('image');
-              } else {
-                setImageModalVisible(true);
-              }
+              openImageModal(uri);
             }}
           >
             {isVideo(uri) ? (
@@ -284,7 +299,7 @@ const Post = () => {
         />
         <input
           type="text"
-          placeholder={`Bạn đang nghĩ gì, ${me?.first_name } ?`}
+          placeholder={`Bạn đang nghĩ gì, ${me?.first_name} ?`}
           className="post-input"
         />
       </div>
@@ -343,6 +358,7 @@ const Post = () => {
                         </div>
                       </div>
                     </div>
+                    {/* report */}
                     <button
                       className="options-button"
                       onClick={() => {

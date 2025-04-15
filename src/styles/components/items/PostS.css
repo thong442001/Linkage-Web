@@ -269,7 +269,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Thêm lại nền mờ */
+  background-color: rgba(0, 0, 0, 0.1); /* Thêm lại nền mờ */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -394,7 +394,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
   z-index: 1000;
   display: flex;
   justify-content: center;
