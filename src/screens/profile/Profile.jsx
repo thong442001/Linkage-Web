@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, changeAvatar, changeBackground } from "../../rtk/Reducer";
 import {
@@ -36,7 +37,9 @@ import {
 } from "../../rtk/API";
 import style from "../../styles/screens/profile/Profile.module.css";
 import axios from "axios";
-import PostProfile from "../../components/items/PostProfile";
+import PostProfile from "../../components/items/Post";
+import ReportDialog from "../../components/dialogs/ReportDialog"; // Import ReportDialog
+import { Menu, MenuItem } from "@mui/material"; // Import Menu từ MUI
 
 const Profile = () => {
   const { id } = useParams();
@@ -65,6 +68,10 @@ const Profile = () => {
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [successFadeOut, setSuccessFadeOut] = useState(false);
   const [errorFadeOut, setErrorFadeOut] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [reportDialogOpen, setReportDialogOpen] = useState(false); // State cho ReportDialog
+  const [anchorEl, setAnchorEl] = useState(null); // State cho menu ngữ cảnh
+  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -301,6 +308,26 @@ const Profile = () => {
     } catch (error) {
       setErrorMessage("Lỗi khi xử lý!");
     }
+  };
+
+  // Xử lý mở/đóng menu ngữ cảnh
+  const handleMoreClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Xử lý mở ReportDialog
+  const handleReportClick = () => {
+    setReportDialogOpen(true);
+    handleMenuClose();
+  };
+
+  // Xử lý đóng ReportDialog
+  const handleReportDialogClose = () => {
+    setReportDialogOpen(false);
   };
 
   const updatePostReaction = (postId, reaction, reactionId) => {
@@ -657,10 +684,39 @@ const Profile = () => {
         </div>
       )}
 
-      {/* Thanh tab */}
-      <div className={style.tabsContainer}>
-        <button className={`${style.tab} ${style.activeTab}`}>Posts</button>
-      </div>
+     {/* Thanh tab */}
+<div className={style.tabsContainer}>
+  <button className={`${style.tab} ${style.activeTab}`}>Posts</button>
+  {user && me && user._id !== me._id && (
+    <div>
+      <button
+        className={style.moreButton}
+        onClick={handleMoreClick}
+      >
+        <FaEllipsisH size={22} />
+      </button>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          style: {
+            width: "200px",
+          },
+        }}
+      >
+        <MenuItem onClick={handleReportClick}>
+          <FaFlag style={{ marginRight: "8px" }} /> Báo cáo
+        </MenuItem>
+      </Menu>
+    </div>
+  )}
+</div>
+
+{/* ReportDialog */}
+<div>
+<ReportDialog open={reportDialogOpen} onClose={handleReportDialogClose} />
+    </div>
 
       {/* Nội dung chính */}
       <div className={style.contentContainer}>
@@ -726,6 +782,8 @@ const Profile = () => {
           </div>
         </div>
 
+        
+
         {/* Cột phải */}
         <div className={style.rightColumn}>
           <div className={style.postsSection}>
@@ -759,6 +817,9 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+
+
     </div>
   );
 };

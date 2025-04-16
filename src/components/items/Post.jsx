@@ -1,12 +1,25 @@
-import React, { useState, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from 'react-icons/fa';
-import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-icons/ai';
-import { addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
-import './../../styles/components/items/PostS.css';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useState, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from "react-icons/fa";
+import {
+  AiOutlineGlobal,
+  AiOutlineUsergroupAdd,
+  AiOutlineLock,
+} from "react-icons/ai";
+import { addPost_Reaction, deletePost_reaction, addPost } from "../../rtk/API";
+import "./../../styles/components/items/PostS.css";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
-const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePostReaction, deletPostReaction }) => {
+const Post = ({
+  post,
+  ID_user,
+  currentTime,
+  onDelete,
+  onDeleteVinhVien,
+  updatePostReaction,
+  deletPostReaction,
+  className
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const me = useSelector((state) => state.app.user);
@@ -19,22 +32,25 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
   const [isLoading, setIsLoading] = useState(false);
   const [isImageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [captionShare, setCaptionShare] = useState('');
-  const [selectedOption, setSelectedOption] = useState({ status: 1, name: 'Công khai' });
+  const [captionShare, setCaptionShare] = useState("");
+  const [selectedOption, setSelectedOption] = useState({
+    status: 1,
+    name: "Công khai",
+  });
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const reactionRef = useRef(null);
 
   const status = [
-    { status: 1, name: 'Công khai' },
-    { status: 2, name: 'Bạn bè' },
-    { status: 3, name: 'Chỉ mình tôi' },
+    { status: 1, name: "Công khai" },
+    { status: 2, name: "Bạn bè" },
+    { status: 3, name: "Chỉ mình tôi" },
   ];
 
   // Hàm tính thời gian đăng bài
   const getTimeAgo = (createdAt) => {
-    if (!createdAt) return 'Không xác định';
+    if (!createdAt) return "Không xác định";
     const diffMs = currentTime - new Date(createdAt).getTime();
-    if (diffMs < 0) return 'Vừa xong';
+    if (diffMs < 0) return "Vừa xong";
     const seconds = Math.floor(diffMs / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
@@ -48,11 +64,11 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
   // Hàm hiển thị icon trạng thái
   const getIcon = (status) => {
     switch (status) {
-      case 'Công khai':
+      case "Công khai":
         return <AiOutlineGlobal size={12} color="gray" />;
-      case 'Bạn bè':
+      case "Bạn bè":
         return <AiOutlineUsergroupAdd size={12} color="gray" />;
-      case 'Chỉ mình tôi':
+      case "Chỉ mình tôi":
         return <AiOutlineLock size={12} color="gray" />;
       default:
         return null;
@@ -60,20 +76,21 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
   };
 
   const getMediaStyle = (count, index) => {
-    if (count === 1) return 'single-media';
-    else if (count === 2) return 'double-media';
-    else if (count === 3) return index === 0 ? 'triple-media-first' : 'triple-media-second';
-    else if (count === 4) return 'quad-media';
+    if (count === 1) return "single-media";
+    else if (count === 2) return "double-media";
+    else if (count === 3)
+      return index === 0 ? "triple-media-first" : "triple-media-second";
+    else if (count === 4) return "quad-media";
     else {
-      if (index < 2) return 'five-plus-media-first-row';
-      else if (index === 2) return 'five-plus-media-second-row-left';
-      else if (index === 3) return 'five-plus-media-second-row-middle';
-      else return 'five-plus-media-second-row-right';
+      if (index < 2) return "five-plus-media-first-row";
+      else if (index === 2) return "five-plus-media-second-row-left";
+      else if (index === 3) return "five-plus-media-second-row-middle";
+      else return "five-plus-media-second-row-right";
     }
   };
 
   const isVideo = (uri) => {
-    return uri.endsWith('.mp4') || uri.endsWith('.mov') || uri.endsWith('.avi');
+    return uri.endsWith(".mp4") || uri.endsWith(".mov") || uri.endsWith(".avi");
   };
 
   const renderMediaGrid = (medias) => {
@@ -131,11 +148,15 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
       await dispatch(addPost_Reaction(paramsAPI))
         .unwrap()
         .then((response) => {
-          updatePostReaction(post._id, { _id: ID_reaction, name, icon }, response.post_reaction._id);
+          updatePostReaction(
+            post._id,
+            { _id: ID_reaction, name, icon },
+            response.post_reaction._id
+          );
         })
-        .catch((error) => console.log('Lỗi call api addPost_Reaction', error));
+        .catch((error) => console.log("Lỗi call api addPost_Reaction", error));
     } catch (error) {
-      console.log('Lỗi trong addPost_Reaction:', error);
+      console.log("Lỗi trong addPost_Reaction:", error);
     }
   };
 
@@ -147,9 +168,11 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
         .then(() => {
           deletPostReaction(post._id, reactionId);
         })
-        .catch((error) => console.log('Lỗi call api callDeletePost_reaction', error));
+        .catch((error) =>
+          console.log("Lỗi call api callDeletePost_reaction", error)
+        );
     } catch (error) {
-      console.log('Lỗi trong callDeletePost_reaction:', error);
+      console.log("Lỗi trong callDeletePost_reaction:", error);
     }
   };
 
@@ -161,8 +184,10 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
         caption: captionShare,
         medias: [],
         status: selectedOption.name,
-        type: 'Share',
-        ID_post_shared: post.ID_post_shared ? post.ID_post_shared._id : post._id,
+        type: "Share",
+        ID_post_shared: post.ID_post_shared
+          ? post.ID_post_shared._id
+          : post._id,
         tags: [],
       };
       await dispatch(addPost(paramsAPI))
@@ -174,14 +199,14 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
         })
         .catch((error) => {
           setIsLoading(false);
-          console.log('Lỗi khi share bài viết:', error);
+          console.log("Lỗi khi share bài viết:", error);
           setShareVisible(false);
           setFailedModalVisible(true);
           setTimeout(() => setFailedModalVisible(false), 1500);
         });
     } catch (error) {
       setIsLoading(false);
-      console.log('Lỗi share bài viết:', error);
+      console.log("Lỗi share bài viết:", error);
       setShareVisible(false);
       setFailedModalVisible(true);
       setTimeout(() => setFailedModalVisible(false), 1500);
@@ -190,9 +215,11 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
 
   const timeAgo = getTimeAgo(post.createdAt);
   const timeAgoShare = getTimeAgo(post.ID_post_shared?.createdAt);
-  const hasCaption = post?.caption?.trim() !== '';
-  const hasMedia = post?.medias?.length > 0 || post?.ID_post_shared?.medias?.length > 0;
-  const userReaction = post.post_reactions?.find((r) => r.ID_user._id === me?._id) || null;
+  const hasCaption = post?.caption?.trim() !== "";
+  const hasMedia =
+    post?.medias?.length > 0 || post?.ID_post_shared?.medias?.length > 0;
+  const userReaction =
+    post.post_reactions?.find((r) => r.ID_user._id === me?._id) || null;
 
   const reactionCount = (post.post_reactions || []).reduce((acc, reaction) => {
     if (!reaction.ID_reaction) return acc;
@@ -208,14 +235,22 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
 
   return (
     <div className="post-container">
-
       {/* Header share */}
       {post.ID_post_shared && (
         <div>
           <div className="header-share">
             <div className="user-info">
-              <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}>
-                <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
+              <a
+                href="#"
+                onClick={() =>
+                  console.log("Navigate to Profile:", post.ID_user._id)
+                }
+              >
+                <img
+                  src={post.ID_user?.avatar}
+                  className="avatar"
+                  alt="User Avatar"
+                />
               </a>
               <div className="user-details">
                 <a
@@ -244,20 +279,32 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
               <FaEllipsisH size={22} />
             </button>
           </div>
-          <div>
-            {hasCaption && <p className="caption">{post.caption}</p>}
-          </div>
+          <div>{hasCaption && <p className="caption">{post.caption}</p>}</div>
         </div>
       )}
 
       {/* Header gốc */}
-      <div className={post.ID_post_shared ? 'header-shared' : 'header-original'}>
-        <div className='box-header'>
+      <div
+        className={post.ID_post_shared ? "header-shared" : "header-original"}
+      >
+        <div className="box-header">
           <div className="header-content">
             {post.ID_post_shared ? (
               <div className="user-info">
-                <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}>
-                  <img src={post.ID_post_shared.ID_user?.avatar} className="avatar" alt="User Avatar" />
+                <a
+                  href="#"
+                  onClick={() =>
+                    console.log(
+                      "Navigate to Profile:",
+                      post.ID_post_shared.ID_user._id
+                    )
+                  }
+                >
+                  <img
+                    src={post.ID_post_shared.ID_user?.avatar}
+                    className="avatar"
+                    alt="User Avatar"
+                  />
                 </a>
                 <div className="user-details">
                   <a
@@ -267,21 +314,31 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                     }}
                     className="name"
                   >
-                    {post.ID_post_shared.ID_user.first_name} {post.ID_post_shared.ID_user.last_name}
+                    {post.ID_post_shared.ID_user.first_name}{" "}
+                    {post.ID_post_shared.ID_user.last_name}
                     {post.ID_post_shared.tags?.length > 0 && (
                       <span>
-                        <span style={{ color: 'gray' }}> cùng với </span>
+                        <span style={{ color: "gray" }}> cùng với </span>
                         <a
                           href="#"
-                          onClick={() => navigate(`/profile/${post.ID_post_shared.tags[0]?._id}`)}
+                          onClick={() =>
+                            navigate(
+                              `/profile/${post.ID_post_shared.tags[0]?._id}`
+                            )
+                          }
                           className="name"
                         >
-                          {post.ID_post_shared.tags[0]?.first_name} {post.ID_post_shared.tags[0]?.last_name}
+                          {post.ID_post_shared.tags[0]?.first_name}{" "}
+                          {post.ID_post_shared.tags[0]?.last_name}
                         </a>
                         {post.ID_post_shared.tags.length > 1 && (
                           <>
-                            <span style={{ color: 'gray' }}> và </span>
-                            <a href="#" onClick={() => console.log('Navigate to ListTag')} className="name">
+                            <span style={{ color: "gray" }}> và </span>
+                            <a
+                              href="#"
+                              onClick={() => console.log("Navigate to ListTag")}
+                              className="name"
+                            >
                               {post.ID_post_shared.tags.length - 1} người khác
                             </a>
                           </>
@@ -297,10 +354,15 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
               </div>
             ) : (
               <div className="user-info">
-                <a href="#"
+                <a
+                  href="#"
                   onClick={() => navigate(`/profile/${post.ID_user._id}`)}
                 >
-                  <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
+                  <img
+                    src={post.ID_user?.avatar}
+                    className="avatar"
+                    alt="User Avatar"
+                  />
                 </a>
                 <div className="user-details">
                   <a
@@ -313,18 +375,27 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                     {post.ID_user?.first_name} {post.ID_user?.last_name}
                     {post.tags?.length > 0 && (
                       <span>
-                        <span style={{ color: 'gray' }}> cùng với </span>
+                        <span style={{ color: "gray" }}> cùng với </span>
                         <a
                           href="#"
-                          onClick={() => console.log('Navigate to Profile:', post.tags[0]?._id)}
+                          onClick={() =>
+                            console.log(
+                              "Navigate to Profile:",
+                              post.tags[0]?._id
+                            )
+                          }
                           className="name"
                         >
                           {post.tags[0]?.first_name} {post.tags[0]?.last_name}
                         </a>
                         {post.tags.length > 1 && (
                           <>
-                            <span style={{ color: 'gray' }}> và </span>
-                            <a href="#" onClick={() => console.log('Navigate to ListTag')} className="name">
+                            <span style={{ color: "gray" }}> và </span>
+                            <a
+                              href="#"
+                              onClick={() => console.log("Navigate to ListTag")}
+                              className="name"
+                            >
                               {post.tags.length - 1} người khác
                             </a>
                           </>
@@ -344,7 +415,10 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                 className="options-button"
                 onClick={() => {
                   const rect = reactionRef.current?.getBoundingClientRect();
-                  setMenuPosition({ top: rect?.top || 0, left: rect?.left || 0 });
+                  setMenuPosition({
+                    top: rect?.top || 0,
+                    left: rect?.left || 0,
+                  });
                   setModalVisible(true);
                 }}
               >
@@ -353,20 +427,27 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
             )}
           </div>
           <p className="caption">
-            {post.ID_post_shared ? post.ID_post_shared.caption : hasCaption && post.caption}
+            {post.ID_post_shared
+              ? post.ID_post_shared.caption
+              : hasCaption && post.caption}
           </p>
         </div>
       </div>
 
       {/* Media */}
-      {post.ID_post_shared ? hasMedia && renderMediaGrid(post.ID_post_shared.medias) : hasMedia && renderMediaGrid(post.medias)}
+      {post.ID_post_shared
+        ? hasMedia && renderMediaGrid(post.ID_post_shared.medias)
+        : hasMedia && renderMediaGrid(post.medias)}
 
       {/* Footer */}
       {!post._destroy && (
         <div className="footer">
           {post.post_reactions?.length > 0 ? (
             <div className="footer-reactions">
-              <a href="#" onClick={() => console.log('Open Bottom Sheet for Reactions')}>
+              <a
+                href="#"
+                onClick={() => console.log("Open Bottom Sheet for Reactions")}
+              >
                 {topReactions.map((reaction, index) => (
                   <span key={index}>{reaction.ID_reaction.icon}</span>
                 ))}
@@ -383,7 +464,10 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
             <div className="footer-spacer" />
           )}
           {post.comments?.length > 0 && (
-            <span className="comment-count" onClick={() => console.log('Navigate to PostDetail:', post._id)}>
+            <span
+              className="comment-count"
+              onClick={() => console.log("Navigate to PostDetail:", post._id)}
+            >
               {post.comments.length} bình luận
             </span>
           )}
@@ -395,20 +479,35 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
         <div className="interactions">
           <button
             ref={reactionRef}
-            className={`action ${userReaction ? 'reacted' : ''}`}
+            className={`action ${userReaction ? "reacted" : ""}`}
             onMouseDown={(e) => setTimeout(() => handleLongPress(e), 200)}
             onClick={() =>
               userReaction
                 ? callDeletePost_reaction(userReaction._id)
-                : callAddPost_Reaction(reactions[0]?._id, reactions[0]?.name, reactions[0]?.icon)
+                : callAddPost_Reaction(
+                    reactions[0]?._id,
+                    reactions[0]?.name,
+                    reactions[0]?.icon
+                  )
             }
           >
-            <span>{userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={20} />}</span>
-            <span className={userReaction ? 'reacted-text' : ''}>
-              {userReaction ? userReaction.ID_reaction.name : reactions[0]?.name || 'Thích'}
+            <span>
+              {userReaction ? (
+                userReaction.ID_reaction.icon
+              ) : (
+                <FaThumbsUp size={20} />
+              )}
+            </span>
+            <span className={userReaction ? "reacted-text" : ""}>
+              {userReaction
+                ? userReaction.ID_reaction.name
+                : reactions[0]?.name || "Thích"}
             </span>
           </button>
-          <button className="action" onClick={() => console.log('Navigate to PostDetail:', post._id)}>
+          <button
+            className="action"
+            onClick={() => console.log("Navigate to PostDetail:", post._id)}
+          >
             <FaComment size={20} />
             <span>Bình luận</span>
           </button>
@@ -422,13 +521,20 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
       {/* Reactions Modal */}
       {reactionsVisible && (
         <div className="overlay" onClick={() => setReactionsVisible(false)}>
-          <div className="reaction-bar" style={{ top: menuPosition.top, left: menuPosition.left }}>
+          <div
+            className="reaction-bar"
+            style={{ top: menuPosition.top, left: menuPosition.left }}
+          >
             {reactions.map((reaction, index) => (
               <button
                 key={index}
                 className="reaction-button"
                 onClick={() => {
-                  callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
+                  callAddPost_Reaction(
+                    reaction._id,
+                    reaction.name,
+                    reaction.icon
+                  );
                   setReactionsVisible(false);
                 }}
               >
@@ -446,9 +552,14 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
             <div className="share-header">
               <img src={me?.avatar} className="avatar" alt="User Avatar" />
               <div>
-                <span className="name">{me?.first_name} {me?.last_name}</span>
+                <span className="name">
+                  {me?.first_name} {me?.last_name}
+                </span>
                 <div className="box-status">
-                  <button className="btn-status" onClick={() => setModalVisible(true)}>
+                  <button
+                    className="btn-status"
+                    onClick={() => setModalVisible(true)}
+                  >
                     {selectedOption.name}
                   </button>
                 </div>
@@ -476,7 +587,6 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                 className="option-button"
                 onClick={() => {
                   setModalVisible(false);
-                  console.log('Navigate to Report:', post._id);
                 }}
               >
                 <i className="fas fa-exclamation-circle" /> Báo cáo
@@ -490,8 +600,10 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                     setModalVisible(false);
                   }}
                 >
-                  <i className={post._destroy ? 'fas fa-undo' : 'fas fa-trash'} />
-                  {post._destroy ? 'Phục hồi' : 'Xóa bài viết'}
+                  <i
+                    className={post._destroy ? "fas fa-undo" : "fas fa-trash"}
+                  />
+                  {post._destroy ? "Phục hồi" : "Xóa bài viết"}
                 </button>
                 {post._destroy && (
                   <button
@@ -531,7 +643,12 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
       {isImageModalVisible && (
         <div className="overlay" onClick={() => setImageModalVisible(false)}>
           {isVideo(selectedImage) ? (
-            <video src={selectedImage} className="full-media" controls autoPlay />
+            <video
+              src={selectedImage}
+              className="full-media"
+              controls
+              autoPlay
+            />
           ) : (
             <img src={selectedImage} className="full-media" alt="Full Media" />
           )}
@@ -548,7 +665,9 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
       {/* Failed Modal */}
       {failedModalVisible && (
         <div className="overlay">
-          <div className="failed-modal">Chia sẻ bài viết thất bại. Vui lòng thử lại!</div>
+          <div className="failed-modal">
+            Chia sẻ bài viết thất bại. Vui lòng thử lại!
+          </div>
         </div>
       )}
     </div>
