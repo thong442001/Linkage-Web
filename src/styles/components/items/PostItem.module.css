@@ -1,0 +1,583 @@
+.postContainer {
+  background: #fff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.userDetails {
+  flex: 1;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+  cursor: pointer;
+}
+
+
+.time {
+  margin-right: 4px;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.menuDropdown {
+  position: absolute;
+  top: 130px;
+  right: 457px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  z-index: 10;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  color: #000;
+}
+
+.menuItem:hover {
+  background: #f0f0f0;
+}
+
+.caption {
+  font-weight: 600;
+  font-size: 14px;
+  color: #000;
+  margin: 8px 0;
+}
+
+.mediaGrid {
+  width: 100%;
+  margin: 8px 0;
+}
+
+.media {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+.interactions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0;
+  border-top: 1px solid #e6e6e6;
+  padding-top: 8px;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #65676b;
+}
+
+.action svg {
+  color: #65676b;
+}
+
+.action:hover svg {
+  color: #000;
+}
+
+.likeCount {
+  font-size: 14px;
+  color: #65676b;
+}
+
+.commentSection {
+  margin-top: 8px;
+}
+
+.comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.commentAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentName {
+  font-weight: 600;
+  font-size: 13px;
+  color: #000;
+  margin-right: 4px;
+}
+
+.commentTime {
+  font-size: 12px;
+  color: #65676b;
+}
+
+.commentText {
+  font-size: 14px;
+  color: #000;
+  margin-top: 2px;
+}
+.share-header, .header-normal, .header-shared {
+  margin-bottom: 0.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.name {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tag-text {
+  color: #555;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.time {
+  margin-right: 0.5rem;
+}
+
+.caption {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-dropdown {
+  position: absolute;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 0.5rem;
+  z-index: 10;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background: #f0f0f0;
+}
+
+.media-grid {
+  display: grid;
+  gap: 4px;
+  margin-top: 0.5rem;
+}
+
+.media-grid-1 { grid-template-columns: 1fr; }
+.media-grid-2 { grid-template-columns: 1fr 1fr; }
+.media-grid-3 { grid-template-columns: 2fr 1fr; }
+.media-grid-4 { grid-template-columns: 1fr 1fr; }
+.media-grid-5 { grid-template-columns: 1fr 1fr 1fr; }
+
+.media-item {
+  position: relative;
+  cursor: pointer;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.video-wrapper {
+  position: relative;
+}
+
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-text {
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.footer-reactions {
+  display: flex;
+  align-items: center;
+}
+
+.reactions-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.comments-count {
+  cursor: pointer;
+  color: #555;
+}
+
+.interactions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.action.reacted {
+  color: #0064e0;
+}
+
+.reaction-menu {
+  position: fixed;
+  display: flex;
+  gap: 0.5rem;
+  background: #fff;
+  padding: 0.5rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.reaction-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.full-media {
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.share-modal {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.share-caption {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.share-status {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.share-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.cancel-button, .share-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background: #ccc;
+}
+
+.share-button {
+  background: #0064e0;
+  color: #fff;
+}
+
+.reactions-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.header-reaction {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+.tab-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 0.5rem;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+}
+
+.tab.selected {
+  background: #0064e0;
+  color: #fff;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.reaction-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .post-container {
+    padding: 0.5rem;
+  }
+
+
+  .name, .caption {
+    font-size: 0.9rem;
+  }
+
+  .action {
+    padding: 0.4rem;
+  }
+}
+
+/* PostItem.module.css */
+.mediaGrid {
+  display: grid;
+  gap: 4px;
+  margin-top: 0.5rem;
+}
+
+.mediaGrid-1 {
+  grid-template-columns: 1fr;
+}
+
+.mediaGrid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.mediaGrid-3 {
+  grid-template-columns: 2fr 1fr;
+}
+
+.mediaGrid-4 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.mediaGrid-5 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.mediaItem {
+  position: relative;
+  cursor: pointer;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.videoWrapper {
+  position: relative;
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlayText {
+  color: #fff;
+  font-size: 1.5rem;
+}

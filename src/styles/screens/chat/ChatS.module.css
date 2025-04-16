@@ -1,6 +1,6 @@
 .app {
   display: flex;
-  height: 100vh;
+  height: 90vh;
   font-family: Arial, sans-serif;
 }
 
@@ -203,4 +203,43 @@
 .groupTime {
   color: #999;
   font-size: 12px;
+}
+.post_modal_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Chiều rộng toàn màn hình */
+  height: 100vh; /* Chiều cao toàn màn hình */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal_background{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Chiều rộng toàn màn hình (viewport width) */
+  height: 100vh; /* Chiều cao toàn màn hình (viewport height) */
+  background: rgba(0, 0, 0, 0.9); /* Dark background with slight transparency */
+  z-index: 1;
+}
+.full_image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain; /* Ensure the image scales properly without cropping */
+  z-index: 2;
+}
+.close_button_full_image {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 3;
+  border-radius: 5px;
+  padding: 30px 30x;
 }

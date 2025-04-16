@@ -9,13 +9,15 @@ import {
     FaUserFriends, FaUsers as FaGroups, FaClock,
     FaBookmark, FaPlayCircle, FaShoppingBag
 } from 'react-icons/fa';
-import { getAllNotificationOfUser } from '../../rtk/API';
+import { getAllNotificationOfUser, getAllUsers } from '../../rtk/API';
 import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
 import Friend from '../friend/Friend';
 import Chat from '../chat/Chat';
 import Profile from '../profile/Profile';
 import NotificationDialog from '../../components/items/NotificationDialog';
+import SearchDialog from '../../components/items/SearchDialog';
+import ReportDialog from '../../components/dialogs/ReportDialog';
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -23,19 +25,65 @@ const Home = () => {
     const me = useSelector((state) => state.app.user);
     const token = useSelector((state) => state.app.token);
 
-    const [inputValue, setInputValue] = useState('');
     const [activeIcon, setActiveIcon] = useState('home');
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [formattedNotifications, setFormattedNotifications] = useState([]);
 
+    //dialog report
+    const [open, setOpen] = useState(true);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    //search
+    const [data, setData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
     const handleLogout = () => {
         dispatch(logout());
         navigate('/'); // Navigate to the login route after logout
     };
+    //search
+    useEffect(() => {
+        getData();
+    }, []);
 
-    const handleInputChange = (e) => {
-        setInputValue(e.target.value);
+    const getData = async () => {
+        try {
+            const response = await dispatch(getAllUsers({ token })).unwrap();
+            setData(response.users);
+            //   console.log('Users:', response.users);
+        } catch (error) {
+            console.log('Error:', error);
+        }
+    };
+
+    const normalizeText = (text) => {
+        return text
+            .toLowerCase()
+            .normalize('NFD') // Tách dấu ra khỏi chữ
+            .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D');
+    };
+    const handleInputChange = query => {
+        setIsSearchOpen(!isSearchOpen)
+        setSearchQuery(query.target.value);
+        if (query.target.value === '') {
+            setFilteredProducts([]);
+            setIsSearching(false);
+        } else {
+            setIsSearching(true);
+            setFilteredProducts(
+                data.filter(user =>
+                    normalizeText((user.first_name + ' ' + user.last_name))
+                        .toLowerCase()
+                        .includes(normalizeText(query.target.value).toLowerCase()),
+                ),
+            );
+        }
     };
 
     const calculateTimeAgo = (updatedAt) => {
@@ -225,7 +273,6 @@ const Home = () => {
 
     return (
         <div className="home-container">
-
             <div className="header-container">
                 <div className="logo-search-container">
                     <img src="/Logo_app.png" alt="Logo" className="logo" />
@@ -234,31 +281,18 @@ const Home = () => {
                         <input
                             className="search-input"
                             type="text"
-                            value={inputValue}
+                            value={searchQuery}
                             onChange={handleInputChange}
                             placeholder="Search..."
                         />
+                        {isSearchOpen && (
+                            <SearchDialog
+                                item={filteredProducts}
+                                onClose={() => setIsSearchOpen(false)}
+                            />
+                        )}
                     </div>
                 </div>
-                <button
-                    onClick={handleLogout}
-                    style={{
-                        width: '100%',
-                        padding: '10px',
-                        backgroundColor: '#1e90ff',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.3s',
-                    }}
-                    onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')}
-                    onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
-                >
-                    Log Out
-                </button>
                 <div className='mid-header'>
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
@@ -291,11 +325,15 @@ const Home = () => {
                         <FaBell className="nav-icon" />
                     </div>
                 </div>
+
                 <div className="mid-header1">
-                    <div className="icon-wrapper1">
+                    <div className="icon-wrapper1" onClick={handleLogout}>
                         <FaTh className="nav-icon1" />
                     </div>
-                    <div className="icon-wrapper1" onClick={() => navigate('/chat')}>
+                    <div className="icon-wrapper1" onClick={() => {
+                        setIsNotificationOpen(false);
+                        navigate('/chat')
+                    }}>
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
@@ -327,8 +365,29 @@ const Home = () => {
                     <Route path="/" element={<Post />} />
                     <Route path="/friend" element={<Friend />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path='/chat' element={<Chat />} />
                 </Routes>
             </div>
+            {/* <button
+                onClick={handleLogout}
+                style={{
+                    width: '100%',
+                    padding: '10px',
+                    backgroundColor: '#1e90ff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '5px',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s',
+                }}
+                onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')}
+                onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
+            >
+                Log Out
+            </button> */}
+            <ReportDialog open={open} onClose={handleClose} />
         </div>
     );
 };

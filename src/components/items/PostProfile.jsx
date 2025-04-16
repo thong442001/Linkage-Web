@@ -206,19 +206,19 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
 
   return (
     <div className="post-container">
-        {post?.ID_user?._id === me?._id && (
-          <div className="create-post">
-        <img
-          src={me?.avatar || 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg'}
-          alt="Profile"
-          className="avatar"
-        />
-        <input
-          type="text"
-          placeholder={`Bạn đang nghĩ gì, ${me?.first_name } ?`}
-          className="post-input"
-        />
-      </div>
+      {post?.ID_user?._id === me?._id && (
+        <div className="create-post">
+          <img
+            src={me?.avatar || 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg'}
+            alt="Profile"
+            className="avatar"
+          />
+          <input
+            type="text"
+            placeholder={`Bạn đang nghĩ gì, ${me?.first_name} ?`}
+            className="post-input"
+          />
+        </div>
       )}
 
       {/* Header share */}
@@ -556,7 +556,7 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
         </div>
       )}
 
-     
+
     </div>
   );
 };
