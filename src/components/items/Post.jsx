@@ -4,8 +4,10 @@ import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from 'react-icons/fa';
 import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-icons/ai';
 import { addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
 import './../../styles/components/items/PostS.css';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePostReaction, deletPostReaction }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const me = useSelector((state) => state.app.user);
   const reactions = useSelector((state) => state.app.reactions || []);
@@ -206,7 +208,7 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
 
   return (
     <div className="post-container">
-      
+
       {/* Header share */}
       {post.ID_post_shared && (
         <div>
@@ -218,7 +220,9 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
               <div className="user-details">
                 <a
                   href="#"
-                  onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}
+                  onClick={() => {
+                    navigate(`/profile/${post.ID_user_shared._id}`);
+                  }}
                   className="name"
                 >
                   {post.ID_user?.first_name} {post.ID_user?.last_name}
@@ -258,7 +262,9 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                 <div className="user-details">
                   <a
                     href="#"
-                    onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}
+                    onClick={() => {
+                      navigate(`/profile/${post.ID_User_shared._id}`);
+                    }}
                     className="name"
                   >
                     {post.ID_post_shared.ID_user.first_name} {post.ID_post_shared.ID_user.last_name}
@@ -267,7 +273,7 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                         <span style={{ color: 'gray' }}> cùng với </span>
                         <a
                           href="#"
-                          onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.tags[0]?._id)}
+                          onClick={() => navigate(`/profile/${post.ID_post_shared.tags[0]?._id}`)}
                           className="name"
                         >
                           {post.ID_post_shared.tags[0]?.first_name} {post.ID_post_shared.tags[0]?.last_name}
@@ -291,13 +297,17 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
               </div>
             ) : (
               <div className="user-info">
-                <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}>
+                <a href="#"
+                  onClick={() => navigate(`/profile/${post.ID_user._id}`)}
+                >
                   <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
                 </a>
                 <div className="user-details">
                   <a
                     href="#"
-                    onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}
+                    onClick={() => {
+                      navigate(`/profile/${post.ID_user._id}`);
+                    }}
                     className="name"
                   >
                     {post.ID_user?.first_name} {post.ID_user?.last_name}

@@ -416,3 +416,21 @@ export const getAllUsers = createAsyncThunk(
     }
   }
 );
+
+export const getAllReaction = createAsyncThunk(
+  'reaction/getAllReaction',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .get(`reaction/getAllReaction`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
