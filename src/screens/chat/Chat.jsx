@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../context/socketContext";
 import Groupcomponent from "../../components/items/Groupcomponent";
 import styles from "../../styles/screens/chat/ChatS.module.css";
+import {
+  FaPenAlt,
+} from 'react-icons/fa';
+import MessageItem from "../../components/items/MessageItem";
 const Chat = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -21,7 +25,6 @@ const Chat = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const messageRef = useRef(null); // ref để tham chiếu tới tin nhắn
   // const message.sender._id === user._id = messages.sender._id === user._id; // Kiểm tra tin nhắn có phải của user hiện tại không
   //console.log(messages);
   const [message, setMessage] = useState('');
@@ -32,42 +35,7 @@ const Chat = () => {
   const typingUsersInfo = selectedGroup?.members?.filter(member => typingUsers.includes(member._id));
   const hasSentLocation = useRef(false); // Biến ref để theo dõi trạng thái gửi
 
-  //check nó là link gg map
-  const isGoogleMapsLink = text => {
-    return /^https:\/\/www\.google\.com\/maps\?q=/.test(text);
-  };
-
-  //check nó là link 
-  const isLink = (text) => {
-    // Loại bỏ khoảng trắng đầu cuối
-    const trimmedText = text.trim();
-
-    // Biểu thức chính quy cho URL, hỗ trợ query string lồng nhau
-    const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=:+]*)*$|^[\w-]+:\/\/[\w-./?%&=:+]*$/i;
-
-    return urlPattern.test(trimmedText);
-  };
-  //tách link và non link
-  const renderStyledMessage = (text) => {
-    const parts = text.split(/(https?:\/\/[^\s]+)/g); // Tách link và non-link
-
-    return parts.map((part, index) => {
-      if (isLink(part)) {
-        return (
-          <a
-            key={index}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`linkStyle ${messages.sender._id === user._id ? 'currentUserTextLink' : ''}`}
-          >
-            {part}
-          </a>
-        );
-      }
-      return <span key={index}>{part}</span>;
-    });
-  };
+  
   const normalizeText = (text) =>
     text
       .toLowerCase()
@@ -504,6 +472,10 @@ const Chat = () => {
                 </h3>
                 <p>Được mã hóa đầu cuối</p>
               </div>
+              <div className={styles.chatHeaderActions}>
+              
+                <button><FaPenAlt /></button>
+              </div>
             </div>
 
             <div className={styles.chatMessages}>
@@ -512,139 +484,44 @@ const Chat = () => {
                   .slice() // Tạo bản sao của mảng
                   .reverse() // Đảo ngược mảng sao chép
                   .map((message) => (
-                    <div
+                    <MessageItem
                       key={message._id}
-                      className={`${styles.message} ${message.sender._id === user._id
-                        ? styles.me
-                        : styles.other
-                        }`}
-                    >
-                      {message.sender._id !== user._id && (
-                        <img
-                          src={
-                            message.sender.avatar ||
-                            "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
-                          }
-                          alt="Profile"
-                          className={styles.avatar}
-                        />
-                      )}
-                      <div className={styles.messageContent}>
-                        <div
-                          ref={messageRef}
-                          className={`messageWrapper ${message.sender._id === user._id ? "currentUserMessage" : ""
-                            }`}
-                        >
-                          {/* Hiển thị tin nhắn trả lời nếu có */}
-                          {/* {message.ID_message_reply &&
-                            message._destroy === false && (
-                              <div className="replyContainer">
-                                <p className="replyText">
-                                  {message.ID_message_reply.content ||
-                                    "Tin nhắn không tồn tại"}
-                                </p>
-                              </div>
-                            )} */}
-
-                          {/* Nội dung chính */}
-                          {message._destroy === true ? (
-                            <p className="messageTextThuHoi">
-                              Tin nhắn đã được thu hồi
-                            </p>
-                          ) : message.type === "text" ? (
-                            isGoogleMapsLink(message.content) ? (
-                              <div style={{ textAlign: "center" }}>
-                                <div
-                                  style={{
-                                    width: "200px",
-                                    height: "120px",
-                                    borderRadius: "10px",
-                                    backgroundColor: "#ccc",
-                                    marginBottom: "5px",
-                                  }}
-                                >
-                                  <p style={{ paddingTop: "45px" }}>
-                                    Google Maps Preview
-                                  </p>
-                                </div>
-                                {/* <button
-                                  // onClick={() =>
-                                  //   handlePressLocation(message.content)
-                                  // }
-                                  style={{
-                                    backgroundColor: "#2196F3",
-                                    color: "#fff",
-                                    padding: "6px 12px",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  Mở Google Maps
-                                </button> */}
-                              </div>
-                            ) : isLink(message.content) ? (
-                              <a
-                                href={message.content}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`messageTextIsLink ${message.sender._id === user._id ? "currentUserTextLink" : ""
-                                  }`}
-                              >
-                                {message.content}
-                              </a>
-                            ) : (
-                              <p
-                                className={`messageText ${message.sender._id === user._id ? "currentUserText" : ""
-                                  }`}
-                              >
-                                {renderStyledMessage(message.content)}
-                              </p>
-                            )
-                          ) : message.type === "image" ? (
-                            <img
-                              src={message.content}
-                              alt="image"
-                              className="messageImage"
-                              style={{
-                                maxWidth: "100%",
-                                maxHeight: "200px",
-                                borderRadius: "10px",
-                              }}
-                              onClick={() => { openImageModal(message.content) }}
-                            />
-                          ) : message.type === "video" ? (
-                            <video
-                              src={message.content}
-                              controls
-                              className={`messageVideo ${message.sender._id === user._id ? "currentUserText" : ""
-                                }`}
-                              style={{
-                                maxWidth: "100%",
-                                maxHeight: "200px",
-                                borderRadius: "10px",
-                              }}
-                              onClick={() => { openImageModal(message.content) }}
-                            />
-                          ) : null}
-
-                          {/* Thời gian gửi */}
-                          <p className={message.sender._id !== user._id ? styles.messageTime : styles.messageTimeMe}>
-                            {new Date(message.createdAt).toLocaleTimeString()}
-                          </p>
-                        </div>
-                      </div>
-                      {/* <div className={styles.messageContent}>
-                        <p>{message.content}</p>
-                        <span className={styles.messageTime}>
-                          {new Date(message.createdAt).toLocaleTimeString()}
-                        </span>
-                      </div> */}
-                    </div>
+                      message={message}
+                      user={user}
+                      onReply={() => setReply(message)}
+                      // onRevoke={revokeMessage}
+                      // onIcon={iconMessage}
+                    />
                   ))
               ) : (
                 <p>Chưa có tin nhắn nào</p>
               )}
             </div>
+            {
+              reply && (
+                <div className={styles.replyPreview}>
+                  <div>
+                    <p className={styles.replyTitle}>Đang trả lời: </p>
+                    <p className={styles.replyContent}>
+                      {user._id === reply.sender._id
+                        ? ' Bạn: '
+                        : ` ${reply.sender.first_name} ${reply.sender.last_name}: `}
+                      {reply.type === 'text'
+                        ? reply.content
+                        : reply.type === 'image'
+                          ? 'Ảnh'
+                          : 'Video'}
+                    </p>
+                  </div>
+                  <button
+                    className={styles.replyRight}
+                    onClick={() => setReply(null)}
+                  >
+                  <span className={styles.replyTitle}>✖</span>
+                  </button>
+                </div>
+              )
+            }
 
             <div className={styles.chatInput}>
               <input
@@ -653,6 +530,12 @@ const Chat = () => {
                 placeholderTextColor={'grey'}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // nếu dùng textarea và không muốn xuống dòng
+                    sendMessage('text', message);
+                  }
+                }}
               //onChangeText={handleTyping}
               />
               <button

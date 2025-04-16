@@ -243,3 +243,48 @@
   border-radius: 5px;
   padding: 30px 30x;
 }
+.actionIcons {
+  background-color: transparent;
+  display: none;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 10;
+}
+
+.message:hover .actionIcons {
+  display: flex;
+}
+
+.reactionList {
+  bottom: 120%; /* phía trên icon */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 6px 10px;
+  display: flex;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.reactionItem {
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.reactionItem:hover {
+  transform: scale(1.3);
+}
+
+.replyPreview {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f1f0f0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
