@@ -16,7 +16,7 @@ const HomeStories = ({ stories, liveSessions }) => {
   }, []);
 
   const handleAddStoryClick = () => {
-    navigate('/post-story');
+    navigate('/UpStory');
   };
 
   const handleGoLiveClick = () => {
@@ -57,20 +57,6 @@ const HomeStories = ({ stories, liveSessions }) => {
           onClick={() => navigate('/up-post')}
           readOnly
         />
-      </div>
-      <div className={style['action-buttons']}>
-        <div className={style['action-button']} onClick={handleGoLiveClick}>
-          <FaVideo size={20} color="#df0b0b" />
-          <span>Video trực tiếp</span>
-        </div>
-        <div className={style['action-button']} onClick={handlePhotoVideoClick}>
-          <FaPhotoVideo size={20} color="#00cc00" />
-          <span>Ảnh/video</span>
-        </div>
-        <div className={style['action-button']} onClick={handleFeelingActivityClick}>
-          <FaSmile size={20} color="#ffcc00" />
-          <span>Cảm xúc/hoạt động</span>
-        </div>
       </div>
 
       {/* Danh sách Stories */}

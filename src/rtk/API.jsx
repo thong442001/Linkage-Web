@@ -466,4 +466,34 @@ export const getAllReaction = createAsyncThunk(
   }
 );
 
+export const storyViewerOfStory = createAsyncThunk(
+  'storyViewer/addReport_user',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('storyViewer/storyViewerOfStory', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// add reaction story
+// params : ID_post, ID_user, ID_reaction
+export const addStoryViewer_reaction = createAsyncThunk(
+  'storyViewer/addReport_user',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('storyViewer/addStoryViewer_reaction', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 

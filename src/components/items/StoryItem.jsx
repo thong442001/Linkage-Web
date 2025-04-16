@@ -1,29 +1,37 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './../../styles/screens/home/HomeS.css'; // Import file CSS
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "./../../styles/screens/home/HomeS.css"; // Import file CSS
+import { useSelector } from "react-redux";
 
 const StoryItem = ({ storyPost }) => {
   const navigate = useNavigate();
+  const me = useSelector((state) => state.app.user);
 
   // Kiểm tra nếu storyPost không hợp lệ
   if (!storyPost || !storyPost.stories || !storyPost.user) return null;
 
-  const firstImages = storyPost.stories.map(story => story.medias?.[0] || null);
+  const firstImages = storyPost.stories.map((story) => story.medias?.[0] || null);
 
   // Kiểm tra xem media đầu tiên có phải là video không
   const isVideoAtIndex0 = () => {
     const firstStory = storyPost.stories[0];
     return (
-      firstStory?.mediaType === 'video' ||
-      firstStory?.medias[0]?.toLowerCase().endsWith('.mp4')
+      firstStory?.mediaType === "video" ||
+      firstStory?.medias[0]?.toLowerCase().endsWith(".mp4")
     );
   };
 
   const handleClick = () => {
-    navigate('/story-viewer', {
+    if (!me?._id) {
+      console.log("Người dùng chưa đăng nhập!");
+      return;
+    }
+
+    console.log("Navigating with storyPost:", storyPost); // Debug dữ liệu
+    navigate("/story-viewer", {
       state: {
-        storyView: storyPost,
-        currentUserId: storyPost.user._id,
+        StoryView: storyPost, // Đảm bảo key là "StoryView"
+        currentUserId: me._id,
       },
     });
   };
@@ -36,14 +44,14 @@ const StoryItem = ({ storyPost }) => {
           src={firstImages[0]}
           muted
           autoPlay={false}
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: "cover" }}
         />
       ) : (
         <img
           className="story-media"
           src={firstImages[0]}
           alt="Story"
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: "cover" }}
         />
       )}
       <img
