@@ -5,12 +5,21 @@ import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-ico
 import { addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
 import './../../styles/components/items/PostS.css';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import ReportDialog from '../../components/dialogs/ReportDialog';
 
-const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePostReaction, deletPostReaction }) => {
+const Post = ({
+  post,
+  me,
+  reactions,
+  reasons,
+  currentTime,
+  onDelete,
+  onDeleteVinhVien,
+  updatePostReaction,
+  deletPostReaction
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const me = useSelector((state) => state.app.user);
-  const reactions = useSelector((state) => state.app.reactions || []);
   const [reactionsVisible, setReactionsVisible] = useState(false);
   const [shareVisible, setShareVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,6 +32,11 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
   const [selectedOption, setSelectedOption] = useState({ status: 1, name: 'Công khai' });
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const reactionRef = useRef(null);
+
+  //dialog report
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const status = [
     { status: 1, name: 'Công khai' },
@@ -476,7 +490,7 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
                 className="option-button"
                 onClick={() => {
                   setModalVisible(false);
-                  console.log('Navigate to Report:', post._id);
+                  handleOpen();
                 }}
               >
                 <i className="fas fa-exclamation-circle" /> Báo cáo
@@ -551,6 +565,15 @@ const Post = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePo
           <div className="failed-modal">Chia sẻ bài viết thất bại. Vui lòng thử lại!</div>
         </div>
       )}
+
+      <ReportDialog
+        open={open}
+        onClose={handleClose}
+        reasons={reasons}
+        ID_me={me._id}
+        ID_post={post._id}
+        ID_user={null}
+      />
     </div>
   );
 };

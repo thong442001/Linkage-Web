@@ -467,4 +467,56 @@ export const getAllReaction = createAsyncThunk(
   }
 );
 
+// ****************** report ****************
+
+export const getAllReason = createAsyncThunk(
+  'reason/getAllReason',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`reason/getAllReason`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Report post
+// params : me, ID_post, ID_reason
+export const addReport_post = createAsyncThunk(
+  'report_post/addReport_post',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('report_post/addReport_post', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+// Report user
+// params :me, ID_user, ID_reason
+export const addReport_user = createAsyncThunk(
+  'report_user/addReport_user',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('report_user/addReport_user', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 

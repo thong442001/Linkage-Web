@@ -10,6 +10,7 @@ const initialState = {
     // Loại bỏ fcmToken vì không cần thiết trong ReactJS (hoặc thay thế bằng logic Web Push nếu cần)
     stories: [],
     history: [],
+    reasons: [],
 };
 
 const appSlice = createSlice({
@@ -56,6 +57,10 @@ const appSlice = createSlice({
 
         setReactions: (state, action) => {
             state.reactions = action.payload;
+        },
+        setReasons: (state, action) => {
+            state.reasons = action.payload;
+            //console.log('setReasons:', action.payload);
         },
 
         // Loại bỏ setFcmToken vì không cần thiết trong ReactJS
@@ -160,6 +165,7 @@ export const {
     addSearch,
     removeSearch,
     clearHistory,
+    setReasons,
 } = appSlice.actions;
 
 export default appSlice.reducer;

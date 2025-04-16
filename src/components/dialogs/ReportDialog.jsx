@@ -12,45 +12,84 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import {
+    addReport_post,
+    addReport_user
+} from '../../rtk/API';
+import { useDispatch, useSelector } from 'react-redux';
+const ReportDialog = ({ open, onClose, reasons, ID_me, ID_post, ID_user }) => {
 
-const ReportDialog = ({ open, onClose }) => {
-    const reportReasons = [
-        {
-            title: 'Vấn đề liên quan đến người dưới 18 tuổi',
-            description: 'Bắt nạt, quấy rối học đường/làm việc, nguồn đại diện',
-        },
-        {
-            title: 'Bạo lực, quấy rối hoặc ngôn ngữ thù địch',
-            description: 'Đối xử bất công, đe dọa, kích động bạo lực',
-        },
-        {
-            title: 'Tự tử hoặc tự gây thương tích',
-            description: 'Nội dung mạnh tính bạo lực, tự ghét hoặc gây phiền toái',
-        },
-        {
-            title: 'Bán hoặc quảng cáo mặt hàng bị hạn chế',
-            description: 'Nội dung nguồn lớn',
-        },
-        {
-            title: 'Thông tin sai sự thật, lùa đảo hoặc gian lận',
-            description: 'Quyền sở hữu trí tuệ',
-        },
-        {
-            title: 'Tôi không muốn xem nội dung này',
-            description: '',
-        },
-    ];
+    const dispatch = useDispatch();
 
-    const handleReasonClick = (reason) => {
-        console.log('Lý do báo cáo được chọn:', reason.title);
-        // Xử lý logic khi chọn lý do (ví dụ: gửi API báo cáo)
+    const handleReasonClick = (ID_reason) => {
+        if (!ID_me) return;
+        if (ID_post) {
+            callAddReport_post(ID_reason)
+        } else {
+            callAddReport_user(ID_reason)
+        }
         onClose(); // Đóng dialog sau khi chọn
+    };
+
+    const callAddReport_post = async (ID_reason) => {
+        try {
+            if (!ID_post) {
+                console.log('ID_post: ', ID_post);
+                return;
+            }
+            const paramsAPI = {
+                me: ID_me,
+                ID_post: ID_post,
+                ID_reason: ID_reason,
+            }
+            await dispatch(addReport_post(paramsAPI))
+                .unwrap()
+                .then(response => {
+                    console.log('status callAddReport_post:', response.status);
+                    //navigation.goBack()
+                })
+                .catch(error => {
+                    console.log('Lỗi khi callAddReport_post:', error);
+                });
+        } catch (error) {
+            console.log('Lỗi trong addReport_post:', error);
+        }
+    };
+
+    const callAddReport_user = async (ID_reason) => {
+        try {
+            if (!ID_user) {
+                console.log('ID_post: ', ID_user);
+                return;
+            }
+            const paramsAPI = {
+                me: ID_me,
+                ID_user: ID_user,
+                ID_reason: ID_reason,
+            }
+            await dispatch(addReport_user(paramsAPI))
+                .unwrap()
+                .then(response => {
+                    console.log('status callAddReport_user:', response.status);
+                    //navigation.goBack()
+                })
+                .catch(error => {
+                    console.log('Lỗi khi callAddReport_user:', error);
+                });
+        } catch (error) {
+            console.log('Lỗi trong addReport_post:', error);
+        }
     };
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>
-                Tại sao bạn báo cáo bài viết này?
+                {
+                    (ID_post)
+                        ? 'Tại sao bạn báo cáo bài viết này?'
+                        : 'Tại sao bạn báo cáo trang cá nhân này?'
+                }
+
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -66,24 +105,24 @@ const ReportDialog = ({ open, onClose }) => {
             </DialogTitle>
             <DialogContent>
                 <DialogContentText sx={{ mb: 2 }}>
-                    Nếu bạn nhận thấy ai đó đang gặp nguy hiểm, đừng chần chừ mà hãy tìm ngay sự giúp đỡ trước khi báo cáo với Facebook.
+                    Nếu bạn nhận thấy ai đó đang gặp nguy hiểm, đừng chần chừ mà hãy tìm ngay sự giúp đỡ trước khi báo cáo với Linkage.
                 </DialogContentText>
                 <List>
-                    {reportReasons.map((reason, index) => (
+                    {reasons?.map((reason, index) => (
                         <ListItem
                             key={index}
                             button
-                            onClick={() => handleReasonClick(reason)}
+                            onClick={() => handleReasonClick(reason._id)}
                             sx={{ py: 1 }}
                             secondaryAction={<ChevronRightIcon />}
                         >
                             <ListItemText
                                 primary={
                                     <Typography variant="subtitle1" fontWeight="bold">
-                                        {reason.title}
+                                        {reason.reason_text}
                                     </Typography>
                                 }
-                                secondary={reason.description}
+                            //secondary={reason.description}
                             />
                         </ListItem>
                     ))}

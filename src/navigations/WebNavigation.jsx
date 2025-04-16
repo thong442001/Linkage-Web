@@ -5,16 +5,21 @@ import HomeNavigation from './HomeNavigation';
 import UserNavigation from './UserNavigation';
 import {
   getAllReaction,
+  getAllReason
 } from '../rtk/API';
-import { setReactions } from '../rtk/Reducer';
+import { setReactions, setReasons } from '../rtk/Reducer';
 const WebNavigation = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.app);
+  const { user, token } = useSelector((state) => state.app);
 
   useEffect(() => {
-    //reactions
-    callGetAllReaction();
-  }, []);
+    if (user) {
+      //reactions
+      callGetAllReaction();
+      //reasons
+      callGetAllReason();
+    }
+  }, [user]);
 
   //call api getAllReaction
   const callGetAllReaction = async () => {
@@ -27,6 +32,23 @@ const WebNavigation = () => {
         })
         .catch(error => {
           console.log('Error callGetAllReaction:', error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //call api getAllReaction
+  const callGetAllReason = async () => {
+    try {
+      await dispatch(getAllReason({ token: token }))
+        .unwrap()
+        .then(response => {
+          //console.log("****: " + response)
+          dispatch(setReasons(response.reasons));
+        })
+        .catch(error => {
+          console.log('Error callGetAllReason:', error);
         });
     } catch (error) {
       console.log(error);

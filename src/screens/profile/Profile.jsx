@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, changeAvatar, changeBackground } from "../../rtk/Reducer";
 import {
@@ -36,14 +37,17 @@ import {
 } from "../../rtk/API";
 import style from "../../styles/screens/profile/Profile.module.css";
 import axios from "axios";
-import PostProfile from "../../components/items/PostProfile";
-
+import Post from "../../components/items/Post";
+import { Menu, MenuItem } from "@mui/material"; // Import Menu từ MUI
+import ReportDialog from '../../components/dialogs/ReportDialog';
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const me = useSelector((state) => state.app.user);
+  const reactions = useSelector((state) => state.app.reactions);
+  const reasons = useSelector((state) => state.app.reasons);
 
   const [inputValue, setInputValue] = useState("");
   const [activeIcon, setActiveIcon] = useState(
@@ -65,6 +69,14 @@ const Profile = () => {
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [successFadeOut, setSuccessFadeOut] = useState(false);
   const [errorFadeOut, setErrorFadeOut] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false); // State cho ReportDialog
+  const [anchorEl, setAnchorEl] = useState(null); // State cho menu ngữ cảnh
+
+  //dialog report
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -303,27 +315,48 @@ const Profile = () => {
     }
   };
 
+  // Xử lý mở/đóng menu ngữ cảnh
+  const handleMoreClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Xử lý mở ReportDialog
+  const handleReportClick = () => {
+    setReportDialogOpen(true);
+    handleMenuClose();
+    handleOpen();
+  };
+
+  // Xử lý đóng ReportDialog
+  const handleReportDialogClose = () => {
+    setReportDialogOpen(false);
+  };
+
   const updatePostReaction = (postId, reaction, reactionId) => {
     setPosts((prev) =>
       prev.map((post) =>
         post._id === postId
           ? {
-              ...post,
-              post_reactions: [
-                ...post.post_reactions,
-                {
-                  _id: reactionId,
-                  ID_user: {
-                    _id: me._id,
-                    first_name: me.first_name,
-                    last_name: me.last_name,
-                    avatar: me.avatar,
-                  },
-                  ID_reaction: reaction,
-                  quantity: 1,
+            ...post,
+            post_reactions: [
+              ...post.post_reactions,
+              {
+                _id: reactionId,
+                ID_user: {
+                  _id: me._id,
+                  first_name: me.first_name,
+                  last_name: me.last_name,
+                  avatar: me.avatar,
                 },
-              ],
-            }
+                ID_reaction: reaction,
+                quantity: 1,
+              },
+            ],
+          }
           : post
       )
     );
@@ -334,11 +367,11 @@ const Profile = () => {
       prev.map((post) =>
         post._id === postId
           ? {
-              ...post,
-              post_reactions: post.post_reactions.filter(
-                (reaction) => reaction._id !== reactionId
-              ),
-            }
+            ...post,
+            post_reactions: post.post_reactions.filter(
+              (reaction) => reaction._id !== reactionId
+            ),
+          }
           : post
       )
     );
@@ -451,18 +484,16 @@ const Profile = () => {
       {/* Thông báo */}
       {successMessage && (
         <div
-          className={`${style.snackbar} ${style.success} ${
-            successFadeOut ? style.fadeOut : ""
-          }`}
+          className={`${style.snackbar} ${style.success} ${successFadeOut ? style.fadeOut : ""
+            }`}
         >
           {successMessage}
         </div>
       )}
       {errorMessage && (
         <div
-          className={`${style.snackbar} ${style.error} ${
-            errorFadeOut ? style.fadeOut : ""
-          }`}
+          className={`${style.snackbar} ${style.error} ${errorFadeOut ? style.fadeOut : ""
+            }`}
         >
           {errorMessage}
         </div>
@@ -498,9 +529,8 @@ const Profile = () => {
           <img
             src={user?.avatar}
             alt="Profile"
-            className={`${style.profilePic} ${
-              !user?.avatar ? style.noBackground : ""
-            }`}
+            className={`${style.profilePic} ${!user?.avatar ? style.noBackground : ""
+              }`}
             onClick={() => openImageModal(user?.avatar)}
           />
           {user?._id === me._id && (
@@ -517,9 +547,8 @@ const Profile = () => {
         </div>
         <div className={style.profileDetails}>
           <div className={style.nameAndFriends}>
-            <h1 className={style.name}>{`${user?.first_name || ""} ${
-              user?.last_name || ""
-            }`}</h1>
+            <h1 className={style.name}>{`${user?.first_name || ""} ${user?.last_name || ""
+              }`}</h1>
             <p className={style.friendsCount}>{friends.length} friends</p>
           </div>
           <div className={style.actionButtons}>
@@ -556,24 +585,39 @@ const Profile = () => {
                     Hủy bạn bè
                   </button>
                 )}
-                {(relationship?.relation === "A gửi lời kết bạn B" ||
-                  relationship?.relation === "B gửi lời kết bạn A") && (
-                  <button
-                    className={style.storyButton}
-                    onClick={handleCancelFriendRequest}
-                  >
-                    Hủy lời mời
-                  </button>
-                )}
-                {(relationship?.relation === "B gửi lời kết bạn A" ||
-                  relationship?.relation === "A gửi lời kết bạn B") && (
-                  <button
-                    className={style.storyButton}
-                    onClick={handleAcceptFriendRequest}
-                  >
-                    + Phản hồi
-                  </button>
-                )}
+                {((relationship?.ID_userA == me?._id &&
+                  relationship?.relation === "A gửi lời kết bạn B") ||
+                  (relationship?.ID_userB == me?._id &&
+                    relationship?.relation === "B gửi lời kết bạn A")) && (
+                    <button
+                      className="story-button"
+                      onClick={handleCancelFriendRequest}
+                    >
+                      Hủy lời mời
+                    </button>
+                  )}
+                {((relationship?.ID_userA == me?._id &&
+                  relationship?.relation === "B gửi lời kết bạn A") ||
+                  (relationship?.ID_userB == me?._id &&
+                    relationship?.relation === "A gửi lời kết bạn B")) && (
+                    <button
+                      className="story-button"
+                      onClick={handleCancelFriendRequest}
+                    >
+                      Hủy lời mời kết bạn
+                    </button>
+                  )}
+                {((relationship?.ID_userA == me?._id &&
+                  relationship?.relation === "B gửi lời kết bạn A") ||
+                  (relationship?.ID_userB == me?._id &&
+                    relationship?.relation === "A gửi lời kết bạn B")) && (
+                    <button
+                      className="story-button"
+                      onClick={handleAcceptFriendRequest}
+                    >
+                      Đồng ý kết bạn
+                    </button>
+                  )}
                 <button
                   className={style.editProfileButton}
                   onClick={() => navigate("/chat")}
@@ -645,6 +689,30 @@ const Profile = () => {
       {/* Thanh tab */}
       <div className={style.tabsContainer}>
         <button className={`${style.tab} ${style.activeTab}`}>Posts</button>
+        {user && me && user._id !== me._id && (
+          <div>
+            <button
+              className={style.moreButton}
+              onClick={handleMoreClick}
+            >
+              <FaEllipsisH size={22} />
+            </button>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              PaperProps={{
+                style: {
+                  width: "200px",
+                },
+              }}
+            >
+              <MenuItem onClick={handleReportClick}>
+                <FaFlag style={{ marginRight: "8px" }} /> Báo cáo
+              </MenuItem>
+            </Menu>
+          </div>
+        )}
       </div>
 
       {/* Nội dung chính */}
@@ -711,6 +779,8 @@ const Profile = () => {
           </div>
         </div>
 
+
+
         {/* Cột phải */}
         <div className={style.rightColumn}>
           <div className={style.postsSection}>
@@ -727,10 +797,12 @@ const Profile = () => {
             </div>
             {posts.length > 0 ? (
               posts.map((post) => (
-                <PostProfile
+                <Post
                   key={post._id}
                   post={post}
-                  ID_user={me._id}
+                  me={me}
+                  reactions={reactions}
+                  reasons={reasons}
                   currentTime={currentTime}
                   onDelete={() => handleDeletePost(post._id)}
                   onDeleteVinhVien={() => handleDeletePermanently(post._id)}
@@ -744,6 +816,16 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      <ReportDialog
+        open={open}
+        onClose={handleClose}
+        reasons={reasons}
+        ID_me={me._id}
+        ID_post={null}
+        ID_user={user?._id}
+      />
+
     </div>
   );
 };

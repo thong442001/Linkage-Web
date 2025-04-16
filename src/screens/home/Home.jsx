@@ -40,7 +40,6 @@ import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
 import NotificationDialog from '../../components/items/NotificationDialog';
 import SearchDialog from '../../components/items/SearchDialog';
-import ReportDialog from '../../components/dialogs/ReportDialog';
 
 const Home = ({ content }) => {
     const dispatch = useDispatch();
@@ -48,6 +47,8 @@ const Home = ({ content }) => {
     const location = useLocation();
     const me = useSelector((state) => state.app.user);
     const token = useSelector((state) => state.app.token);
+    const reactions = useSelector((state) => state.app.reactions);
+    const reasons = useSelector((state) => state.app.reasons);
 
     const [activeIcon, setActiveIcon] = useState('home');
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -63,10 +64,6 @@ const Home = ({ content }) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    //dialog report
-    const [open, setOpen] = useState(true);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
     // Search
     const [data, setData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -517,16 +514,21 @@ const Home = ({ content }) => {
                             <p>Đang tải...</p>
                         ) : posts.length > 0 ? (
                             posts.map((post) => (
-                                <Post
-                                    key={post._id}
-                                    post={post}
-                                    ID_user={me._id}
-                                    currentTime={currentTime}
-                                    onDelete={() => handleDeletePost(post._id)}
-                                    onDeleteVinhVien={() => handleDeletePermanently(post._id)}
-                                    updatePostReaction={updatePostReaction}
-                                    deletePostReaction={deletePostReaction}
-                                />
+                                <>
+                                    <Post
+                                        key={post._id}
+                                        post={post}
+                                        me={me}
+                                        reactions={reactions}
+                                        reasons={reasons}
+                                        currentTime={currentTime}
+                                        onDelete={() => handleDeletePost(post._id)}
+                                        onDeleteVinhVien={() => handleDeletePermanently(post._id)}
+                                        updatePostReaction={updatePostReaction}
+                                        deletePostReaction={deletePostReaction}
+                                    />
+                                </>
+
                             ))
                         ) : (
                             <p>Chưa có bài đăng nào.</p>
