@@ -4,7 +4,7 @@
   min-height: 100vh; /* Đảm bảo chiều cao tối thiểu bằng viewport */
   color: #1c1e21; /* Màu chữ chính */
   padding-bottom: 20px; /* Đệm dưới để tránh nội dung bị cắt */
-  padding-top: 60px; /* Khoảng cách trên để tránh header cố định che nội dung */
+  /* padding-top: 60px; Khoảng cách trên để tránh header cố định che nội dung */
 }
 
 /* Container cho ảnh bìa */
