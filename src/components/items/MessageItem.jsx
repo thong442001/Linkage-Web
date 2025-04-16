@@ -7,9 +7,9 @@ const MessageItem = ({
   message,
   openImageModal,
   user,
-  onIcon,
   onReply,
   onRevoke,
+  onIcon
 }) => {
   const messageRef = useRef(null); // ref để tham chiếu tới tin nhắn
   const reactions = useSelector((state) => state.app.reactions);
@@ -20,6 +20,7 @@ const MessageItem = ({
   const handleonRevoke = () => {
     console.log("tin nhắn đã xóa", message._id);
     setShowReactionList(false);
+    onRevoke(message._id); // Thu hồi tin nhắn
   };
   // hàm trả lời tin nhắn
   const handleonReply = () => {
@@ -31,6 +32,7 @@ const MessageItem = ({
   const handleonIcon = (ID_reaction, ID_message) => {
     console.log("Bạn đã chọn reaction:", ID_reaction, ID_message);
     setShowReactionList(false);
+    onIcon(ID_message, ID_reaction);
   };
 
   useEffect(() => {
@@ -97,6 +99,7 @@ const MessageItem = ({
       return <span key={index}>{part}</span>;
     });
   };
+
   return (
     <div
       key={message._id}
