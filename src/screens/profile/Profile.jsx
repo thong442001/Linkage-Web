@@ -37,6 +37,7 @@ import {
 import "../../styles/screens/profile/Profile.css";
 import axios from "axios";
 import PostProfile from "../../components/items/PostProfile";
+import Post from "../../components/items/Post";
 
 
 const Profile = () => {
@@ -699,7 +700,7 @@ const Profile = () => {
             </div>
             {posts.length > 0 ? (
               posts.map((post) => (
-                <PostProfile
+                <Post
                   key={post._id}
                   post={post}
                   ID_user={me._id}

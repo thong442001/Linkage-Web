@@ -266,12 +266,11 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
           <div className="header-content">
             {post.ID_post_shared ? (
               <div className="user-info">
-                <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}>
+                <a onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}>
                   <img src={post.ID_post_shared.ID_user?.avatar} className="avatar" alt="User Avatar" />
                 </a>
                 <div className="user-details">
                   <a
-                    href="#"
                     onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.ID_user._id)}
                     className="name"
                   >
@@ -280,7 +279,6 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
                       <span>
                         <span style={{ color: 'gray' }}> cùng với </span>
                         <a
-                          href="#"
                           onClick={() => console.log('Navigate to Profile:', post.ID_post_shared.tags[0]?._id)}
                           className="name"
                         >
@@ -289,7 +287,7 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
                         {post.ID_post_shared.tags.length > 1 && (
                           <>
                             <span style={{ color: 'gray' }}> và </span>
-                            <a href="#" onClick={() => console.log('Navigate to ListTag')} className="name">
+                            <a onClick={() => console.log('Navigate to ListTag')} className="name">
                               {post.ID_post_shared.tags.length - 1} người khác
                             </a>
                           </>
@@ -305,12 +303,11 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
               </div>
             ) : (
               <div className="user-info">
-                <a href="#" onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}>
+                <a onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}>
                   <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
                 </a>
                 <div className="user-details">
                   <a
-                    href="#"
                     onClick={() => console.log('Navigate to Profile:', post.ID_user._id)}
                     className="name"
                   >
@@ -319,7 +316,6 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
                       <span>
                         <span style={{ color: 'gray' }}> cùng với </span>
                         <a
-                          href="#"
                           onClick={() => console.log('Navigate to Profile:', post.tags[0]?._id)}
                           className="name"
                         >
@@ -328,7 +324,7 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
                         {post.tags.length > 1 && (
                           <>
                             <span style={{ color: 'gray' }}> và </span>
-                            <a href="#" onClick={() => console.log('Navigate to ListTag')} className="name">
+                            <a onClick={() => console.log('Navigate to ListTag')} className="name">
                               {post.tags.length - 1} người khác
                             </a>
                           </>
@@ -370,7 +366,7 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
         <div className="footer">
           {post.post_reactions?.length > 0 ? (
             <div className="footer-reactions">
-              <a href="#" onClick={() => console.log('Open Bottom Sheet for Reactions')}>
+              <a onClick={() => console.log('Open Bottom Sheet for Reactions')}>
                 {topReactions.map((reaction, index) => (
                   <span key={index}>{reaction.ID_reaction.icon}</span>
                 ))}
@@ -555,8 +551,6 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
           <div className="failed-modal">Chia sẻ bài viết thất bại. Vui lòng thử lại!</div>
         </div>
       )}
-
-
     </div>
   );
 };
