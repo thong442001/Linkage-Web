@@ -34,24 +34,23 @@ import {
   deletePost_reaction,
   getAllFriendOfID_user,
 } from "../../rtk/API";
-import "../../styles/screens/profile/Profile.css";
+import style from "../../styles/screens/profile/Profile.module.css";
 import axios from "axios";
 import PostProfile from "../../components/items/PostProfile";
 
-
 const Profile = () => {
-  const { id } = useParams(); // Lấy ID từ URL
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const me = useSelector((state) => state.app.user);
 
-  // State
   const [inputValue, setInputValue] = useState("");
   const [activeIcon, setActiveIcon] = useState(
     location.pathname === "/" ? "home" : "profile"
   );
   const [user, setUser] = useState(null);
+  console.log("User: ", user);
   const [posts, setPosts] = useState([]);
   const [friends, setFriends] = useState([]);
   const [relationship, setRelationship] = useState(null);
@@ -64,8 +63,9 @@ const Profile = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [stories, setStories] = useState(null);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [successFadeOut, setSuccessFadeOut] = useState(false);
+  const [errorFadeOut, setErrorFadeOut] = useState(false);
 
-  // Cập nhật thời gian mỗi 10 giây
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(Date.now());
@@ -73,23 +73,19 @@ const Profile = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Hàm xử lý input tìm kiếm
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
 
-  // Hàm nhấn avatar
   const handleAvatarClick = () => {
     setActiveIcon("profile");
     navigate("/profile");
   };
 
-  // Hàm đăng xuất
   const handleLogout = () => {
     dispatch(logout());
   };
 
-  // Hàm upload ảnh lên Cloudinary
   const uploadFile = async (file) => {
     try {
       const data = new FormData();
@@ -97,7 +93,7 @@ const Profile = () => {
       data.append("upload_preset", "ml_default");
 
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/ddbolgs7p/upload",
+        "https://api.cloudinary.com/v1_1/ddasyg5z3/upload",
         data,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -112,7 +108,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm đổi ảnh đại diện
   const onChangeAvatar = async (e) => {
     try {
       setLoading(true);
@@ -149,7 +144,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm đổi ảnh bìa
   const onChangeBackground = async (e) => {
     try {
       setLoading(true);
@@ -186,7 +180,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm chỉnh sửa bio
   const handleEditBio = async (newBio) => {
     try {
       const data = { ID_user: me._id, bio: newBio };
@@ -205,7 +198,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm gửi lời mời kết bạn
   const handleSendFriendRequest = async () => {
     try {
       const paramsAPI = { ID_relationship: relationship?._id, me: me._id };
@@ -223,7 +215,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm chấp nhận lời mời kết bạn
   const handleAcceptFriendRequest = async () => {
     try {
       const paramsAPI = { ID_relationship: relationship?._id };
@@ -241,7 +232,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm hủy lời mời kết bạn
   const handleCancelFriendRequest = async () => {
     try {
       const paramsAPI = { ID_relationship: relationship?._id };
@@ -259,7 +249,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm hủy bạn bè
   const handleUnfriend = async () => {
     try {
       const paramsAPI = { ID_relationship: relationship?._id };
@@ -278,7 +267,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm xóa bài đăng
   const handleDeletePost = async (postId) => {
     try {
       dispatch(changeDestroyPost({ _id: postId }))
@@ -299,7 +287,6 @@ const Profile = () => {
     }
   };
 
-  // Hàm xóa vĩnh viễn bài đăng
   const handleDeletePermanently = async (postId) => {
     try {
       dispatch(changeDestroyPost({ _id: postId, permanent: true }))
@@ -316,50 +303,47 @@ const Profile = () => {
     }
   };
 
-  // Hàm cập nhật reaction
   const updatePostReaction = (postId, reaction, reactionId) => {
     setPosts((prev) =>
       prev.map((post) =>
         post._id === postId
           ? {
-            ...post,
-            post_reactions: [
-              ...post.post_reactions,
-              {
-                _id: reactionId,
-                ID_user: {
-                  _id: me._id,
-                  first_name: me.first_name,
-                  last_name: me.last_name,
-                  avatar: me.avatar,
+              ...post,
+              post_reactions: [
+                ...post.post_reactions,
+                {
+                  _id: reactionId,
+                  ID_user: {
+                    _id: me._id,
+                    first_name: me.first_name,
+                    last_name: me.last_name,
+                    avatar: me.avatar,
+                  },
+                  ID_reaction: reaction,
+                  quantity: 1,
                 },
-                ID_reaction: reaction,
-                quantity: 1,
-              },
-            ],
-          }
+              ],
+            }
           : post
       )
     );
   };
 
-  // Hàm xóa reaction
   const deletePostReaction = (postId, reactionId) => {
     setPosts((prev) =>
       prev.map((post) =>
         post._id === postId
           ? {
-            ...post,
-            post_reactions: post.post_reactions.filter(
-              (reaction) => reaction._id !== reactionId
-            ),
-          }
+              ...post,
+              post_reactions: post.post_reactions.filter(
+                (reaction) => reaction._id !== reactionId
+              ),
+            }
           : post
       )
     );
   };
 
-  // Hàm sao chép liên kết
   const copyToClipboard = () => {
     navigator.clipboard.writeText(
       `https://linkage.id.vn/deeplink?url=linkage://profile?ID_user=${me?._id}`
@@ -367,12 +351,9 @@ const Profile = () => {
     setSuccessMessage("Đã sao chép liên kết!");
   };
 
-  // Hàm lấy dữ liệu profile
-  // Hàm lấy dữ liệu profile
   const fetchProfileData = useCallback(async () => {
     try {
       setLoading(true);
-      // Sử dụng id từ URL, nếu không có thì dùng me._id
       const profileId = id || me._id;
       const paramsAPI = { ID_user: profileId, me: me._id };
       dispatch(allProfile(paramsAPI))
@@ -382,7 +363,6 @@ const Profile = () => {
           setPosts(response.posts);
           setRelationship(response.relationship);
 
-          // Biến đổi friends để lấy thông tin của người kia
           const transformedFriends = response.friends.map((relationship) => {
             const otherUser =
               relationship.ID_userA._id === profileId
@@ -419,43 +399,88 @@ const Profile = () => {
     }
   }, [dispatch, me, id]);
 
-  // Gọi dữ liệu khi component mount
   useEffect(() => {
     fetchProfileData();
   }, [fetchProfileData]);
 
-  // Hiển thị ảnh lớn
   const openImageModal = (imageUrl) => {
     setSelectedImage(imageUrl);
     setImageModalVisible(true);
   };
 
-  // Đóng modal ảnh
   const closeImageModal = () => {
     setImageModalVisible(false);
     setSelectedImage(null);
   };
+  useEffect(() => {
+    if (successMessage) {
+      setSuccessFadeOut(false);
+      const fadeTimer = setTimeout(() => {
+        setSuccessFadeOut(true);
+      }, 2700); // Bắt đầu fade-out trước 300ms
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+        setSuccessFadeOut(false);
+      }, 3000);
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(timer);
+      };
+    }
+  }, [successMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      setErrorFadeOut(false);
+      const fadeTimer = setTimeout(() => {
+        setErrorFadeOut(true);
+      }, 2700);
+      const timer = setTimeout(() => {
+        setErrorMessage("");
+        setErrorFadeOut(false);
+      }, 3000);
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(timer);
+      };
+    }
+  }, [errorMessage]);
 
   return (
-    <div className="profile-container">
+    <div className={style.profileContainer}>
       {/* Thông báo */}
       {successMessage && (
-        <div className="snackbar success">{successMessage}</div>
+        <div
+          className={`${style.snackbar} ${style.success} ${
+            successFadeOut ? style.fadeOut : ""
+          }`}
+        >
+          {successMessage}
+        </div>
       )}
-      {errorMessage && <div className="snackbar error">{errorMessage}</div>}
+      {errorMessage && (
+        <div
+          className={`${style.snackbar} ${style.error} ${
+            errorFadeOut ? style.fadeOut : ""
+          }`}
+        >
+          {errorMessage}
+        </div>
+      )}
       {/* Ảnh bìa */}
-      <div className="cover-photo-container">
-        <img
-          src={
-            user?.background ||
-            "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
-          }
-          alt="Cover Photo"
-          className="cover-photo"
-          onClick={() => openImageModal(user?.background)}
-        />
+      <div className={style.coverPhotoContainer}>
+        {user?.background ? (
+          <img
+            src={user?.background}
+            alt="Cover Photo"
+            className={style.coverPhoto}
+            onClick={() => openImageModal(user?.background)}
+          />
+        ) : (
+          <div className={`${style.coverPhoto} ${style.noBackground}`} />
+        )}
         {user?._id === me._id && (
-          <label className="cover-photo-button">
+          <label className={style.coverPhotoButton}>
             <FaCamera /> Edit cover photo
             <input
               type="file"
@@ -468,19 +493,18 @@ const Profile = () => {
       </div>
 
       {/* Thông tin hồ sơ */}
-      <div className="profile-info-container">
-        <div className="profile-pic-wrapper">
+      <div className={style.profileInfoContainer}>
+        <div className={style.profilePicWrapper}>
           <img
-            src={
-              user?.avatar ||
-              "https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg"
-            }
+            src={user?.avatar}
             alt="Profile"
-            className="profile-pic"
+            className={`${style.profilePic} ${
+              !user?.avatar ? style.noBackground : ""
+            }`}
             onClick={() => openImageModal(user?.avatar)}
           />
           {user?._id === me._id && (
-            <label className="camera-icon">
+            <label className={style.cameraIcon}>
               <FaCamera />
               <input
                 type="file"
@@ -491,23 +515,24 @@ const Profile = () => {
             </label>
           )}
         </div>
-        <div className="profile-details">
-          <div className="name-and-friends">
-            <h1 className="name">{`${user?.first_name || ""} ${user?.last_name || ""
-              }`}</h1>
-            <p className="friends-count">{friends.length} friends</p>
+        <div className={style.profileDetails}>
+          <div className={style.nameAndFriends}>
+            <h1 className={style.name}>{`${user?.first_name || ""} ${
+              user?.last_name || ""
+            }`}</h1>
+            <p className={style.friendsCount}>{friends.length} friends</p>
           </div>
-          <div className="action-buttons">
+          <div className={style.actionButtons}>
             {user?._id === me._id ? (
               <>
                 <button
-                  className="story-button"
+                  className={style.storyButton}
                   onClick={() => navigate("/post-story")}
                 >
                   + Thêm vào tin
                 </button>
                 <button
-                  className="edit-profile-button"
+                  className={style.editProfileButton}
                   onClick={() => setIsEditBio(true)}
                 >
                   Chỉnh sửa trang cá nhân
@@ -517,44 +542,47 @@ const Profile = () => {
               <>
                 {relationship?.relation === "Người lạ" && (
                   <button
-                    className="story-button"
+                    className={style.storyButton}
                     onClick={handleSendFriendRequest}
                   >
                     + Thêm bạn bè
                   </button>
                 )}
                 {relationship?.relation === "Bạn bè" && (
-                  <button className="story-button" onClick={handleUnfriend}>
+                  <button
+                    className={style.storyButton}
+                    onClick={handleUnfriend}
+                  >
                     Hủy bạn bè
                   </button>
                 )}
                 {(relationship?.relation === "A gửi lời kết bạn B" ||
                   relationship?.relation === "B gửi lời kết bạn A") && (
-                    <button
-                      className="story-button"
-                      onClick={handleCancelFriendRequest}
-                    >
-                      Hủy lời mời
-                    </button>
-                  )}
+                  <button
+                    className={style.storyButton}
+                    onClick={handleCancelFriendRequest}
+                  >
+                    Hủy lời mời
+                  </button>
+                )}
                 {(relationship?.relation === "B gửi lời kết bạn A" ||
                   relationship?.relation === "A gửi lời kết bạn B") && (
-                    <button
-                      className="story-button"
-                      onClick={handleAcceptFriendRequest}
-                    >
-                      + Phản hồi
-                    </button>
-                  )}
+                  <button
+                    className={style.storyButton}
+                    onClick={handleAcceptFriendRequest}
+                  >
+                    + Phản hồi
+                  </button>
+                )}
                 <button
-                  className="edit-profile-button"
+                  className={style.editProfileButton}
                   onClick={() => navigate("/chat")}
                 >
                   Nhắn tin
                 </button>
               </>
             )}
-            <button className="more-button" onClick={copyToClipboard}>
+            <button className={style.moreButton} onClick={copyToClipboard}>
               <FaLink /> Sao chép liên kết
             </button>
           </div>
@@ -563,10 +591,20 @@ const Profile = () => {
 
       {/* Modal xem ảnh lớn */}
       {isImageModalVisible && (
-        <div className="post-modal-container">
-          <div className="modal-background" onClick={closeImageModal}></div>
-          <img src={selectedImage} alt="Full Image" className="full-image" />
-          <button className="close-button-full-image" onClick={closeImageModal}>
+        <div className={style.postModalContainer}>
+          <div
+            className={style.modalBackground}
+            onClick={closeImageModal}
+          ></div>
+          <img
+            src={selectedImage}
+            alt="Full Image"
+            className={style.fullImage}
+          />
+          <button
+            className={style.closeButtonFullImage}
+            onClick={closeImageModal}
+          >
             ✕
           </button>
         </div>
@@ -574,23 +612,19 @@ const Profile = () => {
 
       {/* Modal chỉnh sửa bio */}
       {isEditBio && (
-        <div className="post-modal-container">
-          {/* <div
-            className="modal-background"
-            onClick={() => setIsEditBio(false)}
-          ></div> */}
-          <div className="modal-dialog">
+        <div className={style.postModalContainer}>
+          <div className={style.modalDialog}>
             <h3>Chỉnh sửa Bio</h3>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Nhập miêu tả..."
-              className="bio-input"
+              className={style.bioInput}
             />
-            <div className="modal-actions">
+            <div className={style.modalActions}>
               <button
                 onClick={() => handleEditBio(bio)}
-                className="confirm-button"
+                className={style.confirmButton}
               >
                 Lưu
               </button>
@@ -599,7 +633,7 @@ const Profile = () => {
                   setBio(user?.bio || "");
                   setIsEditBio(false);
                 }}
-                className="cancel-button"
+                className={style.cancelButton}
               >
                 Hủy
               </button>
@@ -609,49 +643,45 @@ const Profile = () => {
       )}
 
       {/* Thanh tab */}
-      <div className="tabs-container">
-        <button className="tab active-tab">Posts</button>
-        <button className="tab" onClick={() => navigate("/friend")}>
-          Friends
-        </button>
-        <button className="tab">More ▼</button>
+      <div className={style.tabsContainer}>
+        <button className={`${style.tab} ${style.activeTab}`}>Posts</button>
       </div>
 
       {/* Nội dung chính */}
-      <div className="content-container">
+      <div className={style.contentContainer}>
         {/* Cột trái */}
-        <div className="left-column">
-          <div className="intro-section">
-            <h2 className="section-title">Giới thiệu</h2>
-            <p className="intro-text">{bio || "Chưa có bio"}</p>
+        <div className={style.leftColumn}>
+          <div className={style.introSection}>
+            <h2 className={style.sectionTitle}>Giới thiệu</h2>
+            <p className={style.introText}>{bio || "Chưa có bio"}</p>
           </div>
-          <div className="friends-section">
-            <div className="friends-header">
-              <h2 className="section-title">Bạn bè</h2>
-              <p className="friends-count">{friends.length} Bạn bè</p>
+          <div className={style.friendsSection}>
+            <div className={style.friendsHeader}>
+              <div>
+                <h2 className={style.sectionTitle}>Bạn bè</h2>
+                <p className={style.friendsCount}>{friends.length} Bạn bè</p>
+              </div>
               <button
-                className="see-all-button"
+                className={style.seeAllButton}
                 onClick={() => navigate("/friend")}
               >
                 Xem tất cả bạn bè
               </button>
             </div>
-            <div className="friends-grid">
+            <div className={style.friendsGrid}>
               {/* Hàng 1: 3 người bạn đầu tiên */}
-              <div className="friends-row">
+              <div className={style.friendsRow}>
                 {friends.slice(0, 3).map((friend) => (
-                  <div key={friend.id} className="friend-item">
+                  <div key={friend.id} className={style.friendItem}>
                     <img
                       src={friend.image}
                       alt={friend.name}
-                      className="friend-pic"
+                      className={`${style.friendPic} ${style.cursorPointer}`}
                       onClick={() => navigate(`/profile/${friend.id}`)}
-                      style={{ cursor: "pointer" }}
                     />
                     <p
-                      className="friend-name"
+                      className={`${style.friendName} ${style.cursorPointer}`}
                       onClick={() => navigate(`/profile/${friend.id}`)}
-                      style={{ cursor: "pointer" }}
                     >
                       {friend.name}
                     </p>
@@ -659,20 +689,18 @@ const Profile = () => {
                 ))}
               </div>
               {/* Hàng 2: 3 người bạn tiếp theo */}
-              <div className="friends-row">
+              <div className={style.friendsRow}>
                 {friends.slice(3, 6).map((friend) => (
-                  <div key={friend.id} className="friend-item">
+                  <div key={friend.id} className={style.friendItem}>
                     <img
                       src={friend.image}
                       alt={friend.name}
-                      className="friend-pic"
+                      className={`${style.friendPic} ${style.cursorPointer}`}
                       onClick={() => navigate(`/profile/${friend.id}`)}
-                      style={{ cursor: "pointer" }}
                     />
                     <p
-                      className="friend-name"
+                      className={`${style.friendName} ${style.cursorPointer}`}
                       onClick={() => navigate(`/profile/${friend.id}`)}
-                      style={{ cursor: "pointer" }}
                     >
                       {friend.name}
                     </p>
@@ -684,13 +712,13 @@ const Profile = () => {
         </div>
 
         {/* Cột phải */}
-        <div className="right-column">
-          <div className="posts-section">
-            <div className="posts-header">
-              <h2 className="section-title">Bài viết</h2>
-              <div className="posts-options">
+        <div className={style.rightColumn}>
+          <div className={style.postsSection}>
+            <div className={style.postsHeader}>
+              <h2 className={style.sectionTitle}>Bài viết</h2>
+              <div className={style.postsOptions}>
                 <button
-                  className="manage-posts-button"
+                  className={style.managePostsButton}
                   onClick={() => navigate("/trash")}
                 >
                   Quản lý bài viết
