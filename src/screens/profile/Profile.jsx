@@ -556,22 +556,37 @@ const Profile = () => {
                     Hủy bạn bè
                   </button>
                 )}
-                {(relationship?.relation === "A gửi lời kết bạn B" ||
-                  relationship?.relation === "B gửi lời kết bạn A") && (
+                {((relationship?.ID_userA == me?._id &&
+                  relationship?.relation === "A gửi lời kết bạn B") ||
+                  (relationship?.ID_userB == me?._id &&
+                    relationship?.relation === "B gửi lời kết bạn A")) && (
                   <button
-                    className={style.storyButton}
+                    className="story-button"
                     onClick={handleCancelFriendRequest}
                   >
                     Hủy lời mời
                   </button>
                 )}
-                {(relationship?.relation === "B gửi lời kết bạn A" ||
-                  relationship?.relation === "A gửi lời kết bạn B") && (
+                {((relationship?.ID_userA == me?._id &&
+                  relationship?.relation === "B gửi lời kết bạn A") ||
+                  (relationship?.ID_userB == me?._id &&
+                    relationship?.relation === "A gửi lời kết bạn B")) && (
                   <button
-                    className={style.storyButton}
+                    className="story-button"
+                    onClick={handleCancelFriendRequest}
+                  >
+                    Hủy lời mời kết bạn
+                  </button>
+                )}
+                {((relationship?.ID_userA == me?._id &&
+                  relationship?.relation === "B gửi lời kết bạn A") ||
+                  (relationship?.ID_userB == me?._id &&
+                    relationship?.relation === "A gửi lời kết bạn B")) && (
+                  <button
+                    className="story-button"
                     onClick={handleAcceptFriendRequest}
                   >
-                    + Phản hồi
+                    Đồng ý kết bạn
                   </button>
                 )}
                 <button
