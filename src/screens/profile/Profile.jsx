@@ -37,7 +37,7 @@ import {
 } from "../../rtk/API";
 import style from "../../styles/screens/profile/Profile.module.css";
 import axios from "axios";
-import PostProfile from "../../components/items/Post";
+import Post from "../../components/items/Post";
 import ReportDialog from "../../components/dialogs/ReportDialog"; // Import ReportDialog
 import { Menu, MenuItem } from "@mui/material"; // Import Menu từ MUI
 
@@ -800,7 +800,7 @@ const Profile = () => {
             </div>
             {posts.length > 0 ? (
               posts.map((post) => (
-                <PostProfile
+                <Post
                   key={post._id}
                   post={post}
                   ID_user={me._id}

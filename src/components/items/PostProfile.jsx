@@ -414,13 +414,8 @@ const PostProfile = ({
                             <span style={{ color: "gray" }}> và </span>
                             <a
                               href="#"
-                              onClick={() => console.log("Navigate to ListTag")}
                               className="name"
                             >
-                              {post.tags.length - 1} người khác
-                            </a>
-                          </>
-                        )}
                       </span>
                     )}
                   </a>
