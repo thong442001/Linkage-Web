@@ -40,6 +40,7 @@ import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
 import NotificationDialog from '../../components/items/NotificationDialog';
 import SearchDialog from '../../components/items/SearchDialog';
+import ChangePasswordDialog from '../../components/dialogs/ChangePasswordDialog';
 
 const Home = ({ content }) => {
     const dispatch = useDispatch();
@@ -69,6 +70,11 @@ const Home = ({ content }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
+
+    // dialog đổi mật khẩu
+    const [open, setOpen] = useState(true);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     // Đồng bộ activeIcon với URL
     useEffect(() => {
@@ -537,6 +543,8 @@ const Home = ({ content }) => {
                 ) : (
                     content
                 )}
+
+                <ChangePasswordDialog open={open} onClose={handleClose} />
             </div>
         </div >
     );
