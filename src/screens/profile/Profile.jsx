@@ -38,8 +38,9 @@ import {
 import style from "../../styles/screens/profile/Profile.module.css";
 import axios from "axios";
 import Post from "../../components/items/Post";
+import ReportDialog from "../../components/dialogs/ReportDialog"; // Import ReportDialog
 import { Menu, MenuItem } from "@mui/material"; // Import Menu từ MUI
-import ReportDialog from '../../components/dialogs/ReportDialog';
+
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -73,10 +74,6 @@ const Profile = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false); // State cho ReportDialog
   const [anchorEl, setAnchorEl] = useState(null); // State cho menu ngữ cảnh
 
-  //dialog report
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -328,7 +325,6 @@ const Profile = () => {
   const handleReportClick = () => {
     setReportDialogOpen(true);
     handleMenuClose();
-    handleOpen();
   };
 
   // Xử lý đóng ReportDialog
@@ -715,6 +711,18 @@ const Profile = () => {
         )}
       </div>
 
+      {/* ReportDialog */}
+      <div>
+        <ReportDialog
+          open={reportDialogOpen}
+          onClose={handleReportDialogClose}
+          reasons={reasons}
+          ID_me={me._id}
+          ID_post={null}
+          ID_user={user?._id}
+        />
+      </div>
+
       {/* Nội dung chính */}
       <div className={style.contentContainer}>
         {/* Cột trái */}
@@ -817,14 +825,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <ReportDialog
-        open={open}
-        onClose={handleClose}
-        reasons={reasons}
-        ID_me={me._id}
-        ID_post={null}
-        ID_user={user?._id}
-      />
+
 
     </div>
   );

@@ -1,10 +1,13 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Home from '../screens/home/Home';
-import Friend from '../screens/friend/Friend';
-import Profile from '../screens/profile/Profile';
-import Chat from '../screens/chat/Chat';
-import Trash from '../screens/trash/Trash';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "../screens/home/Home";
+import Friend from "../screens/friend/Friend";
+import Profile from "../screens/profile/Profile";
+import Chat from "../screens/chat/Chat";
+import Trash from "../screens/trash/Trash";
+import UpStory from "../screens/story/UpStory";
+import EditStory from "../screens/story/EditStory";
+import StoryViewer from "../screens/story/StoryViewer";
 
 // Component bố cục chính
 const MainLayout = ({ children }) => {
@@ -68,6 +71,9 @@ const HomeNavigation = () => {
           </MainLayout>
         }
       />
+      <Route path="/UpStory" element={<UpStory />} />
+      <Route path="/EditStory" element={<EditStory />} />
+      <Route path="/story-viewer" element={<StoryViewer />} />
     </Routes>
   );
 };

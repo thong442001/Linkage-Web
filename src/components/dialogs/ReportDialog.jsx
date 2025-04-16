@@ -16,7 +16,7 @@ import {
     addReport_post,
     addReport_user
 } from '../../rtk/API';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 const ReportDialog = ({ open, onClose, reasons, ID_me, ID_post, ID_user }) => {
 
     const dispatch = useDispatch();

@@ -397,14 +397,12 @@ export const changeDestroyPost = createAsyncThunk(
     }
   }
 );
-
-/// test token
-export const getAllUsers = createAsyncThunk(
-  'user/getAllUsers',
+export const getPostsUserIdDestroyTrue = createAsyncThunk(
+  'post/getPostsUserIdDestroyTrue',
   async (data, { rejectWithValue }) => {
     try {
       const response = await AxiosHelper(data.token)
-        .get('user/getAllUsers', data);
+        .get(`post/getPostsUserIdDestroyTrue?me=${data.me}`);
       //console.log(response.status)
       if (response.status == true) {
         return response;
@@ -417,12 +415,13 @@ export const getAllUsers = createAsyncThunk(
   }
 );
 
-export const getPostsUserIdDestroyTrue = createAsyncThunk(
-  'post/getPostsUserIdDestroyTrue',
+/// test token
+export const getAllUsers = createAsyncThunk(
+  'user/getAllUsers',
   async (data, { rejectWithValue }) => {
     try {
       const response = await AxiosHelper(data.token)
-        .get(`post/getPostsUserIdDestroyTrue?me=${data.me}`);
+        .get('user/getAllUsers', data);
       //console.log(response.status)
       if (response.status == true) {
         return response;
@@ -520,3 +519,35 @@ export const addReport_user = createAsyncThunk(
   }
 );
 
+//***************** Story viewer */
+// show tất cả story viewer của story
+// params : ID_post, ID_user
+export const storyViewerOfStory = createAsyncThunk(
+  'storyViewer/addReport_user',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('storyViewer/storyViewerOfStory', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// add reaction story
+// params : ID_post, ID_user, ID_reaction
+export const addStoryViewer_reaction = createAsyncThunk(
+  'storyViewer/addReport_user',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('storyViewer/addStoryViewer_reaction', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

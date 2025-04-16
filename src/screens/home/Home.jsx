@@ -41,6 +41,7 @@ import Post from '../../components/items/Post';
 import NotificationDialog from '../../components/items/NotificationDialog';
 import SearchDialog from '../../components/items/SearchDialog';
 import ChangePasswordDialog from '../../components/dialogs/ChangePasswordDialog';
+import HomeStories from '../../components/items/HomeStories'; // Import HomeStories
 
 const Home = ({ content }) => {
     const dispatch = useDispatch();
@@ -98,7 +99,7 @@ const Home = ({ content }) => {
                 .then((response) => {
                     setPosts(response.posts || []);
                     setStories(response.stories || []);
-                    setLiveSessions([]);
+                    setLiveSessions([]); // Nếu có dữ liệu liveSessions từ API, cập nhật tại đây
                     setLoading(false);
                 })
                 .catch((error) => {
@@ -441,7 +442,7 @@ const Home = ({ content }) => {
                             <SearchDialog item={filteredProducts} onClose={() => setIsSearchOpen(false)} />
                         )}
                     </div>
-                </div >
+                </div>
                 <div className="mid-header">
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
@@ -468,8 +469,8 @@ const Home = ({ content }) => {
                         <FaPlusCircle className="nav-icon" />
                     </div>
                     <div
-                        className={`icon-wrapper ${activeIcon === 'bell' ? 'active' : ''}`}
-                        onClick={() => setActiveIcon('bell')}
+                        className="icon-wrapper"
+                        onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                     >
                         <FaBell className="nav-icon" />
                     </div>
@@ -512,10 +513,12 @@ const Home = ({ content }) => {
                         />
                     </div>
                 </div>
-            </div >
+            </div>
             <div className="body-container">
                 {location.pathname === '/' ? (
                     <div className="mid-sidebar">
+                        {/* Thêm HomeStories trước danh sách bài đăng */}
+                        <HomeStories stories={stories} liveSessions={liveSessions} />
                         {loading ? (
                             <p>Đang tải...</p>
                         ) : posts.length > 0 ? (
@@ -544,9 +547,9 @@ const Home = ({ content }) => {
                     content
                 )}
 
-                <ChangePasswordDialog open={open} onClose={handleClose} />
+                {/* <ChangePasswordDialog open={open} onClose={handleClose} /> */}
             </div>
-        </div >
+        </div>
     );
 };
 

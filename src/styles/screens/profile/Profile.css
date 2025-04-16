@@ -17,11 +17,10 @@
 
 .cover-photo {
   width: 100%;
-  height: 100%;
-  object-fit: cover; /* Đảm bảo ảnh bìa lấp đầy mà không méo */
-  border-radius: 0 0 8px 8px; /* Bo góc dưới */
+  height: 100%; /* Điều chỉnh chiều cao nếu cần */
+  object-fit: cover; /* Dành cho img */
+  background-color: #FFFFFF; /* Màu trắng mặc định khi không có ảnh */
 }
-
 .cover-photo-button {
   position: absolute;
   bottom: 10px;

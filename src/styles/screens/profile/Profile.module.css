@@ -166,6 +166,7 @@
 /* Thanh điều hướng tab (Posts, About, Friends, v.v.) */
 .tabsContainer {
   display: flex;
+  justify-content: space-between;
   border-bottom: 1px solid #dadde1;
   /* Đường viền dưới */
   padding: 0 10px;
@@ -463,4 +464,18 @@
 
 .cursorPointer {
   cursor: pointer;
+}
+
+.moreButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+}
+
+/* Style cho dialog (nếu cần thêm tùy chỉnh) */
+.postModalContainer {
+  z-index: 1300; /* Đảm bảo dialog hiển thị trên các phần tử khác */
 }
