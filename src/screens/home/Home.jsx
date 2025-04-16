@@ -9,7 +9,7 @@ import {
     FaUserFriends, FaUsers as FaGroups, FaClock,
     FaBookmark, FaPlayCircle, FaShoppingBag
 } from 'react-icons/fa';
-import { getAllNotificationOfUser,getAllUsers } from '../../rtk/API';
+import { getAllNotificationOfUser, getAllUsers } from '../../rtk/API';
 import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
 import Friend from '../friend/Friend';
@@ -35,7 +35,6 @@ const Home = () => {
 
   // lấy lịch sử tìm kiếm
   const searchHistory = useSelector((state) => state.app.history) || [];
-  console.log("canh",searchHistory);
   //thêm làm lịch sử tìm kiếm
   const saveSearch = (user) => {
     dispatch(addSearch(user));
@@ -63,17 +62,18 @@ const Home = () => {
         getData();
     }, []);
     
-      const getData = async () => {
-        try {
-          const response = await dispatch(getAllUsers({ token })).unwrap();
-          setData(response.users);
-        console.log('Users:', response.users._id);
-        } catch (error) {
-          console.log('Error:', error);
-        }
-      };
 
-      const normalizeText = (text) => {
+    const getData = async () => {
+        try {
+            const response = await dispatch(getAllUsers({ token })).unwrap();
+            setData(response.users);
+            //   console.log('Users:', response.users);
+        } catch (error) {
+            console.log('Error:', error);
+        }
+    };
+
+    const normalizeText = (text) => {
         return text
           .toLowerCase()
           .normalize('NFD') // Tách dấu ra khỏi chữ
@@ -101,7 +101,7 @@ const Home = () => {
             )
           );
         }
-      };
+    };
 
     const calculateTimeAgo = (updatedAt) => {
         const now = Date.now();
@@ -321,7 +321,7 @@ const Home = () => {
                             </div>
                         )}
                     </div>
-                </div>  
+                </div>
                 <div className='mid-header'>
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
@@ -360,7 +360,7 @@ const Home = () => {
                         <FaBell className="nav-icon" />
                     </div>
                 </div>
-                
+
                 <div className="mid-header1">
                     <div className="icon-wrapper1" onClick={() => {
                         handleLogout()

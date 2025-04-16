@@ -243,3 +243,15 @@
   border-radius: 5px;
   padding: 30px 30x;
 }
+.actionIcons {
+  background-color: transparent;
+  display: none;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 10;
+}
+
+.message:hover .actionIcons {
+  display: flex;
+}
