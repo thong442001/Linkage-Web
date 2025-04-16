@@ -1,61 +1,72 @@
+/* Container chính của trang Profile */
 .profileContainer {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
+  background-color: #f0f2f5;
+  /* Màu nền xám nhạt */
   min-height: 100vh;
-  /* color: #1c1e21; */
+  /* Đảm bảo chiều cao tối thiểu bằng viewport */
+  color: #1c1e21;
+  /* Màu chữ chính */
   padding-bottom: 20px;
+  /* Đệm dưới để tránh nội dung bị cắt */
 }
 
-.boxContainer {
-  background-color: #fff;
-}
-
-.boxAll {
-  background-color: #d9d9d960;
-}
-
+/* Container cho ảnh bìa */
 .coverPhotoContainer {
   height: 350px;
+  /* Chiều cao cố định */
   position: relative;
+  /* Để định vị nút chỉnh sửa */
   max-width: 1000px;
+  /* Giới hạn chiều rộng */
   margin: 0 auto;
+  /* Căn giữa */
 }
 
 .coverPhoto {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Đảm bảo ảnh bìa lấp đầy mà không méo */
   border-radius: 0 0 8px 8px;
+  /* Bo góc dưới */
 }
 
 .coverPhotoButton {
   position: absolute;
   bottom: 10px;
   right: 10px;
+  /* Đặt ở góc dưới bên phải */
   background-color: #fff;
   padding: 8px 12px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  /* Viền xám */
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   gap: 5px;
+  /* Khoảng cách giữa biểu tượng và chữ */
   color: #1c1e21;
 }
 
+/* Container cho thông tin hồ sơ */
 .profileInfoContainer {
   display: flex;
   align-items: flex-end;
+  /* Căn chỉnh dưới cùng */
   max-width: 1000px;
   margin: 0 auto;
   margin-top: -60px;
+  /* Kéo lên để chồng lên ảnh bìa */
   padding-bottom: 10px;
+  z-index: 2;
+  /* Đảm bảo nằm trên coverPhotoContainer */
 }
 
 .profilePicWrapper {
   position: relative;
+  /* Để định vị biểu tượng camera */
   margin-right: 20px;
 }
 
@@ -63,7 +74,9 @@
   width: 168px;
   height: 168px;
   border-radius: 50%;
+  /* Ảnh tròn */
   border: 4px solid #fff;
+  /* Viền trắng */
   object-fit: cover;
 }
 
@@ -71,6 +84,7 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
+  /* Góc dưới bên phải của ảnh đại diện */
   background-color: #fff;
   border-radius: 50%;
   padding: 5px;
@@ -85,6 +99,7 @@
   flex: 1;
   display: flex;
   justify-content: space-between;
+  /* Căn đều giữa tên và nút hành động */
   align-items: center;
 }
 
@@ -103,16 +118,19 @@
 .friendsCount {
   font-size: 16px;
   color: #606770;
+  /* Màu chữ nhạt hơn */
   margin-top: 5px;
 }
 
 .actionButtons {
   display: flex;
   gap: 10px;
+  /* Khoảng cách giữa các nút */
 }
 
 .storyButton {
   background-color: #1877f2;
+  /* Màu xanh Facebook */
   color: #fff;
   padding: 8px 12px;
   border-radius: 5px;
@@ -123,6 +141,7 @@
 
 .editProfileButton {
   background-color: #e4e6eb;
+  /* Màu xám nhạt */
   color: #1c1e21;
   padding: 8px 12px;
   border-radius: 5px;
@@ -139,16 +158,25 @@
   border: none;
   font-size: 14px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
+/* Thanh điều hướng tab (Posts, About, Friends, v.v.) */
 .tabsContainer {
   display: flex;
   border-bottom: 1px solid #dadde1;
+  /* Đường viền dưới */
   padding: 0 10px;
-  justify-content: space-between;
   max-width: 1000px;
   margin: 0 auto;
   background-color: #fff;
+  /* Nền trắng */
+  border-radius: 8px;
+  /* Bo góc */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  /* Hiệu ứng bóng */
 }
 
 .tab {
@@ -156,22 +184,29 @@
   background: none;
   border: none;
   color: #606770;
+  /* Màu chữ xám */
   font-size: 16px;
   cursor: pointer;
+  font-weight: 600;
+  /* Font đậm vừa */
 }
 
 .activeTab {
   border-bottom: 2px solid #1877f2;
+  /* Đường viền xanh khi được chọn */
   color: #1877f2;
+  /* Màu chữ xanh */
   font-weight: bold;
 }
 
+/* Container chính cho nội dung (cột trái và phải) */
 .contentContainer {
   display: flex;
   padding: 20px;
   max-width: 1000px;
   margin: 0 auto;
   gap: 20px;
+  /* Khoảng cách giữa hai cột */
   align-items: flex-start;
 }
 
@@ -181,14 +216,19 @@
   flex-direction: column;
   gap: 20px;
   position: sticky;
-  top: 0;
-  max-height: 100vh;
+  /* Cố định cột trái khi cuộn */
+  top: 60px;
+  /* Căn chỉnh với header cố định */
+  max-height: calc(100vh - 60px);
+  /* Giới hạn chiều cao để không vượt viewport */
 }
 
 .rightColumn {
   flex: 2;
+  /* Chiếm nhiều không gian hơn cột trái */
 }
 
+/* Tiêu đề cho các phần */
 .sectionTitle {
   font-size: 18px;
   font-weight: bold;
@@ -196,6 +236,7 @@
   color: #1c1e21;
 }
 
+/* Phần giới thiệu (Intro) */
 .introSection {
   background-color: #fff;
   padding: 15px;
@@ -209,194 +250,7 @@
   font-size: 14px;
 }
 
-.editButton {
-  background-color: #e4e6eb;
-  color: #1c1e21;
-  padding: 8px;
-  border-radius: 5px;
-  border: none;
-  width: 100%;
-  margin-bottom: 10px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.postInputContainer {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border-radius: 20px;
-  padding: 10px;
-  margin-bottom: 15px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.postsSection {
-  margin-top: 20px;
-}
-
-.smallProfilePic {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-  object-fit: cover;
-}
-
-.postInput {
-  flex: 1;
-  background: none;
-  border: none;
-  color: #606770;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.postActions {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  background-color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.postActionButton {
-  background: none;
-  border: none;
-  color: #606770;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-}
-
-.postsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.postsOptions {
-  display: flex;
-  gap: 10px;
-}
-
-.filterButton,
-.managePostsButton {
-  background-color: #e4e6eb;
-  color: #1c1e21;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.post {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  padding: 15px;
-}
-
-.postHeader {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.postInfo {
-  flex: 1;
-}
-
-.postAuthor {
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0;
-  color: #1c1e21;
-}
-
-.postMeta {
-  font-size: 12px;
-  color: #606770;
-  margin: 0;
-}
-
-.postOptions {
-  background: none;
-  border: none;
-  color: #606770;
-  cursor: pointer;
-}
-
-.postContent {
-  font-size: 14px;
-  color: #1c1e21;
-  margin-bottom: 10px;
-}
-
-.postImage {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.postInteractions {
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid #dadde1;
-  padding-top: 10px;
-  margin-bottom: 10px;
-}
-
-.interactionButton {
-  background: none;
-  border: none;
-  color: #606770;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-}
-
-.commentSection {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.commentInputContainer {
-  width: 80%;
-  position: relative;
-}
-
-.commentInput {
-  width: 100%;
-  padding: 8px 40px 8px 12px;
-  border-radius: 20px;
-  border: 1px solid #dadde1;
-  font-size: 14px;
-  color: #1c1e21;
-}
-
-.commentIcons {
-  position: absolute;
-  right: 0px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 5px;
-}
-
-.commentIcon {
-  color: #606770;
-  cursor: pointer;
-}
-
+/* Phần bạn bè */
 .friendsSection {
   background-color: #fff;
   padding: 15px;
@@ -407,37 +261,26 @@
 
 .friendsHeader {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.friendsCount {
-  font-size: 14px;
-  color: #606770;
-  margin: 5px 0;
-}
-
-.seeAllButton {
-  background: none;
-  border: none;
-  color: #1877f2;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  text-align: left;
-  padding: 0;
-}
-
-.friendsList {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.friendsRow {
+  display: flex;
+  justify-content: space-between;
+  /* Các bạn bè phân bố đều trong hàng */
   gap: 10px;
+  /* Khoảng cách giữa các bạn bè trong cùng một hàng */
 }
 
 .friendItem {
+  flex: 1;
+  /* Mỗi bạn bè chiếm đều không gian */
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 }
 
 .friendPic {
@@ -455,36 +298,169 @@
   margin: 0;
 }
 
-.iconWrapper1 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.navButton {
+.seeAllButton {
   background: none;
   border: none;
-  padding: 10px;
+  color: #1877f2;
+  font-size: 14px;
+  font-weight: bold;
   cursor: pointer;
-  border-radius: 50%;
+  text-align: left;
+  padding: 0;
+}
+
+/* Phần bài đăng */
+.postsSection {
+  margin-top: 20px;
+}
+
+.postsHeader {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s;
-}
-
-.navButton:hover {
-  background-color: #f0f2f5;
-}
-
-.header {
   justify-content: space-between;
   align-items: center;
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
+  margin-bottom: 15px;
+}
+
+.postsOptions {
+  display: flex;
+  gap: 10px;
+}
+
+.managePostsButton {
+  background-color: #e4e6eb;
+  color: #1c1e21;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Snackbar */
+.snackbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: white;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+.snackbar.fadeOut {
+  opacity: 0;
+}
+
+.snackbar.success {
+  background-color: #28a745;
+}
+
+.snackbar.error {
+  background-color: #dc3545;
+}
+
+/* Modal */
+.postModalContainer {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  width: 100vw;
+  /* Chiều rộng toàn màn hình */
+  height: 100vh;
+  /* Chiều cao toàn màn hình */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
+}
+
+.modalBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  /* Chiều rộng toàn màn hình (viewport width) */
+  height: 100vh;
+  /* Chiều cao toàn màn hình (viewport height) */
+  background: rgba(0, 0, 0, 0.9);
+  /* Dark background with slight transparency */
+  z-index: 1;
+}
+
+.modalDialog {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+.bioInput {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.confirmButton,
+.cancelButton {
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirmButton {
+  background-color: #0064e0;
+  color: white;
+}
+
+.cancelButton {
+  background-color: #ccc;
+}
+
+.fullImage {
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 8px;
+  object-fit: contain;
+  z-index: 2;
+}
+
+.closeButtonFullImage {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 3;
+  border-radius: 5px;
+  padding: 30px 30px;
+}
+
+.closeButtonFullImage:hover {
+  background-color: #ff0000;
+  /* Màu nền khi hover */
+}
+
+/* Class bổ sung để xử lý khi không có ảnh */
+.noBackground {
+  background-color: #606770;
+  /* Màu xám trung tính thay cho đen */
+}
+
+.cursorPointer {
+  cursor: pointer;
 }

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from 'react-icons/fa';
 import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-icons/ai';
 import { addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
-import './../../styles/components/items/PostS.css';
+import './../../styles/screens/profile/Profile.css';
 
 const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, updatePostReaction, deletPostReaction }) => {
   const dispatch = useDispatch();
@@ -205,7 +205,7 @@ const PostProfile = ({ post, ID_user, currentTime, onDelete, onDeleteVinhVien, u
     .slice(0, 2);
 
   return (
-    <div className="post-container">
+    <div className="post-container-profile">
       {post?.ID_user?._id === me?._id && (
         <div className="create-post">
           <img

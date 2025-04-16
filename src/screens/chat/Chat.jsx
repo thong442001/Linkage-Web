@@ -488,18 +488,40 @@ const Chat = () => {
                       key={message._id}
                       message={message}
                       user={user}
-                      openImageModal={openImageModal}
-                      ID_me={user._id}
-                      setReply={setReply}
-                      isTyping={isTyping}
-                      typingUsersInfo={typingUsersInfo}
-                      hasSentLocation={hasSentLocation.current} // Truyền giá trị ref vào prop
+                      onReply={() => setReply(message)}
+                      // onRevoke={revokeMessage}
+                      // onIcon={iconMessage}
                     />
                   ))
               ) : (
                 <p>Chưa có tin nhắn nào</p>
               )}
             </div>
+            {
+              reply && (
+                <div className={styles.replyPreview}>
+                  <div>
+                    <p className={styles.replyTitle}>Đang trả lời: </p>
+                    <p className={styles.replyContent}>
+                      {user._id === reply.sender._id
+                        ? ' Bạn: '
+                        : ` ${reply.sender.first_name} ${reply.sender.last_name}: `}
+                      {reply.type === 'text'
+                        ? reply.content
+                        : reply.type === 'image'
+                          ? 'Ảnh'
+                          : 'Video'}
+                    </p>
+                  </div>
+                  <button
+                    className={styles.replyRight}
+                    onClick={() => setReply(null)}
+                  >
+                  <span className={styles.replyTitle}>✖</span>
+                  </button>
+                </div>
+              )
+            }
 
             <div className={styles.chatInput}>
               <input
@@ -508,6 +530,12 @@ const Chat = () => {
                 placeholderTextColor={'grey'}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // nếu dùng textarea và không muốn xuống dòng
+                    sendMessage('text', message);
+                  }
+                }}
               //onChangeText={handleTyping}
               />
               <button

@@ -1,39 +1,119 @@
-// src/components/Trash/Trash.jsx
-import React from "react";
-import styles from "../../styles/screens/strash/Trash.module.css";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
+// import Lottie from 'react-lottie-player';
+import {
+  getPostsUserIdDestroyTrue,
+  changeDestroyPost,
+  deletePost,
+} from '../../rtk/API';
+// import animationData from '../../utils/animation/bin/bin.json';
+import PostItem from '../../components/items/TrashComponent.jsx';
+import Style from '../../styles/screens/trash/Trash.module.css';
 
 const Trash = () => {
-  return (
-    <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <h2>Bỏ đi</h2>
-        <input type="text" placeholder="Tìm kiếm trong nhật ký hoạt động" className={styles.searchInput} />
-        <ul className={styles.menu}>
-          <li>📘 Nhật ký hoạt động</li>
-          <li>📁 Kho lưu trữ</li>
-          <li>🕓 Lịch sử hoạt động</li>
-        </ul>
-      </div>
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const me = useSelector((state) => state.app.user);
+  const token = useSelector((state) => state.app.token);
+  const [posts, setPosts] = useState([]);
+  const [currentTime, setCurrentTime] = useState(Date.now());
 
-      <div className={styles.main}>
-        <div className={styles.notice}>Mục trong thùng rác chỉ hiển thị với bạn.</div>
-        
-        <div className={styles.postGroup}>
-          <div className={styles.date}>12 Tháng 4, 2025</div>
-          <div className={styles.post}>
-            <input type="checkbox" />
-            <img src="https://i.imgur.com/4Z8Y2zG.png" alt="avatar" className={styles.avatar} />
-            <div className={styles.postContent}>
-              <div><strong>Canh Phan</strong> đã cập nhật trạng thái của anh ấy.</div>
-              <div className={styles.desc}>adjfajscil</div>
-              <div className={styles.time}>🗑️ Còn 29 ngày</div>
-            </div>
-            <div className={styles.postActions}>
-              <button className={styles.viewButton}>Xem</button>
-              <span className={styles.postTime}>17:46</span>
-            </div>
+  // Update currentTime for PostItem
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Fetch posts when component mounts
+  useEffect(() => {
+    if (me?._id && token) {
+      callGetPostsUserIdDestroyTrue(me._id);
+    }
+  }, [me._id, token]);
+
+  const callGetPostsUserIdDestroyTrue = async (ID_user) => {
+    try {
+      await dispatch(getPostsUserIdDestroyTrue({ me: ID_user, token }))
+        .unwrap()
+        .then((response) => {
+          console.log('Post thùng rác: ', response.posts);
+          setPosts(response.posts || []);
+        })
+        .catch((error) => {
+          console.log('Error callGetPostsUserIdDestroyTrue: ', error);
+        });
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  const callDeletePost = async (ID_post) => {
+    try {
+      await dispatch(deletePost({ _id: ID_post }))
+        .unwrap()
+        .then((response) => {
+          console.log('Xóa vĩnh viễn thành công:', response);
+          setPosts((prevPosts) => prevPosts.filter((post) => post._id !== ID_post));
+        })
+        .catch((error) => {
+          console.log('Lỗi khi xóa vĩnh viễn bài viết:', error);
+        });
+    } catch (error) {
+      console.log('Lỗi trong callDeletePost:', error);
+    }
+  };
+
+  const callChangeDestroyPost = async (ID_post) => {
+    try {
+      await dispatch(changeDestroyPost({ _id: ID_post }))
+        .unwrap()
+        .then((response) => {
+          console.log('Phục hồi thành công:', response);
+          const restoredPost = posts.find((post) => post._id === ID_post);
+          setPosts((prevPosts) => prevPosts.filter((post) => post._id !== ID_post));
+          navigate(-1, { state: { isRestored: true, restoredPost } });
+        })
+        .catch((error) => {
+          console.log('Lỗi khi phục hồi bài viết:', error);
+        });
+    } catch (error) {
+      console.log('Lỗi trong callChangeDestroyPost:', error);
+    }
+  };
+
+  return (
+    <div className={Style.trashContainer}>
+      <div className={Style.header}>
+        <button className={Style.back_button} onClick={() => navigate(-1)}>
+          <FaArrowLeft size="1.5rem" />
+        </button>
+        <h1 className={Style.header_title}>Thùng rác</h1>
+      </div>
+      <div className={Style.post_container}>
+        {posts && posts.length > 0 ? (
+          <div className={Style.post_list}>
+            {posts.map((item) => (
+              <div key={item._id} className={Style.post_item}>
+                <PostItem
+                  post={item}
+                  ID_user={me._id}
+                  onDelete={() => callChangeDestroyPost(item._id)}
+                  onDeleteVinhVien={() => callDeletePost(item._id)}
+                  currentTime={currentTime}
+                />
+              </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className={Style.empty_container}>
+           
+            <p className={Style.empty_text}>Chưa có bài nào</p>
+          </div>
+        )}
       </div>
     </div>
   );
