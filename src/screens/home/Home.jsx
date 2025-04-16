@@ -17,6 +17,7 @@ import Chat from '../chat/Chat';
 import Profile from '../profile/Profile';
 import NotificationDialog from '../../components/items/NotificationDialog';
 import SearchDialog from '../../components/items/SearchDialog';
+import ReportDialog from '../../components/dialogs/ReportDialog';
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -30,6 +31,10 @@ const Home = () => {
     const [notifications, setNotifications] = useState([]);
     const [formattedNotifications, setFormattedNotifications] = useState([]);
 
+    //dialog report
+    const [open, setOpen] = useState(true);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     //search
     const [data, setData] = useState([]);
@@ -382,6 +387,7 @@ const Home = () => {
             >
                 Log Out
             </button> */}
+            <ReportDialog open={open} onClose={handleClose} />
         </div>
     );
 };
