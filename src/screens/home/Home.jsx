@@ -1,27 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { logout } from '../../rtk/Reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
-    FaHome, FaSearch, FaVideo, FaStore,
-    FaUsers, FaPlusCircle, FaTh, FaBell,
-    FaFacebookMessenger, FaChevronDown,
-    FaUserFriends, FaUsers as FaGroups, FaClock,
-    FaBookmark, FaPlayCircle, FaShoppingBag
+    FaHome,
+    FaSearch,
+    FaVideo,
+    FaStore,
+    FaUsers,
+    FaPlusCircle,
+    FaTh,
+    FaBell,
+    FaFacebookMessenger,
+    FaChevronDown,
+    FaUserFriends,
+    FaUsers as FaGroups,
+    FaClock,
+    FaBookmark,
+    FaPlayCircle,
+    FaShoppingBag,
 } from 'react-icons/fa';
-import { getAllNotificationOfUser, getAllUsers } from '../../rtk/API';
+import {
+    getAllNotificationOfUser,
+    getAllUsers,
+    getAllPostsInHome,
+    editAvatarOfUser,
+    editBackgroundOfUser,
+    editBioOfUser,
+    guiLoiMoiKetBan,
+    chapNhanLoiMoiKetBan,
+    huyLoiMoiKetBan,
+    huyBanBe,
+    changeDestroyPost,
+    addPost_Reaction,
+    deletePost_reaction,
+    getAllFriendOfID_user,
+} from '../../rtk/API';
 import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
-import Friend from '../friend/Friend';
-import Chat from '../chat/Chat';
-import Profile from '../profile/Profile';
 import NotificationDialog from '../../components/items/NotificationDialog';
 import SearchDialog from '../../components/items/SearchDialog';
 import ReportDialog from '../../components/dialogs/ReportDialog';
 
-const Home = () => {
+const Home = ({ content }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const me = useSelector((state) => state.app.user);
     const token = useSelector((state) => state.app.token);
 
@@ -30,22 +54,70 @@ const Home = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [formattedNotifications, setFormattedNotifications] = useState([]);
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [stories, setStories] = useState([]);
+    const [liveSessions, setLiveSessions] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [currentTime, setCurrentTime] = useState(Date.now());
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     //dialog report
     const [open, setOpen] = useState(true);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
-    //search
+    // Search
     const [data, setData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
+
+    // Đồng bộ activeIcon với URL
+    useEffect(() => {
+        if (location.pathname === '/') setActiveIcon('home');
+        else if (location.pathname === '/friend') setActiveIcon('users');
+        else if (location.pathname === '/chat') setActiveIcon('chat');
+        else if (location.pathname.startsWith('/profile')) setActiveIcon('profile');
+    }, [location.pathname]);
+
     const handleLogout = () => {
         dispatch(logout());
-        navigate('/'); // Navigate to the login route after logout
+        navigate('/');
     };
-    //search
+
+    // Gọi API
+    const callGetAllPostsInHome = async (ID_user) => {
+        try {
+            if (!refreshing) setLoading(true);
+            await dispatch(getAllPostsInHome({ me: ID_user, token, timestamp: Date.now() }))
+                .unwrap()
+                .then((response) => {
+                    setPosts(response.posts || []);
+                    setStories(response.stories || []);
+                    setLiveSessions([]);
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.log('Error getAllPostsInHome:: ', error);
+                    setPosts([]);
+                    setStories([]);
+                    setLiveSessions([]);
+                    setLoading(false);
+                });
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (location.pathname === '/') {
+            callGetAllPostsInHome(me._id);
+        }
+    }, [me._id, location.pathname]);
+
+    // Search
     useEffect(() => {
         getData();
     }, []);
@@ -54,7 +126,6 @@ const Home = () => {
         try {
             const response = await dispatch(getAllUsers({ token })).unwrap();
             setData(response.users);
-            //   console.log('Users:', response.users);
         } catch (error) {
             console.log('Error:', error);
         }
@@ -63,13 +134,14 @@ const Home = () => {
     const normalizeText = (text) => {
         return text
             .toLowerCase()
-            .normalize('NFD') // Tách dấu ra khỏi chữ
-            .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
             .replace(/đ/g, 'd')
             .replace(/Đ/g, 'D');
     };
-    const handleInputChange = query => {
-        setIsSearchOpen(!isSearchOpen)
+
+    const handleInputChange = (query) => {
+        setIsSearchOpen(!isSearchOpen);
         setSearchQuery(query.target.value);
         if (query.target.value === '') {
             setFilteredProducts([]);
@@ -77,12 +149,89 @@ const Home = () => {
         } else {
             setIsSearching(true);
             setFilteredProducts(
-                data.filter(user =>
-                    normalizeText((user.first_name + ' ' + user.last_name))
+                data.filter((user) =>
+                    normalizeText(user.first_name + ' ' + user.last_name)
                         .toLowerCase()
-                        .includes(normalizeText(query.target.value).toLowerCase()),
-                ),
+                        .includes(normalizeText(query.target.value).toLowerCase())
+                )
             );
+        }
+    };
+
+    // Hàm cập nhật reaction
+    const updatePostReaction = (postId, reaction, reactionId) => {
+        setPosts((prev) =>
+            prev.map((post) =>
+                post._id === postId
+                    ? {
+                        ...post,
+                        post_reactions: [
+                            ...post.post_reactions,
+                            {
+                                _id: reactionId,
+                                ID_user: {
+                                    _id: me._id,
+                                    first_name: me.first_name,
+                                    last_name: me.last_name,
+                                    avatar: me.avatar,
+                                },
+                                ID_reaction: reaction,
+                                quantity: 1,
+                            },
+                        ],
+                    }
+                    : post
+            )
+        );
+    };
+
+    // Hàm xóa reaction
+    const deletePostReaction = (postId, reactionId) => {
+        setPosts((prev) =>
+            prev.map((post) =>
+                post._id === postId
+                    ? {
+                        ...post,
+                        post_reactions: post.post_reactions.filter((reaction) => reaction._id !== reactionId),
+                    }
+                    : post
+            )
+        );
+    };
+
+    // Hàm xóa bài đăng
+    const handleDeletePost = async (postId) => {
+        try {
+            dispatch(changeDestroyPost({ _id: postId }))
+                .unwrap()
+                .then(() => {
+                    setPosts((prev) =>
+                        prev.map((post) => (post._id === postId ? { ...post, _destroy: true } : post))
+                    );
+                    setSuccessMessage('Đã xóa bài đăng!');
+                })
+                .catch((err) => {
+                    setErrorMessage('Lỗi khi xóa bài đăng!');
+                });
+        } catch (error) {
+            setErrorMessage('Lỗi khi xử lý!');
+        }
+    };
+
+    // Hàm xóa vĩnh viễn bài đăng
+    const handleDeletePermanently = async (postId) => {
+        try {
+            dispatch(changeDestroyPost({ _id: postId, permanent: true }))
+                .unwrap()
+                .then(() => {
+                    setPosts((prev) => prev.filter((post) => post._id !== postId));
+                    setSuccessMessage('Đã xóa vĩnh viễn bài đăng!');
+                })
+                .catch((err) => {
+                    setErrorMessage('Lỗi khi xóa vĩnh viễn bài đăng!');
+                });
+        } catch (error) {
+            setErrorMessage('Lỗi khi xử lý!');
         }
     };
 
@@ -119,11 +268,11 @@ const Home = () => {
         try {
             await dispatch(getAllNotificationOfUser({ me: me._id, token: token }))
                 .unwrap()
-                .then(response => {
+                .then((response) => {
                     setNotifications(response.notifications || []);
                     console.log('Notifications:', response.notifications);
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.log('Error getAllNotificationOfUser: ', error);
                 });
         } catch (error) {
@@ -133,11 +282,11 @@ const Home = () => {
 
     useEffect(() => {
         callGetAllNotificationOfUser();
-    }, [me._id, token, dispatch]);
+    }, [me._id, token]);
 
     useEffect(() => {
         const formatNotifications = () => {
-            const formatted = notifications.map(notification => {
+            const formatted = notifications.map((notification) => {
                 let name = '';
                 let avatar = '';
                 let icon = '';
@@ -286,14 +435,11 @@ const Home = () => {
                             placeholder="Search..."
                         />
                         {isSearchOpen && (
-                            <SearchDialog
-                                item={filteredProducts}
-                                onClose={() => setIsSearchOpen(false)}
-                            />
+                            <SearchDialog item={filteredProducts} onClose={() => setIsSearchOpen(false)} />
                         )}
                     </div>
-                </div>
-                <div className='mid-header'>
+                </div >
+                <div className="mid-header">
                     <div
                         className={`icon-wrapper ${activeIcon === 'home' ? 'active' : ''}`}
                         onClick={() => {
@@ -325,15 +471,18 @@ const Home = () => {
                         <FaBell className="nav-icon" />
                     </div>
                 </div>
-
                 <div className="mid-header1">
                     <div className="icon-wrapper1" onClick={handleLogout}>
                         <FaTh className="nav-icon1" />
                     </div>
-                    <div className="icon-wrapper1" onClick={() => {
-                        setIsNotificationOpen(false);
-                        navigate('/chat')
-                    }}>
+                    <div
+                        className="icon-wrapper1"
+                        onClick={() => {
+                            setIsNotificationOpen(false);
+                            setActiveIcon('chat');
+                            navigate('/chat');
+                        }}
+                    >
                         <FaFacebookMessenger className="nav-icon1" />
                     </div>
                     <div className="icon-wrapper1" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
@@ -349,6 +498,7 @@ const Home = () => {
                         className="avatar-wrapper"
                         onClick={() => {
                             setIsNotificationOpen(false);
+                            setActiveIcon('profile');
                             navigate('/profile');
                         }}
                     >
@@ -359,36 +509,34 @@ const Home = () => {
                         />
                     </div>
                 </div>
-            </div>
+            </div >
             <div className="body-container">
-                <Routes>
-                    <Route path="/" element={<Post />} />
-                    <Route path="/friend" element={<Friend />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path='/chat' element={<Chat />} />
-                </Routes>
+                {location.pathname === '/' ? (
+                    <div className="mid-sidebar">
+                        {loading ? (
+                            <p>Đang tải...</p>
+                        ) : posts.length > 0 ? (
+                            posts.map((post) => (
+                                <Post
+                                    key={post._id}
+                                    post={post}
+                                    ID_user={me._id}
+                                    currentTime={currentTime}
+                                    onDelete={() => handleDeletePost(post._id)}
+                                    onDeleteVinhVien={() => handleDeletePermanently(post._id)}
+                                    updatePostReaction={updatePostReaction}
+                                    deletePostReaction={deletePostReaction}
+                                />
+                            ))
+                        ) : (
+                            <p>Chưa có bài đăng nào.</p>
+                        )}
+                    </div>
+                ) : (
+                    content
+                )}
             </div>
-            {/* <button
-                onClick={handleLogout}
-                style={{
-                    width: '100%',
-                    padding: '10px',
-                    backgroundColor: '#1e90ff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s',
-                }}
-                onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')}
-                onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
-            >
-                Log Out
-            </button> */}
-            <ReportDialog open={open} onClose={handleClose} />
-        </div>
+        </div >
     );
 };
 
