@@ -6,7 +6,8 @@ import { addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
 import './../../styles/components/items/PostS.css';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import ReportDialog from '../../components/dialogs/ReportDialog';
-import ListTag from './../../screens/home/ListTag'; // Điều chỉnh đường dẫn nếu cần
+import ListTag from './../../screens/home/ListTag';
+
 const Post = ({
   post,
   me,
@@ -24,6 +25,7 @@ const Post = ({
   const [reactionsVisible, setReactionsVisible] = useState(false);
   const [shareVisible, setShareVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [statusModalVisible, setStatusModalVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [failedModalVisible, setFailedModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,8 +40,11 @@ const Post = ({
   const [listTagModalVisible, setListTagModalVisible] = useState(false);
   const [listTagData, setListTagData] = useState([]);
   const reactionRef = useRef(null);
+  const [reactionListModalVisible, setReactionListModalVisible] = useState(false);
+  // Thêm state để quản lý tab đang chọn
+  const [selectedReactionTab, setSelectedReactionTab] = useState('all'); // 'all' hoặc ID_reaction
 
-  //dialog report
+  // Dialog report
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -129,22 +134,22 @@ const Post = ({
     );
   };
 
-  // Xác định className dựa trên đường dẫn
   const postContainerClass = location.pathname.includes('/profile') ? 'post-container-profile' : 'post-container';
 
-  const handleLongPress = (e) => {
-    const rect = reactionRef.current.getBoundingClientRect();
-    setMenuPosition({ top: rect.top - 50, left: rect.left });
-    setReactionsVisible(true);
-  };
+  // const handleLongPress = (e) => {
+  //   const rect = reactionRef.current.getBoundingClientRect();
+  //   setMenuPosition({ top: rect.top - 50, left: rect.left });
+  //   setReactionsVisible(true);
+  // };
 
   const handleShare = () => {
+    setSelectedOption({ status: 1, name: "Công khai" });
     setShareVisible(true);
   };
 
   const handleSelectOption = (option) => {
     setSelectedOption(option);
-    setModalVisible(false);
+    setStatusModalVisible(false);
   };
 
   const callAddPost_Reaction = async (ID_reaction, name, icon) => {
@@ -236,6 +241,23 @@ const Post = ({
     .sort((a, b) => b.count - a.count)
     .slice(0, 2);
 
+  // Tạo danh sách các tab dựa trên các loại biểu cảm
+  const reactionTabs = [
+    { id: 'all', name: 'Tất cả', count: post.post_reactions?.length || 0 },
+    ...Object.values(reactionCount).map(reaction => ({
+      id: reaction.ID_reaction._id,
+      icon: reaction.ID_reaction.icon,
+      count: reaction.count,
+    })),
+  ];
+
+  // Lọc danh sách người dùng dựa trên tab đang chọn
+  const filteredReactions = selectedReactionTab === 'all'
+    ? post.post_reactions
+    : post.post_reactions?.filter(
+      reaction => reaction.ID_reaction._id === selectedReactionTab
+    );
+
   return (
     <div className={postContainerClass}>
       {/* Header share */}
@@ -261,7 +283,9 @@ const Post = ({
                 </a>
                 <div className="box-name">
                   <span className="time">{timeAgo}</span>
-                  {getIcon(post.status)}
+                  <div className="box-status-detail">
+                    {getIcon(post.status)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -328,14 +352,15 @@ const Post = ({
                   </div>
                   <div className="box-name">
                     <span className="time">{timeAgoShare}</span>
-                    {getIcon(post.ID_post_shared?.status)}
+                    <div className='box-status-detail'>
+                      {getIcon(post.ID_post_shared?.status)}
+                    </div>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="user-info">
                 <a
-                  // href="#"
                   onClick={() => navigate(`/profile/${post.ID_user._id}`)}
                 >
                   <img
@@ -347,7 +372,6 @@ const Post = ({
                 <div className="user-details">
                   <div>
                     <a
-                      // href="#"
                       onClick={() => navigate(`/profile/${post.ID_user._id}`)}
                       className="name"
                     >
@@ -357,7 +381,6 @@ const Post = ({
                       <span>
                         <span style={{ color: "gray" }}> cùng với </span>
                         <a
-                          // href="#"
                           onClick={() => navigate(`/profile/${post.tags[0]?._id}`)}
                           className="name"
                         >
@@ -367,7 +390,6 @@ const Post = ({
                           <>
                             <span style={{ color: 'gray' }}> và </span>
                             <a
-                              // href="#"
                               onClick={() => {
                                 setListTagData(post.tags);
                                 setListTagModalVisible(true);
@@ -419,8 +441,7 @@ const Post = ({
           {post.post_reactions?.length > 0 ? (
             <div className="footer-reactions">
               <a
-                href="#"
-                onClick={() => console.log("Open Bottom Sheet for Reactions")}
+                onClick={() => setReactionListModalVisible(true)}
               >
                 {topReactions.map((reaction, index) => (
                   <span key={index}>{reaction.ID_reaction.icon}</span>
@@ -521,35 +542,11 @@ const Post = ({
         </div>
       )}
 
-      {/* {reactionsVisible && (
-        <div className="overlay" onClick={() => setReactionsVisible(false)}>
-          <div
-            className="reaction-bar"
-            style={{ top: menuPosition.top, left: menuPosition.left }}
-          >
-            {reactions.map((reaction, index) => (
-              <button
-                key={index}
-                className="reaction-button"
-                onClick={() => {
-                  callAddPost_Reaction(
-                    reaction._id,
-                    reaction.name,
-                    reaction.icon
-                  );
-                  setReactionsVisible(false);
-                }}
-              >
-                {reaction.icon}
-              </button>
-            ))}
-          </div>
-        </div>
-      )} */}
-
       {shareVisible && (
         <div className="overlay" onClick={() => setShareVisible(false)}>
-          <div className="modal-container">
+          <div className="modal-container"
+            onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan truyền
+          >
             <div className="share-header">
               <img src={me?.avatar} className="avatar" alt="User Avatar" />
               <div>
@@ -559,7 +556,7 @@ const Post = ({
                 <div className="box-status">
                   <button
                     className="btn-status"
-                    onClick={() => setModalVisible(true)}
+                    onClick={() => setStatusModalVisible(true)}
                   >
                     {selectedOption.name}
                   </button>
@@ -623,8 +620,8 @@ const Post = ({
         </div>
       )}
 
-      {modalVisible && shareVisible && (
-        <div className="overlay" onClick={() => setModalVisible(false)}>
+      {statusModalVisible && (
+        <div className="overlay" onClick={() => setStatusModalVisible(false)}>
           <div className="modal-content">
             {status.map((option, index) => (
               <button
@@ -632,7 +629,7 @@ const Post = ({
                 className="option-button"
                 onClick={() => handleSelectOption(option)}
               >
-                {option.name}
+                {getIcon(option.name)} {option.name}
               </button>
             ))}
           </div>
@@ -672,6 +669,81 @@ const Post = ({
         <div className="overlay">
           <div className="failed-modal">
             Chia sẻ bài viết thất bại. Vui lòng thử lại!
+          </div>
+        </div>
+      )}
+
+      {reactionListModalVisible && (
+        <div
+          className="overlay"
+          onClick={() => setReactionListModalVisible(false)}
+        >
+          <div
+            className="modal-content-1"
+            style={{ width: "400px", maxHeight: "80vh", overflowY: "auto" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Cảm xúc về tin nhắn</h3>
+            {/* Thêm các tab lọc */}
+            <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: '10px' }}>
+              {reactionTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  style={{
+                    padding: '8px 16px',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: selectedReactionTab === tab.id ? '2px solid #1877f2' : 'none',
+                    color: selectedReactionTab === tab.id ? '#1877f2' : '#65676b',
+                    fontWeight: selectedReactionTab === tab.id ? 'bold' : 'normal',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                  onClick={() => setSelectedReactionTab(tab.id)}
+                >
+                  {tab.icon && <span style={{ marginRight: '5px' }}>{tab.icon}</span>}
+                  {tab.name || ''}
+                  <span style={{ marginLeft: '5px' }}>{tab.count}</span>
+                </button>
+              ))}
+            </div>
+            {/* Danh sách người dùng đã thả biểu cảm */}
+            {filteredReactions?.length > 0 ? (
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {filteredReactions.map((reaction, index) => (
+                  <li
+                    key={index}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      padding: "10px",
+                      borderBottom: "1px solid #f0f0f0",
+                    }}
+                    onClick={() => navigate(`/profile/${reaction.ID_user._id}`)}
+                  >
+                    <img
+                      src={reaction.ID_user.avatar}
+                      alt="User Avatar"
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        marginRight: "10px",
+                      }}
+                    />
+                    <div>
+                      <span style={{ fontWeight: "bold" }}>
+                        {reaction.ID_user.first_name} {reaction.ID_user.last_name}
+                      </span>
+                      <div>{reaction.ID_reaction.icon} {reaction.ID_reaction.name}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Chưa có biểu cảm nào.</p>
+            )}
           </div>
         </div>
       )}
