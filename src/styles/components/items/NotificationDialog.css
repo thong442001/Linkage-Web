@@ -1,6 +1,6 @@
 .notification-dialog {
     position: absolute;
-    top: 100px;
+    top: 50px;
     /* Điều chỉnh dựa trên kích thước biểu tượng */
     right: 30px;
     width: 370px;
@@ -53,14 +53,26 @@
     border-bottom: 1px solid #eee;
 }
 
+.notification-content {
+    display: flex;
+    align-items: center;
+    /* Căn giữa các phần tử theo chiều dọc */
+    gap: 10px;
+    /* Khoảng cách giữa các phần tử */
+}
+
 .notification-content p {
     margin: 0;
     font-size: 14px;
+    flex: 1;
+    /* Nội dung chính chiếm phần còn lại */
 }
 
-.notification-content span {
+.notification-content span.time {
     font-size: 12px;
     color: #666;
+    white-space: nowrap;
+    /* Ngăn thời gian xuống dòng */
 }
 
 .time {
@@ -92,9 +104,11 @@
     cursor: pointer;
 }
 
-.notification-avatar{
-    width: 40px;
-    height: 40px;
+.notification-avatar {
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     margin-right: 10px;
+    margin-left: 10px;
+    /* Thêm khoảng cách bên trái cho avatar */
 }

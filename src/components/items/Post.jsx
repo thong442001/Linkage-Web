@@ -16,7 +16,7 @@ const Post = ({
   onDelete,
   onDeleteVinhVien,
   updatePostReaction,
-  deletPostReaction
+  deletePostReaction
 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -165,19 +165,19 @@ const Post = ({
     }
   };
 
-  const callDeletePost_reaction = async (reactionId) => {
+  const callDeletePost_reaction = async (ID_post, ID_post_reaction) => {
     try {
-      const paramsAPI = { _id: reactionId };
+      const paramsAPI = { _id: ID_post_reaction };
       await dispatch(deletePost_reaction(paramsAPI))
         .unwrap()
-        .then(() => {
-          deletPostReaction(post._id, reactionId);
+        .then(response => {
+          deletePostReaction(ID_post, ID_post_reaction);
         })
-        .catch((error) =>
-          console.log("Lỗi call api callDeletePost_reaction", error)
-        );
+        .catch(error => {
+          console.log('Lỗi call api callDeletePost_reaction', error);
+        });
     } catch (error) {
-      console.log("Lỗi trong callDeletePost_reaction:", error);
+      console.log('Lỗi trong callDeletePost_reaction:', error);
     }
   };
 
@@ -221,10 +221,8 @@ const Post = ({
   const timeAgo = getTimeAgo(post.createdAt);
   const timeAgoShare = getTimeAgo(post.ID_post_shared?.createdAt);
   const hasCaption = post?.caption?.trim() !== "";
-  const hasMedia =
-    post?.medias?.length > 0 || post?.ID_post_shared?.medias?.length > 0;
-  const userReaction =
-    post.post_reactions?.find((r) => r.ID_user._id === me?._id) || null;
+  const hasMedia = post?.medias?.length > 0 || post?.ID_post_shared?.medias?.length > 0;
+  const userReaction = post.post_reactions?.find((r) => r.ID_user._id === me?._id) || null;
 
   const reactionCount = (post.post_reactions || []).reduce((acc, reaction) => {
     if (!reaction.ID_reaction) return acc;
@@ -449,36 +447,66 @@ const Post = ({
           )}
         </div>
       )}
-
       {!post._destroy && (
         <div className="interactions">
-          <button
-            ref={reactionRef}
-            className={`action ${userReaction ? "reacted" : ""}`}
-            onMouseDown={(e) => setTimeout(() => handleLongPress(e), 200)}
-            onClick={() =>
-              userReaction
-                ? callDeletePost_reaction(userReaction._id)
-                : callAddPost_Reaction(
-                  reactions[0]?._id,
-                  reactions[0]?.name,
-                  reactions[0]?.icon
-                )
-            }
-          >
-            <span>
-              {userReaction ? (
-                userReaction.ID_reaction.icon
-              ) : (
-                <FaThumbsUp size={20} />
-              )}
-            </span>
-            <span className={userReaction ? "reacted-text" : ""}>
-              {userReaction
-                ? userReaction.ID_reaction.name
-                : reactions[0]?.name || "Thích"}
-            </span>
-          </button>
+          <div className="reaction-container">
+            <button
+              ref={reactionRef}
+              className={`action ${userReaction ? "reacted" : ""}`}
+              onMouseEnter={() => setReactionsVisible(true)}
+              onMouseLeave={() => {
+                setTimeout(() => {
+                  if (!document.querySelector('.reaction-bar:hover') && !document.querySelector('.reaction-container:hover')) {
+                    setReactionsVisible(false);
+                  }
+                }, 200);
+              }}
+              onClick={() => {
+                console.log("Reaction button clicked, userReaction:", userReaction);
+                userReaction
+                  ? callDeletePost_reaction(post._id, userReaction._id)
+                  : callAddPost_Reaction(
+                    reactions[0]?._id,
+                    reactions[0]?.name,
+                    reactions[0]?.icon
+                  );
+              }}
+            >
+              <div className="reaction-icon-box">
+                <span>
+                  {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={20} />}
+                </span>
+                <span className={userReaction ? "reacted-text" : ""}>
+                  {userReaction ? userReaction.ID_reaction.name : reactions[0]?.name || "Thích"}
+                </span>
+              </div>
+            </button>
+
+            {reactionsVisible && (
+              <div
+                className="reaction-bar"
+                onMouseEnter={() => setReactionsVisible(true)}
+                onMouseLeave={() => setReactionsVisible(false)}
+              >
+                {reactions.map((reaction, index) => (
+                  <button
+                    key={index}
+                    className="reaction-button"
+                    onClick={() => {
+                      callAddPost_Reaction(
+                        reaction._id,
+                        reaction.name,
+                        reaction.icon
+                      );
+                      setReactionsVisible(false);
+                    }}
+                  >
+                    {reaction.icon}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             className="action"
             onClick={() => console.log("Navigate to PostDetail:", post._id)}
@@ -493,7 +521,7 @@ const Post = ({
         </div>
       )}
 
-      {reactionsVisible && (
+      {/* {reactionsVisible && (
         <div className="overlay" onClick={() => setReactionsVisible(false)}>
           <div
             className="reaction-bar"
@@ -517,7 +545,7 @@ const Post = ({
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {shareVisible && (
         <div className="overlay" onClick={() => setShareVisible(false)}>

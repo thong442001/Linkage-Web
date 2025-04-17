@@ -2,24 +2,32 @@ import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../../styles/screens/chat/ChatS.module.css";
 import { FaReply, FaRegSmile, FaTrash } from "react-icons/fa";
+import ReactionModal from "../dialogs/ReactionModal";
 
 const MessageItem = ({
   message,
   openImageModal,
   user,
-  onIcon,
   onReply,
   onRevoke,
+  onIcon
 }) => {
   const messageRef = useRef(null); // ref để tham chiếu tới tin nhắn
   const reactions = useSelector((state) => state.app.reactions);
   const [showReactionList, setShowReactionList] = useState(false);
   const popupRef = useRef(null); // tạo ref cho popup
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedReactions, setSelectedReactions] = useState([]);
 
+  const handleOpenModal = () => {
+    setSelectedReactions(message.message_reactionList);
+    setModalOpen(true);
+  };
   // hàm thu hồi tin nhắn
   const handleonRevoke = () => {
     console.log("tin nhắn đã xóa", message._id);
     setShowReactionList(false);
+    onRevoke(message._id); // Thu hồi tin nhắn
   };
   // hàm trả lời tin nhắn
   const handleonReply = () => {
@@ -31,6 +39,7 @@ const MessageItem = ({
   const handleonIcon = (ID_reaction, ID_message) => {
     console.log("Bạn đã chọn reaction:", ID_reaction, ID_message);
     setShowReactionList(false);
+    onIcon(ID_message, ID_reaction);
   };
 
   useEffect(() => {
@@ -97,6 +106,7 @@ const MessageItem = ({
       return <span key={index}>{part}</span>;
     });
   };
+
   return (
     <div
       key={message._id}
@@ -151,15 +161,15 @@ const MessageItem = ({
             }`}
         >
           {/* Hiển thị tin nhắn trả lời nếu có */}
-          {/* {message.ID_message_reply &&
-          message._destroy === false && (
-            <div className="replyContainer">
-              <p className="replyText">
+          {message.ID_message_reply &&
+            message._destroy === false && (
+            <div className={styles.replyContainer}>
+              <p className={styles.replyText}>
                 {message.ID_message_reply.content ||
                   "Tin nhắn không tồn tại"}
               </p>
             </div>
-          )} */}
+          )}
 
           {/* Nội dung chính */}
           {message._destroy === true ? (
@@ -252,6 +262,21 @@ const MessageItem = ({
           >
             {new Date(message.createdAt).toLocaleTimeString()}
           </p>
+          <div style={{ display: 'flex', flexDirection: 'row' }} >
+            {message?.message_reactionList.map((reaction, index) => (
+              <div key={index} className={styles.reaction_button} onClick={handleOpenModal}>
+                <span className={styles.reaction_text}>
+                  {reaction.ID_reaction.icon} {reaction.quantity}
+                </span>
+              </div>
+            ))}
+          </div>
+          {modalOpen && (
+            <ReactionModal
+              onClose={() => setModalOpen(false)}
+              reactions={selectedReactions}
+            />
+          )}
         </div>
       </div>
       {message.sender._id !== user._id && (
@@ -263,9 +288,6 @@ const MessageItem = ({
               </span>
               <span onClick={toggleReactionList}>
                 <FaRegSmile />
-              </span>
-              <span onClick={handleonRevoke}>
-                <FaTrash />
               </span>
             </div>
           )}

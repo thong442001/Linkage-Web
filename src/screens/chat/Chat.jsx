@@ -26,7 +26,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   // const message.sender._id === user._id = messages.sender._id === user._id; // Kiểm tra tin nhắn có phải của user hiện tại không
-  //console.log(messages);
+  console.log(messages);
   const [message, setMessage] = useState('');
   const [reply, setReply] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
@@ -35,7 +35,7 @@ const Chat = () => {
   const typingUsersInfo = selectedGroup?.members?.filter(member => typingUsers.includes(member._id));
   const hasSentLocation = useRef(false); // Biến ref để theo dõi trạng thái gửi
 
-  
+
   const normalizeText = (text) =>
     text
       .toLowerCase()
@@ -397,7 +397,7 @@ const Chat = () => {
   // gửi tin nhắn
   const sendMessage = (type, content) => {
     if (socket == null || (message == null && type === 'text') || selectedGroup == null) {
-      console.log("socket null or message null");
+      console.log("socket null or message null or type null or selectedGroup null");
       return;
     }
     const payload = {
@@ -415,6 +415,34 @@ const Chat = () => {
     socket.emit('send_message', payload);
     setMessage('');
     setReply(null); // Xóa tin nhắn trả lời sau khi gửi
+  };
+
+  // Xử lý thu hồi tin nhắn
+  const revokeMessage = (ID_message) => {
+    if (socket == null || ID_message == null) {
+      console.log("socket null or ID_message null");
+      return;
+    }
+    const payload = {
+      ID_message: ID_message,
+      ID_group: selectedGroup._id
+    };
+    socket.emit('revoke_message', payload);
+  };
+
+  // Xử lý thả biểu cảm tin nhắn
+  const iconMessage = (ID_message, ID_reaction) => {
+    if (socket == null || ID_message == null || ID_reaction == null) {
+      console.log("socket null or ID_message null or ID_reaction null");
+      return;
+    }
+    const payload = {
+      ID_group: selectedGroup._id,
+      ID_message: ID_message,
+      ID_user: user._id,
+      ID_reaction: ID_reaction,
+    };
+    socket.emit('send_message_reaction', payload);
   };
 
   return (
@@ -473,7 +501,7 @@ const Chat = () => {
                 <p>Được mã hóa đầu cuối</p>
               </div>
               <div className={styles.chatHeaderActions}>
-              
+
                 <button><FaPenAlt /></button>
               </div>
             </div>
@@ -489,8 +517,8 @@ const Chat = () => {
                       message={message}
                       user={user}
                       onReply={() => setReply(message)}
-                      // onRevoke={revokeMessage}
-                      // onIcon={iconMessage}
+                      onRevoke={revokeMessage}
+                      onIcon={iconMessage}
                     />
                   ))
               ) : (
@@ -517,7 +545,7 @@ const Chat = () => {
                     className={styles.replyRight}
                     onClick={() => setReply(null)}
                   >
-                  <span className={styles.replyTitle}>✖</span>
+                    <span className={styles.replyTitle}>✖</span>
                   </button>
                 </div>
               )

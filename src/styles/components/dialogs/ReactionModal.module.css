@@ -1,0 +1,97 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+  }
+  
+  .modal {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+    overflow: hidden;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .closeButton {
+    font-size: 24px;
+    color: #777;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .tabs {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #eee;
+    overflow-x: auto;
+  }
+  
+  .tab {
+    margin-right: 16px;
+    padding-bottom: 4px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .tabActive {
+    color: #2563eb;
+    font-weight: 600;
+    border-bottom: 2px solid #2563eb;
+  }
+  
+  .list {
+    padding: 16px;
+  }
+  
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+  }
+  
+  .userInfo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+  }
+  
+  .name {
+    font-weight: 500;
+  }
+  
+  .note {
+    font-size: 13px;
+    color: #888;
+  }
+  
+  .emoji {
+    font-size: 20px;
+  }
+  
