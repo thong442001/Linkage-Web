@@ -194,7 +194,11 @@ const Home = ({ content }) => {
                     ? {
                         ...post,
                         post_reactions: [
-                            ...post.post_reactions,
+                            // Lọc bỏ reaction cũ của người dùng hiện tại
+                            ...post.post_reactions.filter(
+                                (r) => r.ID_user._id !== me._id
+                            ),
+                            // Thêm reaction mới
                             {
                                 _id: reactionId,
                                 ID_user: {

@@ -410,6 +410,11 @@
   align-items: center;
 }
 
+.reaction-icon-box{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
 .reaction-bar {
   display: flex;
   background-color: #fff;
@@ -418,7 +423,6 @@
   padding: 8px;
   position: absolute;
 }
-
 
 .reaction-button {
   background: none;
