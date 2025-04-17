@@ -140,7 +140,7 @@ body {
 /* Định dạng chung cho các section */
 .sidebar-section {
   flex: 1;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   align-items: center;
   padding: 10px;
@@ -165,7 +165,7 @@ body {
 }
 
 /* Đảm bảo avatar hiển thị tốt */
-.avatar-wrapper {
+.avatar-wrapper-1 {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -194,7 +194,7 @@ body {
   }
 
   .sidebar-section {
-    max-width: 100%;
+    max-width: 100%; 
     margin-bottom: 20px;
   }
 
