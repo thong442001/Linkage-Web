@@ -373,12 +373,7 @@ const Profile = () => {
     );
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(
-      `https://linkage.id.vn/deeplink?url=linkage://profile?ID_user=${me?._id}`
-    );
-    setSuccessMessage("Đã sao chép liên kết!");
-  };
+
 
   const fetchProfileData = useCallback(async () => {
     try {
@@ -622,9 +617,7 @@ const Profile = () => {
                 </button>
               </>
             )}
-            <button className={style.moreButton} onClick={copyToClipboard}>
-              <FaLink /> Sao chép liên kết
-            </button>
+           
           </div>
         </div>
       </div>
