@@ -533,9 +533,9 @@ const Chat = () => {
       {/* Phần danh sách đoạn chat bên trái */}
       <div className={styles.chatList}>
         <div className={styles.chatListHeader}>
-        <h2>Đoạn chat</h2>
+          <h2>Đoạn chat</h2>
           <button className={styles.createGroupButton} onClick={() => setIsModalCreate(true)}>
-          <FaPenSquare/>
+            <FaPenSquare />
           </button>
         </div>
         <input
@@ -593,8 +593,8 @@ const Chat = () => {
                   <button><FaPenAlt /></button>
                 </div>
               )
-            }
-              
+              }
+
             </div>
 
             <div className={styles.chatMessages}>
@@ -644,7 +644,7 @@ const Chat = () => {
             }
 
             <div className={styles.chatInput}>
-             {/* Input file ẩn */}
+              {/* Input file ẩn */}
               <input
                 type="file"
                 accept="image/*,video/*"
