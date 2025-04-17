@@ -503,7 +503,7 @@ const Profile = () => {
         )}
         {user?._id === me._id && (
           <label className={style.coverPhotoButton}>
-            <FaCamera /> Edit cover photo
+            <FaCamera /> Thêm ảnh bìa
             <input
               type="file"
               accept="image/*"
@@ -540,7 +540,7 @@ const Profile = () => {
           <div className={style.nameAndFriends}>
             <h1 className={style.name}>{`${user?.first_name || ""} ${user?.last_name || ""
               }`}</h1>
-            <p className={style.friendsCount}>{friends.length} friends</p>
+            <p className={style.friendsCount}>{friends.length} Bạn bè</p>
           </div>
           <div className={style.actionButtons}>
             {user?._id === me._id ? (
@@ -617,7 +617,7 @@ const Profile = () => {
                 </button>
               </>
             )}
-           
+
           </div>
         </div>
       </div>
