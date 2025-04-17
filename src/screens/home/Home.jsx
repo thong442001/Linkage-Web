@@ -492,7 +492,8 @@ const Home = ({ content }) => {
                         onClick={() => {
                             setActiveIcon('home');
                             navigate('/');
-                            setIsSearchOpen(false)
+                            setIsSearchOpen(false);
+                            setIsNotificationOpen(false)
                         }}
                     >
                         <FaHome className="nav-icon" />
@@ -502,7 +503,8 @@ const Home = ({ content }) => {
                         onClick={() => {
                             setActiveIcon('users');
                             navigate('/friend');
-                            setIsSearchOpen(false)
+                            setIsSearchOpen(false);
+                            setIsNotificationOpen(false)
                         }}
                     >
                         <FaUsers className="nav-icon" />
@@ -512,6 +514,7 @@ const Home = ({ content }) => {
                         onClick={() => {
                             setActiveIcon('menu')
                             setIsSearchOpen(false)
+                            setIsNotificationOpen(false);
                         }}
                     >
                         <FaPlusCircle className="nav-icon" />
@@ -521,6 +524,7 @@ const Home = ({ content }) => {
                         onClick={() => {
                             setActiveIcon('bell')
                             setIsSearchOpen(false)
+                            setIsNotificationOpen(false)
                         }}
                     >
                         <FaBell className="nav-icon" />
@@ -530,6 +534,7 @@ const Home = ({ content }) => {
                     <div className="icon-wrapper1" onClick={() => {
                         handleLogout()
                         setIsSearchOpen(false)
+                        setIsNotificationOpen(false)
                     }}>
                         <FaTh className="nav-icon1" />
                     </div>
