@@ -552,15 +552,6 @@ export const addStoryViewer_reaction = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-export const getChiTietPost = createAsyncThunk(
-  'post/getChiTietPost',
-  async (data, { rejectWithValue }) => {
-    try {
-      const response = await AxiosHelper(data.token)
-        .get(`post/getChiTietPost?ID_post=${data.ID_post}&ID_user=${data.ID_user}`);
-      //console.log(response.status)
-=======
 // "status": true, message: "Đổi password thành công"
 // "status": false, message: "Sai mật khẩu cũ"
 // nhớ khi call check "status"
@@ -585,7 +576,6 @@ export const editNameOfUser = createAsyncThunk(
       const response = await AxiosHelper()
         .post('user/editNameOfUser', data);
       //console.log(response)
->>>>>>> f488a2124dd56a0ffe7624ccd51a1e94faa0275c
       if (response.status == true) {
         return response;
       } else {
@@ -597,18 +587,6 @@ export const editNameOfUser = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
-// params: ID_user, ID_post, content, ID_comment_reply
-export const addComment = createAsyncThunk(
-  'comment/addComment',
-  async (data, { rejectWithValue }) => {
-    try {
-      const response = await AxiosHelper()
-        .post('comment/addComment', data);
-      return response;
-    } catch (error) {
-      console.error(error);
-=======
 export const addGroup = createAsyncThunk(
   'group/addGroup',
   async (data, { rejectWithValue }) => {
@@ -623,7 +601,41 @@ export const addGroup = createAsyncThunk(
         return rejectWithValue(response.data.message);
       }
     } catch (error) {
->>>>>>> f488a2124dd56a0ffe7624ccd51a1e94faa0275c
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+
+// params: ID_user, ID_post, content, ID_comment_reply
+export const addComment = createAsyncThunk(
+  'comment/addComment',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('comment/addComment', data);
+      return response;
+    } catch (error) {
+      console.error(error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getChiTietPost = createAsyncThunk(
+  'post/getChiTietPost',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`post/getChiTietPost?ID_post=${data.ID_post}&ID_user=${data.ID_user}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
       return rejectWithValue(error.message);
     }
   }
