@@ -43,7 +43,7 @@ import SearchDialog from '../../components/items/SearchDialog';
 import ChangePasswordDialog from '../../components/dialogs/ChangePasswordDialog';
 import HomeStories from '../../components/items/HomeStories'; // Import HomeStories
 import { addSearch, removeSearch, clearHistory } from "../../rtk/Reducer";
-import ReportDialog from '../../components/dialogs/ReportDialog';
+import ChangeNameDialog from '../../components/dialogs/ChangeNameDialog';
 
 const Home = ({ content }) => {
     const dispatch = useDispatch();
@@ -609,7 +609,7 @@ const Home = ({ content }) => {
                     content
                 )}
 
-                <ChangePasswordDialog open={open} onClose={handleClose} />
+                <ChangeNameDialog open={open} onClose={handleClose} />
             </div>
         </div>
     );

@@ -568,3 +568,21 @@ export const editPasswordOfUser = createAsyncThunk(
     }
   }
 );
+
+export const editNameOfUser = createAsyncThunk(
+  'user/editNameOfUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('user/editNameOfUser', data);
+      //console.log(response)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
