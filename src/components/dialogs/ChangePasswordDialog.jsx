@@ -1,47 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
     DialogContent,
     DialogContentText,
     TextField,
-    FormControlLabel,
-    Checkbox,
     Button,
     IconButton,
     Box,
+    InputAdornment,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { useSelector, useDispatch } from 'react-redux';
+import { editPasswordOfUser } from '../../rtk/API';
 
 const ChangePasswordDialog = ({ open, onClose }) => {
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
-    const [logoutOtherDevices, setLogoutOtherDevices] = useState(false);
-    const [error, setError] = useState('');
+
+    const dispatch = useDispatch();
+    const me = useSelector(state => state.app.user);
+
+    const [passwordNew, setPasswordNew] = useState('');
+    const [passwordOLd, setPasswordOld] = useState('');
+    const [rePass, setRepass] = useState('');
+    const [btnState, setBtnState] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [successVisible, setSuccessVisible] = useState(false);
+    const [failed, setFailed] = useState(false);
+
+    const [errorOldPassword, setErrorOldPassword] = useState('');
+    const [errorNewPassword, setErrorNewPassword] = useState('');
+    const [errorRePass, setErrorRePass] = useState('');
+
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showRePassword, setShowRePassword] = useState(false);
+
+    useEffect(() => {
+        if (passwordNew.trim() && passwordOLd.trim() && rePass.trim()) {
+            setBtnState(true);
+        } else {
+            setBtnState(false);
+        }
+    }, [passwordNew, passwordOLd, rePass]);
 
     const handleSubmit = () => {
-        // Kiểm tra mật khẩu
-        if (!currentPassword || !newPassword || !confirmNewPassword) {
-            setError('Vui lòng điền đầy đủ các trường');
-            return;
+        let hasError = false;
+        setErrorOldPassword('');
+        setErrorNewPassword('');
+        setErrorRePass('');
+
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+        if (!passwordRegex.test(passwordNew)) {
+            setErrorNewPassword('Mật khẩu mới phải có ít nhất 6 ký tự, bao gồm chữ cái và số, không được chứa ký tự đặc biệt.');
+            hasError = true;
         }
-        if (newPassword !== confirmNewPassword) {
-            setError('Mật khẩu mới và xác nhận mật khẩu không khớp');
+
+        if (passwordNew === passwordOLd) {
+            setErrorOldPassword('Mật khẩu mới không được trùng với mật khẩu cũ.');
+            hasError = true;
+        }
+
+        if (passwordNew !== rePass) {
+            setErrorRePass('Mật khẩu nhập lại không khớp.');
+            hasError = true;
+        }
+
+        if (hasError) {
             return;
         }
 
-        // Gửi yêu cầu thay đổi mật khẩu (giả lập API)
-        console.log('Thay đổi mật khẩu:', {
-            currentPassword,
-            newPassword,
-            logoutOtherDevices,
-        });
+        setLoading(true);
+        setBtnState(false);
+        const data = { ID_user: me._id, passwordOLd, passwordNew };
 
-        // Đóng dialog sau khi thành công
-        setError('');
-        onClose();
+        setTimeout(() => {
+            dispatch(editPasswordOfUser(data))
+                .unwrap()
+                .then((response) => {
+                    if (response.status === true) {
+                        setSuccessVisible(true);
+                        setTimeout(() => {
+                            setSuccessVisible(false);
+                            onClose();
+                        }, 2000);
+                    } else {
+                        setFailed(true);
+                        setErrorOldPassword('Mật khẩu cũ không đúng.');
+                        setTimeout(() => {
+                            setFailed(false);
+                        }, 2000);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                    setBtnState(true);
+                });
+        }, 2000);
     };
 
     return (
@@ -72,45 +133,73 @@ const ChangePasswordDialog = ({ open, onClose }) => {
                 </DialogContentText>
                 <TextField
                     label="Mật khẩu hiện tại"
-                    type="password"
+                    type={showOldPassword ? 'text' : 'password'}
                     fullWidth
                     margin="normal"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    //helperText="Cập nhật 03/05/2024"
+                    value={passwordOLd}
+                    onChange={(e) => setPasswordOld(e.target.value)}
+                    error={!!errorOldPassword}
+                    helperText={errorOldPassword}
                     sx={{ mb: 2 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => setShowOldPassword(!showOldPassword)}
+                                    edge="end"
+                                >
+                                    {showOldPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
                 <TextField
                     label="Mật khẩu mới"
-                    type="password"
+                    type={showNewPassword ? 'text' : 'password'}
                     fullWidth
                     margin="normal"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    value={passwordNew}
+                    onChange={(e) => setPasswordNew(e.target.value)}
+                    error={!!errorNewPassword}
+                    helperText={errorNewPassword}
                     sx={{ mb: 2 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    edge="end"
+                                >
+                                    {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
                 <TextField
                     label="Nhập lại mật khẩu mới"
-                    type="password"
+                    type={showRePassword ? 'text' : 'password'}
                     fullWidth
                     margin="normal"
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    error={!!error}
-                    helperText={error}
+                    value={rePass}
+                    onChange={(e) => setRepass(e.target.value)}
+                    error={!!errorRePass}
+                    helperText={errorRePass}
                     sx={{ mb: 2 }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => setShowRePassword(!showRePassword)}
+                                    edge="end"
+                                >
+                                    {showRePassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
-                {/* <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={logoutOtherDevices}
-                            onChange={(e) => setLogoutOtherDevices(e.target.checked)}
-                            color="primary"
-                        />
-                    }
-                    label="Đăng xuất khỏi các thiết bị khác sau khi thay đổi mật khẩu. Chọn mục này nếu người khác có thể sử dụng tài khoản của bạn."
-                    sx={{ mb: 2 }}
-                /> */}
                 <Button
                     variant="contained"
                     color="primary"
@@ -121,8 +210,9 @@ const ChangePasswordDialog = ({ open, onClose }) => {
                         '&:hover': { backgroundColor: '#1557b0' },
                         py: 1.5,
                     }}
+                    disabled={!btnState || loading}
                 >
-                    Thay đổi mật khẩu
+                    {loading ? 'Đang xử lý...' : 'Thay đổi mật khẩu'}
                 </Button>
             </DialogContent>
         </Dialog>

@@ -561,7 +561,7 @@ export const editPasswordOfUser = createAsyncThunk(
     try {
       const response = await AxiosHelper()
         .post('user/editPasswordOfUser', data);
-      //console.log(response)
+      console.log(response)
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
