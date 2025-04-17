@@ -606,8 +606,6 @@ export const addGroup = createAsyncThunk(
   }
 );
 
-
-
 // params: ID_user, ID_post, content, ID_comment_reply
 export const addComment = createAsyncThunk(
   'comment/addComment',
