@@ -11,16 +11,24 @@ const UpStory = () => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [mediaType, setMediaType] = useState(null); // "photo" or "video"
   const [loading, setLoading] = useState(false);
+  const [hasOpenedPicker, setHasOpenedPicker] = useState(false); // Trạng thái để kiểm soát mở dialog
   const fileInputRef = useRef(null);
+  const hasOpenedPickerRef = useRef(false); // Use ref instead of state
 
   useEffect(() => {
-    openMediaPicker();
-  }, []);
+    if (!hasOpenedPickerRef.current) {
+      openMediaPicker();
+      hasOpenedPickerRef.current = true; // Mark as opened
+    }
+  }, []); // Empty dependency array ensures it runs once on mount
 
   const openMediaPicker = () => {
-    fileInputRef.current.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+      fileInputRef.current.click();
+    }
   };
-
+  
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) {
@@ -52,8 +60,9 @@ const UpStory = () => {
     } catch (error) {
       alert(`Không thể tải ${type === "photo" ? "ảnh" : "video"} lên, vui lòng thử lại!`);
       console.error("Lỗi upload:", error);
-    } finally {
-      setLoading(false);
+      setLoading(false); // Đảm bảo loading được tắt
+      setHasOpenedPicker(false); // Cho phép mở lại dialog nếu upload thất bại
+      openMediaPicker(); // Mở lại dialog để thử lại
     }
   };
 
@@ -87,4 +96,4 @@ const UpStory = () => {
   );
 };
 
-export default UpStory;   
+export default UpStory;

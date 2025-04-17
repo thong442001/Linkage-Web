@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../../styles/screens/chat/ChatS.module.css";
 import { FaReply, FaRegSmile, FaTrash } from "react-icons/fa";
+import ReactionModal from "../dialogs/ReactionModal";
 
 const MessageItem = ({
   message,
@@ -9,13 +10,19 @@ const MessageItem = ({
   user,
   onReply,
   onRevoke,
-  onIcon
+  onIcon,
 }) => {
   const messageRef = useRef(null); // ref để tham chiếu tới tin nhắn
   const reactions = useSelector((state) => state.app.reactions);
   const [showReactionList, setShowReactionList] = useState(false);
   const popupRef = useRef(null); // tạo ref cho popup
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedReactions, setSelectedReactions] = useState([]);
+  console.log("message", message);
+  const handleOpenModal = () => {
+    setSelectedReactions(message.message_reactionList);
+    setModalOpen(true);
+  };
   // hàm thu hồi tin nhắn
   const handleonRevoke = () => {
     console.log("tin nhắn đã xóa", message._id);
@@ -89,8 +96,9 @@ const MessageItem = ({
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className={`linkStyle ${message.sender._id === user._id ? "currentUserTextLink" : ""
-              }`}
+            className={`linkStyle ${
+              message.sender._id === user._id ? "currentUserTextLink" : ""
+            }`}
           >
             {part}
           </a>
@@ -103,8 +111,9 @@ const MessageItem = ({
   return (
     <div
       key={message._id}
-      className={`${styles.message} ${message.sender._id === user._id ? styles.me : styles.other
-        }`}
+      className={`${styles.message} ${
+        message.sender._id === user._id ? styles.me : styles.other
+      }`}
     >
       {message.sender._id !== user._id && (
         <img
@@ -150,19 +159,51 @@ const MessageItem = ({
       <div className={styles.messageContent}>
         <div
           ref={messageRef}
-          className={`messageWrapper ${message.sender._id === user._id ? "currentUserMessage" : ""
-            }`}
+          className={`messageWrapper ${
+            message.sender._id === user._id ? "currentUserMessage" : ""
+          }`}
         >
           {/* Hiển thị tin nhắn trả lời nếu có */}
-          {/* {message.ID_message_reply &&
-          message._destroy === false && (
-            <div className="replyContainer">
-              <p className="replyText">
-                {message.ID_message_reply.content ||
-                  "Tin nhắn không tồn tại"}
+          {message.ID_message_reply && message._destroy === false && (
+            <div className={styles.replyContainer}>
+              <p className={styles.replyText}>
+                {isGoogleMapsLink(message.ID_message_reply.content) ? (
+                  <div style={{ textAlign: "center" }}>
+                    <div
+                      style={{
+                        width: "200px",
+                        height: "120px",
+                        borderRadius: "10px",
+                        backgroundColor: "#ccc",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <p style={{ paddingTop: "45px" }}>Google Maps Preview</p>
+                    </div>
+                    {/* <button
+              // onClick={() =>
+              //   handlePressLocation(message.content)
+              // }
+              style={{
+                backgroundColor: "#2196F3",
+                color: "#fff",
+                padding: "6px 12px",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Mở Google Maps
+            </button> */}
+                  </div>
+                ) : (
+                  <div>
+                    {message.ID_message_reply.content ||
+                      "Tin nhắn không tồn tại"}
+                  </div>
+                )}
               </p>
             </div>
-          )} */}
+          )}
 
           {/* Nội dung chính */}
           {message._destroy === true ? (
@@ -201,15 +242,17 @@ const MessageItem = ({
                 href={message.content}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`messageTextIsLink ${message.sender._id === user._id ? "currentUserTextLink" : ""
-                  }`}
+                className={`messageTextIsLink ${
+                  message.sender._id === user._id ? "currentUserTextLink" : ""
+                }`}
               >
                 {message.content}
               </a>
             ) : (
               <p
-                className={`messageText ${message.sender._id === user._id ? "currentUserText" : ""
-                  }`}
+                className={`messageText ${
+                  message.sender._id === user._id ? "currentUserText" : ""
+                }`}
               >
                 {renderStyledMessage(message.content)}
               </p>
@@ -232,8 +275,9 @@ const MessageItem = ({
             <video
               src={message.content}
               controls
-              className={`messageVideo ${message.sender._id === user._id ? "currentUserText" : ""
-                }`}
+              className={`messageVideo ${
+                message.sender._id === user._id ? "currentUserText" : ""
+              }`}
               style={{
                 maxWidth: "100%",
                 maxHeight: "200px",
@@ -253,8 +297,30 @@ const MessageItem = ({
                 : styles.messageTimeMe
             }
           >
-            {new Date(message.createdAt).toLocaleTimeString()}
+            {new Date(message.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </p>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {message?.message_reactionList.map((reaction, index) => (
+              <div
+                key={index}
+                className={styles.reaction_button}
+                onClick={handleOpenModal}
+              >
+                <span className={styles.reaction_text}>
+                  {reaction.ID_reaction.icon} {reaction.quantity}
+                </span>
+              </div>
+            ))}
+          </div>
+          {modalOpen && (
+            <ReactionModal
+              onClose={() => setModalOpen(false)}
+              reactions={selectedReactions}
+            />
+          )}
         </div>
       </div>
       {message.sender._id !== user._id && (
@@ -266,9 +332,6 @@ const MessageItem = ({
               </span>
               <span onClick={toggleReactionList}>
                 <FaRegSmile />
-              </span>
-              <span onClick={handleonRevoke}>
-                <FaTrash />
               </span>
             </div>
           )}

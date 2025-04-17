@@ -5,10 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../context/socketContext";
 import Groupcomponent from "../../components/items/Groupcomponent";
 import styles from "../../styles/screens/chat/ChatS.module.css";
+import axios from 'axios';
 import {
   FaPenAlt,
+  FaImage,
+  FaPenSquare
 } from 'react-icons/fa';
 import MessageItem from "../../components/items/MessageItem";
+import CreateGroupModal from "../../components/dialogs/CreateGroupModal";
 const Chat = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,13 +24,11 @@ const Chat = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageModalVisible, setImageModalVisible] = useState(false);
-
   //chat
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   // const message.sender._id === user._id = messages.sender._id === user._id; // Kiểm tra tin nhắn có phải của user hiện tại không
-  //console.log(messages);
   const [message, setMessage] = useState('');
   const [reply, setReply] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
@@ -34,7 +36,88 @@ const Chat = () => {
   const [typingUsers, setTypingUsers] = useState([]);
   const typingUsersInfo = selectedGroup?.members?.filter(member => typingUsers.includes(member._id));
   const hasSentLocation = useRef(false); // Biến ref để theo dõi trạng thái gửi
+  const [sendingFiles, setSendingFiles] = useState({});
+  const fileInputRef = useRef(null); // Ref để điều khiển input file
+  const [isModalCreate, setIsModalCreate] = useState(false);
 
+  const handleCreateGroup = (newGroup) => {
+    console.log('Nhóm mới:', newGroup);
+    // Gọi API hoặc cập nhật state để tạo nhóm
+  };
+  // Hàm upload file (tương tự code bạn cung cấp, nhưng điều chỉnh cho web)
+  const uploadFile = async (file) => {
+    const tempId = Date.now().toString();
+    setSendingFiles((prev) => ({ ...prev, [tempId]: true }));
+
+    // Tin nhắn tạm
+    setMessages((prev) => [
+      {
+        _id: tempId,
+        ID_group: groups.ID_group,
+        sender: {
+          _id: user._id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          avatar: user.avatar,
+        },
+        content: URL.createObjectURL(file), // Preview file tạm
+        type: file.type.startsWith('image/') ? 'image' : 'video',
+        isLoading: true,
+        createdAt: new Date().toISOString(),
+        message_reactionList: [],
+        _destroy: false,
+      },
+      ...prev,
+    ]);
+
+    try {
+      const data = new FormData();
+      data.append('file', file);
+      data.append('upload_preset', 'ml_default');
+
+      const response = await axios.post(
+        'https://api.cloudinary.com/v1_1/ddasyg5z3/upload',
+        data,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      );
+
+      const fileUrl = response.data.secure_url;
+      console.log('🌍 Link Cloudinary:', fileUrl);
+
+      // Gửi tin nhắn với URL file
+      sendMessage(file.type.startsWith('image/') ? 'image' : 'video', fileUrl);
+
+      // Xóa trạng thái sending
+      setSendingFiles((prev) => {
+        const newState = { ...prev };
+        delete newState[tempId];
+        return newState;
+      });
+    } catch (error) {
+      console.log(
+        'Lỗi upload file:',
+        error.response ? error.response.data : error.message
+      );
+      setMessages((prev) => prev.filter((msg) => msg._id !== tempId));
+    }
+  };
+
+  // Hàm mở file explorer
+  const onOpenGallery = () => {
+    fileInputRef.current.click(); // Mở input file ẩn
+  };
+
+  // Hàm xử lý khi chọn file
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      console.log('📂 File đã chọn:', file.name);
+      uploadFile(file);
+      event.target.value = null; // Reset input để có thể chọn lại cùng file
+    }
+  };
 
   const normalizeText = (text) =>
     text
@@ -449,7 +532,12 @@ const Chat = () => {
     <div className={styles.app}>
       {/* Phần danh sách đoạn chat bên trái */}
       <div className={styles.chatList}>
+        <div className={styles.chatListHeader}>
         <h2>Đoạn chat</h2>
+          <button className={styles.createGroupButton} onClick={() => setIsModalCreate(true)}>
+          <FaPenSquare/>
+          </button>
+        </div>
         <input
           type="text"
           placeholder="Tìm kiếm trên đoạn chat"
@@ -500,10 +588,13 @@ const Chat = () => {
                 </h3>
                 <p>Được mã hóa đầu cuối</p>
               </div>
-              <div className={styles.chatHeaderActions}>
-
-                <button><FaPenAlt /></button>
-              </div>
+              {selectedGroup.isPrivate == false && (
+                <div className={styles.chatHeaderActions}>
+                  <button><FaPenAlt /></button>
+                </div>
+              )
+            }
+              
             </div>
 
             <div className={styles.chatMessages}>
@@ -516,6 +607,7 @@ const Chat = () => {
                       key={message._id}
                       message={message}
                       user={user}
+                      openImageModal={openImageModal}
                       onReply={() => setReply(message)}
                       onRevoke={revokeMessage}
                       onIcon={iconMessage}
@@ -552,6 +644,16 @@ const Chat = () => {
             }
 
             <div className={styles.chatInput}>
+             {/* Input file ẩn */}
+              <input
+                type="file"
+                accept="image/*,video/*"
+                style={{ display: 'none' }}
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+              />
+              {/* Nút chọn hình ảnh */}
+              <FaImage className={styles.button_img} onClick={onOpenGallery} />
               <input
                 //type="text"
                 placeholder="Type a message"
@@ -619,6 +721,12 @@ const Chat = () => {
             ✕
           </button>
         </div>
+      )}
+      {isModalCreate && (
+        <CreateGroupModal
+          onClose={() => setIsModalCreate(false)}
+          onCreateGroup={handleCreateGroup}
+        />
       )}
     </div>
   );

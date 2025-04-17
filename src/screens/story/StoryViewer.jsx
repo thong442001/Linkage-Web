@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { deletePost, storyViewerOfStory, addStoryViewer_reaction } from "../../rtk/API";
-import { FaTrash, FaTimes } from "react-icons/fa";
-import style from "../../styles/screens/story/StoryViewer.module.css"; // Sử dụng CSS Modules
+import {
+  deletePost,
+  storyViewerOfStory,
+  addStoryViewer_reaction,
+} from "../../rtk/API";
+import { FaTrash, FaTimes, FaArrowLeft, FaArrowRight, FaPause, FaPlay } from "react-icons/fa";
+import style from "../../styles/screens/story/StoryViewer.module.css";
 
 const StoryViewer = () => {
   const location = useLocation();
@@ -18,14 +22,15 @@ const StoryViewer = () => {
   const [stories, setStories] = useState(StoryView?.stories || []);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [viewers, setViewers] = useState([]);
-  const [reactionsVisible, setReactionsVisible] = useState(false);
   const [progressValues, setProgressValues] = useState(stories.map(() => 0));
-  const [isPaused, setIsPaused] = useState(false); // Bắt đầu không tạm dừng
+  const [isPaused, setIsPaused] = useState(false);
+  const [showViewersDialog, setShowViewersDialog] = useState(false);
+  const [pausedTime, setPausedTime] = useState(0);
   const videoRef = useRef(null);
-  const intervalRef = useRef(null); // Ref để lưu setInterval
+  const intervalRef = useRef(null);
+  const startTimeRef = useRef(null);
 
   useEffect(() => {
-    // Chỉ gọi API nếu có dữ liệu hợp lệ
     if (stories.length > 0 && stories[currentIndex] && me?._id) {
       callStoryViewerOfStory();
     }
@@ -34,18 +39,38 @@ const StoryViewer = () => {
   const callStoryViewerOfStory = async () => {
     try {
       const response = await dispatch(
-        storyViewerOfStory({ ID_post: stories[currentIndex]._id, ID_user: me._id })
+        storyViewerOfStory({
+          ID_post: stories[currentIndex]._id,
+          ID_user: me._id,
+        })
       ).unwrap();
+      console.log("Full response:", response);
       if (response && response.storyViewers) {
-        setViewers(response.storyViewers);
+        const uniqueViewers = Array.from(
+          new Map(
+            response.storyViewers.map((viewer) => [
+              viewer.ID_user?._id,
+              viewer,
+            ])
+          ).values()
+        );
+        console.log("Set viewers with:", uniqueViewers);
+        setViewers(uniqueViewers);
+      } else {
+        console.log("No storyViewers found in response");
+        setViewers([]);
       }
     } catch (error) {
-      console.log("Lỗi khi callStoryViewerOfStory:", error);
+      console.log("Lỗi khi gọi storyViewerOfStory:", error);
+      setViewers([]);
     }
   };
 
   const isVideo = (media) => {
-    return media?.toLowerCase().endsWith(".mp4") || stories[currentIndex]?.type === "video";
+    return (
+      media?.toLowerCase().endsWith(".mp4") ||
+      stories[currentIndex]?.type === "video"
+    );
   };
 
   const getVideoDuration = async (url) => {
@@ -53,33 +78,36 @@ const StoryViewer = () => {
       const video = document.createElement("video");
       video.src = url;
       video.onloadedmetadata = () => {
-        resolve(video.duration * 1000); // Chuyển đổi từ giây sang mili giây
+        resolve(video.duration * 1000);
       };
-      video.onerror = () => resolve(5000); // Mặc định 5 giây nếu lỗi
+      video.onerror = () => resolve(5000);
     });
   };
 
   const startProgress = async (index) => {
     if (!stories[index]) return;
 
-    let duration = 5000; // Mặc định 5 giây cho ảnh
+    let duration = 5000;
     if (isVideo(stories[index].medias[0])) {
-      duration = await getVideoDuration(stories[index].medias[0]); // Lấy thời gian thực của video
+      duration = await getVideoDuration(stories[index].medias[0]);
     }
 
-    const startTime = Date.now(); // Lấy thời gian bắt đầu
+    if (!startTimeRef.current) {
+      startTimeRef.current = Date.now();
+    } else {
+      startTimeRef.current = Date.now() - pausedTime;
+    }
 
     const updateProgress = () => {
-      if (isPaused) return; // Dừng nếu đang tạm dừng
-
-      const elapsedTime = Date.now() - startTime; // Thời gian đã trôi qua
-      let progress = (elapsedTime / duration) * 100; // Tính progress dựa trên thời gian thực
+      const elapsedTime = Date.now() - startTimeRef.current;
+      let progress = (elapsedTime / duration) * 100;
 
       if (progress >= 100) {
-        progress = 100; // Đảm bảo không vượt quá 100%
+        progress = 100;
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
         if (!isPaused) {
-          handleNextStory(); // Chuyển story chỉ khi progress đạt 100%
+          handleNextStory();
         }
         return;
       }
@@ -91,34 +119,66 @@ const StoryViewer = () => {
       });
     };
 
-    // Dọn dẹp interval cũ trước khi tạo interval mới
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
 
-    intervalRef.current = setInterval(updateProgress, 50); // Cập nhật mỗi 50ms
-
-    return () => clearInterval(intervalRef.current); // Cleanup khi component unmount
+    intervalRef.current = setInterval(updateProgress, 50);
   };
 
   useEffect(() => {
+    if (isPaused) {
+      if (intervalRef.current) {
+        setPausedTime(Date.now() - startTimeRef.current);
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    } else {
+      if (!intervalRef.current && stories.length > 0) {
+        startProgress(currentIndex);
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isPaused, currentIndex, stories]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isPaused) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play().catch((error) => {
+          console.error("Lỗi khi phát video:", error);
+        });
+      }
+    }
+  }, [isPaused]);
+
+  useEffect(() => {
     if (stories.length > 0) {
-      // Reset progress khi stories thay đổi
       setProgressValues(stories.map(() => 0));
+      setPausedTime(0);
+      startTimeRef.current = null;
     }
   }, [stories]);
 
   useEffect(() => {
     if (stories.length > 0) {
-      // Reset video khi chuyển story
       if (videoRef.current) {
-        videoRef.current.currentTime = 0; // Reset thời gian phát video
-        videoRef.current.play(); // Phát lại video
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch((error) => {
+          console.error("Lỗi khi phát video:", error);
+        });
       }
+      setPausedTime(0);
+      startTimeRef.current = null;
       startProgress(currentIndex);
     }
 
-    // Cleanup interval khi currentIndex thay đổi hoặc component unmount
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -126,23 +186,12 @@ const StoryViewer = () => {
     };
   }, [currentIndex, stories]);
 
-  useEffect(() => {
-    // Tạm dừng hoặc tiếp tục video khi isPaused thay đổi
-    if (videoRef.current) {
-      if (isPaused) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-    }
-  }, [isPaused]);
-
   const handleNextStory = () => {
     if (currentIndex + 1 < stories.length) {
       setProgressValues((prev) => {
         const newValues = [...prev];
-        newValues[currentIndex] = 100; // Hoàn tất progress của story hiện tại
-        newValues[currentIndex + 1] = 0; // Reset progress của story tiếp theo
+        newValues[currentIndex] = 100;
+        newValues[currentIndex + 1] = 0;
         return newValues;
       });
       setCurrentIndex(currentIndex + 1);
@@ -157,8 +206,8 @@ const StoryViewer = () => {
     if (currentIndex > 0) {
       setProgressValues((prev) => {
         const newValues = [...prev];
-        newValues[currentIndex] = 0; // Reset progress của story hiện tại
-        newValues[currentIndex - 1] = 0; // Reset progress của story trước đó
+        newValues[currentIndex] = 0;
+        newValues[currentIndex - 1] = 0;
         return newValues;
       });
       setCurrentIndex(currentIndex - 1);
@@ -167,20 +216,8 @@ const StoryViewer = () => {
     }
   };
 
-  const handlePress = (event) => {
-    const clickX = event.clientX;
-    const screenWidth = window.innerWidth;
-    if (clickX < screenWidth / 2) {
-      handlePrevStory();
-    } else {
-      handleNextStory();
-    }
-  };
-
   const handleSelectReaction = async (ID_reaction, name, icon) => {
     setSelectedEmoji(icon);
-    setReactionsVisible(false);
-
     try {
       const data = {
         ID_post: stories[currentIndex]._id,
@@ -188,6 +225,7 @@ const StoryViewer = () => {
         ID_reaction: ID_reaction,
       };
       await dispatch(addStoryViewer_reaction(data)).unwrap();
+      await callStoryViewerOfStory();
     } catch (error) {
       console.error("Lỗi khi thêm biểu cảm:", error);
     }
@@ -207,7 +245,7 @@ const StoryViewer = () => {
       setTimeout(() => {
         setShowSuccessModal(false);
         navigate("/");
-      }, 2000); // Đợi 2 giây trước khi điều hướng
+      }, 2000);
     } catch (error) {
       console.error("Không thể xóa story:", error);
     }
@@ -223,92 +261,176 @@ const StoryViewer = () => {
     );
   }
 
+  const otherViewers = viewers.filter((viewer) => viewer.ID_user?._id !== me._id);
+
   return (
-    <div
-      className={style["story-viewer-container"]}
-      onClick={handlePress}
-      onMouseDown={() => setIsPaused(true)}
-      onMouseUp={() => setIsPaused(false)}
-    >
-      <div className={style["progress-bar-container"]}>
-        {stories.map((_, index) => (
-          <div key={index} className={style["progress-bar-background"]}>
-            <div
-              className={style["progress-bar"]}
-              style={{ width: `${progressValues[index]}%` }}
+    <div className={style["container"]}>
+      <div className={style["story-viewer-container"]}>
+        <div className={style["progress-bar-container"]}>
+          {stories.map((_, index) => (
+            <div key={index} className={style["progress-bar-background"]}>
+              <div
+                className={style["progress-bar"]}
+                style={{ width: `${progressValues[index]}%` }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {isVideo(stories[currentIndex]?.medias[0]) ? (
+          <video ref={videoRef} className={style["story-media"]}>
+            <source src={stories[currentIndex]?.medias[0]} type="video/mp4" />
+            Trình duyệt của bạn không hỗ trợ thẻ video.
+          </video>
+        ) : (
+          <img
+            src={stories[currentIndex]?.medias[0]}
+            alt="Story"
+            className={style["story-media"]}
+          />
+        )}
+
+        <div className={style["header-container"]}>
+          <div className={style["user-info-container"]}>
+            <img
+              src={StoryView.user.avatar}
+              alt="Avatar"
+              className={style["viewer-avatar"]}
             />
+            <p className={style["username"]}>
+              {StoryView.user.first_name} {StoryView.user.last_name}
+            </p>
           </div>
-        ))}
-      </div>
-
-      {isVideo(stories[currentIndex]?.medias[0]) ? (
-        <video ref={videoRef} className={style["story-media"]}>
-          <source src={stories[currentIndex]?.medias[0]} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      ) : (
-        <img
-          src={stories[currentIndex]?.medias[0]}
-          alt="Story"
-          className={style["story-media"]}
-        />
-      )}
-
-      <div className={style["header-container"]}>
-        <div className={style["user-info-container"]}>
-          <img src={StoryView.user.avatar} alt="Avatar" className={style["avatar"]} />
-          <p className={style["username"]}>
-            {StoryView.user.first_name} {StoryView.user.last_name}
-          </p>
-        </div>
-        <div className={style["button-container"]}>
-          {me._id === StoryView.user?._id && (
-            <button className={style["delete-button"]} onClick={handleDeleteStory}>
-              <FaTrash />
+          <div className={style["button-container"]}>
+            {me._id === StoryView.user?._id && (
+              <button
+                className={style["delete-button"]}
+                onClick={handleDeleteStory}
+              >
+                <FaTrash />
+              </button>
+            )}
+            <button
+              className={style["pause-button"]}
+              onClick={() => setIsPaused((prev) => !prev)}
+            >
+              {isPaused ? <FaPlay /> : <FaPause />}
             </button>
-          )}
-          <button className={style["exit-button"]} onClick={() => navigate("/")}>
-            <FaTimes />
-          </button>
+            <button
+              className={style["exit-button"]}
+              onClick={() => navigate("/")}
+            >
+              <FaTimes />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {me._id !== StoryView.user?._id && (
-        <button
-          className={style["reaction-trigger"]}
-          onClick={() => setReactionsVisible(true)}
-        >
-          <span className={style["reaction-text"]}>{selectedEmoji || "👍"}</span>
-        </button>
-      )}
-
-      {reactionsVisible && (
-        <div className={style["reaction-modal"]}>
+        {me._id !== StoryView.user?._id && (
           <div className={style["reaction-bar"]}>
             {reactions.map((reaction) => (
               <button
                 key={reaction._id}
-                className={style["reaction-button"]}
+                className={`${style["reaction-button"]} ${
+                  selectedEmoji === reaction.icon ? style["selected"] : ""
+                }`}
                 onClick={() =>
-                  handleSelectReaction(reaction._id, reaction.name, reaction.icon)
+                  handleSelectReaction(
+                    reaction._id,
+                    reaction.name,
+                    reaction.icon
+                  )
                 }
               >
-                <span className={style["reaction-text"]}>{reaction.icon}</span>
+                <span className={style["reaction-text"]}>
+                  {reaction.icon}
+                </span>
               </button>
             ))}
           </div>
-        </div>
-      )}
+        )}
 
-      {me._id === StoryView.user?._id && (
-        <div className={style["viewers-count-container"]}>
-          <p className={style["viewers-title"]}>Đã xem ({viewers.length})</p>
-        </div>
-      )}
+        {me._id === StoryView.user?._id && (
+          <div className={style["viewers-count-container"]}>
+            <p
+              className={style["viewers-title"]}
+              onClick={() => setShowViewersDialog(true)}
+            >
+              Đã xem ({otherViewers.length})
+            </p>
+          </div>
+        )}
 
-      {showSuccessModal && (
-        <div className={style["success-modal"]}>Xóa story thành công</div>
-      )}
+        {showSuccessModal && (
+          <div className={style["success-modal"]}>Xóa story thành công</div>
+        )}
+
+        {showViewersDialog && (
+          <div
+            className={style["viewers-dialog-overlay"]}
+            onClick={() => setShowViewersDialog(false)}
+          >
+            <div
+              className={style["viewers-dialog"]}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={style["viewers-dialog-header"]}>
+                <h3>Người đã xem ({otherViewers.length})</h3>
+                <button
+                  className={style["viewers-dialog-close"]}
+                  onClick={() => setShowViewersDialog(false)}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+              <div className={style["viewers-list"]}>
+                {otherViewers.length > 0 ? (
+                  otherViewers.map((viewer) => {
+                    const reaction = viewer.ID_reaction || null;
+                    console.log("Biểu cảm của người xem:", reaction);
+                    return (
+                      <div key={viewer._id} className={style["viewer-item"]}>
+                        <img
+                          src={viewer.ID_user?.avatar}
+                          alt="Avatar người xem"
+                          className={style["viewer-avatar"]}
+                        />
+                        <p className={style["viewer-name"]}>
+                          {viewer.ID_user?.first_name}{" "}
+                          {viewer.ID_user?.last_name}
+                        </p>
+                        {reaction && (
+                          <span className={style["viewer-reaction"]}>
+                            {reaction.icon}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className={style["no-viewers"]}>
+                    Chưa có ai xem story này.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <button
+        className={`${style["nav-button"]} ${style["prev-button"]}`}
+        onClick={handlePrevStory}
+        disabled={currentIndex === 0}
+      >
+        <FaArrowLeft />
+      </button>
+      <button
+        className={`${style["nav-button"]} ${style["next-button"]}`}
+        onClick={handleNextStory}
+        disabled={currentIndex === stories.length - 1}
+      >
+        <FaArrowRight />
+      </button>
     </div>
   );
 };
