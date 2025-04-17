@@ -551,3 +551,20 @@ export const addStoryViewer_reaction = createAsyncThunk(
     }
   }
 );
+
+// "status": true, message: "Đổi password thành công"
+// "status": false, message: "Sai mật khẩu cũ"
+// nhớ khi call check "status"
+export const editPasswordOfUser = createAsyncThunk(
+  'user/editPasswordOfUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('user/editPasswordOfUser', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

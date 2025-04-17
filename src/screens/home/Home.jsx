@@ -600,7 +600,7 @@ const Home = ({ content }) => {
                     content
                 )}
 
-                {/* <ChangePasswordDialog open={open} onClose={handleClose} /> */}
+                <ChangePasswordDialog open={open} onClose={handleClose} />
             </div>
         </div>
     );
