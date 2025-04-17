@@ -130,6 +130,7 @@
 
 .box-name {
   display: flex;
+  flex-direction: row;
   align-items: center;
   font-size: 13px;
   color: #65676b;
@@ -410,6 +411,11 @@
   align-items: center;
 }
 
+.reaction-icon-box{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
 .reaction-bar {
   display: flex;
   background-color: #fff;
@@ -418,7 +424,6 @@
   padding: 8px;
   position: absolute;
 }
-
 
 .reaction-button {
   background: none;
@@ -461,6 +466,10 @@
 
 .box-status {
   margin-top: 4px;
+}
+
+.box-status-detail{
+  margin-top: 7px;
 }
 
 .btn-status {
@@ -507,6 +516,21 @@
   width: 90%;
   max-width: 400px;
   overflow: hidden;
+}
+
+.modal-content-1 {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content-1 h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
 }
 
 .option-button {

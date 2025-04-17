@@ -26,7 +26,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   // const message.sender._id === user._id = messages.sender._id === user._id; // Kiểm tra tin nhắn có phải của user hiện tại không
-  //console.log(messages);
+  console.log(messages);
   const [message, setMessage] = useState('');
   const [reply, setReply] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
