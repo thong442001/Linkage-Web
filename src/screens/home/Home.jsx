@@ -25,17 +25,7 @@ import {
     getAllNotificationOfUser,
     getAllUsers,
     getAllPostsInHome,
-    editAvatarOfUser,
-    editBackgroundOfUser,
-    editBioOfUser,
-    guiLoiMoiKetBan,
-    chapNhanLoiMoiKetBan,
-    huyLoiMoiKetBan,
-    huyBanBe,
     changeDestroyPost,
-    addPost_Reaction,
-    deletePost_reaction,
-    getAllFriendOfID_user,
 } from '../../rtk/API';
 import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
@@ -45,7 +35,13 @@ import ChangePasswordDialog from '../../components/dialogs/ChangePasswordDialog'
 import HomeStories from '../../components/items/HomeStories'; // Import HomeStories
 import { addSearch, removeSearch, clearHistory } from "../../rtk/Reducer";
 import ChangeNameDialog from '../../components/dialogs/ChangeNameDialog';
-
+import {
+    Typography,
+} from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
+import LockIcon from '@mui/icons-material/Lock';
+import DeleteIcon from '@mui/icons-material/Delete';
+import LogoutIcon from '@mui/icons-material/Logout';
 const Home = ({ content }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -94,9 +90,14 @@ const Home = ({ content }) => {
     const [isSearching, setIsSearching] = useState(false);
 
     // dialog đổi mật khẩu
-    const [open, setOpen] = useState(true);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const [openChangePasswordDialog, setOpenChangePasswordDialog] = useState(false);
+    const handleOpenChangePasswordDialog = () => setOpenChangePasswordDialog(true);
+    const handleCloseChangePasswordDialog = () => setOpenChangePasswordDialog(false);
+
+    // dialog đổi name
+    const [openChangeNameDialog, setOpenChangeNameDialog] = useState(false);
+    const handleOpenChangeNameDialog = () => setOpenChangeNameDialog(true);
+    const handleCloseChangeNameDialog = () => setOpenChangeNameDialog(false);
 
     // Đồng bộ activeIcon với URL
     useEffect(() => {
@@ -607,38 +608,47 @@ const Home = ({ content }) => {
 
                                 <div
                                     className="avatar-wrapper"
-                                // onClick={() => {
-                                //     setIsNotificationOpen(false);
-                                //     setIsSearchOpen(false);
-                                //     navigate('/profile');
-                                // }}
+                                    onClick={() => {
+                                        setOpenChangeNameDialog(true);
+                                    }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', marginTop: '30px' }}>
-                                        <FaCog className="nav-icon1" />
-                                        <p style={{ marginLeft: 10 }}>Cài đặt</p>
+                                        <PersonIcon sx={{ mr: 1, color: 'gray' }} />
+                                        Thay đổi tên
                                     </div>
                                 </div>
 
-                                <button
-                                    onClick={handleLogout}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        backgroundColor: '#1e90ff',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '5px',
-                                        fontSize: '16px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        transition: 'background-color 0.3s',
-                                        marginTop: '30px',
+                                <div
+                                    className="avatar-wrapper"
+                                    onClick={() => {
+                                        setOpenChangePasswordDialog(true);
                                     }}
-                                    onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')}
-                                    onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
                                 >
-                                    Log Out
-                                </button>
+                                    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', marginTop: '30px' }}>
+                                        <LockIcon sx={{ mr: 1, color: 'gray' }} />
+                                        Thay đổi mật khẩu
+                                    </div>
+                                </div>
+
+                                <div
+                                    className="avatar-wrapper"
+                                    onClick={() => navigate("/trash")}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', marginTop: '30px' }}>
+                                        <DeleteIcon sx={{ mr: 1, color: 'gray' }} />
+                                        Thùng rác
+                                    </div>
+                                </div>
+
+                                <div
+                                    className="avatar-wrapper"
+                                    onClick={handleLogout}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', marginTop: '30px' }}>
+                                        <LogoutIcon sx={{ mr: 1, color: 'red' }} />
+                                        <Typography sx={{ color: 'red' }}>Đăng xuất</Typography>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Phần tử 2: Nội dung chính (Stories + Posts) */}
@@ -678,7 +688,8 @@ const Home = ({ content }) => {
                     content
                 )}
 
-                {/* <ChangeNameDialog open={open} onClose={handleClose} /> */}
+                <ChangeNameDialog open={openChangeNameDialog} onClose={handleCloseChangeNameDialog} />
+                <ChangePasswordDialog open={openChangePasswordDialog} onClose={handleCloseChangePasswordDialog} />
             </div>
         </div>
     );
