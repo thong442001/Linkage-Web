@@ -586,3 +586,22 @@ export const editNameOfUser = createAsyncThunk(
     }
   }
 );
+
+export const addGroup = createAsyncThunk(
+  'group/addGroup',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('group/addGroup', data);
+      //console.log(response)
+      if (response.status == true) {
+        console.log(response?.message)
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

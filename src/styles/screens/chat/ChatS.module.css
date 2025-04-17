@@ -154,6 +154,9 @@
   display: flex;
   padding: 10px;
   border-top: 1px solid #ddd;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
 }
 
 .chatInput input {
@@ -171,7 +174,13 @@
   margin-left: 10px;
   cursor: pointer;
 }
-
+.button_img{
+  background: none;
+  border: none;
+  font-size: 25px;
+  margin-right: 10px;
+  cursor: pointer;
+}
 .groupItem {
   display: flex;
   align-items: center;
@@ -308,4 +317,17 @@
   font-size: 14px;
   color: #333;
   margin-left: 5px;
+}
+.chatListHeader{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.createGroupButton {
+  font-size: 23px;
+  background: none;
+  border: none;
 }
