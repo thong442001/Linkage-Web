@@ -10,6 +10,7 @@ const initialState = {
     // Loại bỏ fcmToken vì không cần thiết trong ReactJS (hoặc thay thế bằng logic Web Push nếu cần)
     stories: [],
     history: [],
+    reasons: [],
 };
 
 const appSlice = createSlice({
@@ -30,6 +31,22 @@ const appSlice = createSlice({
             state.token = action.payload;
         },
 
+        // login QR
+        loginQR: (state, action) => {
+            state.token = action.payload?.token || '';
+            state.refreshToken = action.payload?.refreshToken || '';
+            state.user = action.payload?.user
+                ? {
+                    ...action.payload.user,
+                    createdAt: action.payload.user.createdAt
+                        ? new Date(action.payload.user.createdAt).toISOString()
+                        : null,
+                    updatedAt: action.payload.user.updatedAt
+                        ? new Date(action.payload.user.updatedAt).toISOString()
+                        : null,
+                }
+                : null;
+        },
         logout: (state) => {
             state.user = null;
             state.token = '';
@@ -40,6 +57,10 @@ const appSlice = createSlice({
 
         setReactions: (state, action) => {
             state.reactions = action.payload;
+        },
+        setReasons: (state, action) => {
+            state.reasons = action.payload;
+            //console.log('setReasons:', action.payload);
         },
 
         // Loại bỏ setFcmToken vì không cần thiết trong ReactJS
@@ -134,6 +155,7 @@ const appSlice = createSlice({
 export const {
     resetToken,
     logout,
+    loginQR,
     setReactions,
     addStory,
     removeStory,
@@ -143,6 +165,7 @@ export const {
     addSearch,
     removeSearch,
     clearHistory,
+    setReasons,
 } = appSlice.actions;
 
 export default appSlice.reducer;

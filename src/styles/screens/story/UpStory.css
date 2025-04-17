@@ -1,0 +1,19 @@
+.post-story-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+  }
+  
+  .media-preview {
+    width: 300px;
+    height: 400px;
+    object-fit: contain;
+    margin: 20px 0;
+  }
+  
+  .loading {
+    color: white;
+    font-size: 16px;
+  }

@@ -1,0 +1,123 @@
+
+.friendsContainer {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  font-family: Arial, sans-serif;
+}
+
+.sidebarLeft {
+  width: 20%;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.sidebarLeftTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.menuItemFriend {
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.menuItemFriend.active {
+  background-color: #e6f0fa;
+  font-weight: bold;
+}
+
+.mainContentContainer {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.friendRequestsTitle,
+.friendsListTitle {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.friendRequestsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.friendRequestItem {
+  width: 200px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  text-align: center;
+  padding: 10px;
+}
+
+.friendAvatar {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.friendInfo {
+  padding: 10px;
+}
+
+.friendInfoTitle {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.friendInfoText {
+  color: #666;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.friendActions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.confirmBtn {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.deleteBtn {
+  background-color: #e4e6eb;
+  color: #333;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.friendsListGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.friendItem {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  text-align: center;
+  padding: 10px;
+}
+
+.friendItemTitle {
+  margin: 10px 0;
+  font-size: 16px;
+}

@@ -1,0 +1,75 @@
+.trash-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 1.5vw 3vw;
+  }
+  
+  .trash-header {
+    display: flex;
+    align-items: center;
+    padding: 2vh 4vw;
+    background-color: #e6eaec;
+    border-radius: 3vw;
+    box-shadow: 0 0.5vw 1.5vw rgba(0, 0, 0, 0.2);
+    margin-bottom: 3vh;
+  }
+  
+  .back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 3vw;
+  }
+  
+  .back-button ion-icon {
+    color: black;
+    font-size: 6vw; /* Adjust based on viewport width */
+  }
+  
+  .header-title {
+    font-size: 5.5vw;
+    font-weight: bold;
+    color: black;
+    margin: 0;
+  }
+  
+  .trash-post {
+    flex: 1;
+  }
+  
+  .post-list {
+    padding-bottom: 3vh;
+    padding-top: 1vh;
+  }
+  
+  .post-item {
+    margin-bottom: 2vh;
+  }
+  
+  .separator {
+    height: 2vh;
+    background-color: transparent;
+  }
+  
+  .empty-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 0 5vw;
+    margin-bottom: 5vh;
+  }
+  
+  .lottie-animation {
+    width: 50vw;
+    height: 50vw;
+  }
+  
+  .empty-text {
+    text-align: center;
+    font-size: 4.5vw;
+    color: gray;
+  }

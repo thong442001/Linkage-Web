@@ -1,0 +1,290 @@
+.app {
+  display: flex;
+  height: 90vh;
+  font-family: Arial, sans-serif;
+}
+
+.chatList {
+  width: 25%;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chatList h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.searchBar {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+}
+
+.chatItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.active {
+  background-color: #e6f0fa;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  font-size: 30px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.chatInfo {
+  flex: 1;
+}
+
+.chatName {
+  font-weight: bold;
+}
+
+.lastMessage {
+  color: #666;
+  font-size: 14px;
+}
+
+.chatTime {
+  font-size: 12px;
+  color: #666;
+}
+
+.chatContent {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.chatHeaderInfo h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.chatHeaderInfo p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.chatHeaderActions {
+  margin-left: auto;
+}
+
+.chatHeaderActions button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.chatMessages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.message.other .avatar {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.me {
+  justify-content: flex-end;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.messageContent {
+  max-width: 60%;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.message.other .messageContent {
+  background-color: #f1f0f0;
+}
+
+.message.me .messageContent {
+  background-color: #0084ff;
+  color: white;
+}
+
+.messageTime {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-top: 5px;
+}
+.messageTimeMe {
+  font-size: 12px;
+  color: #f1f0f0;
+  display: block;
+  margin-top: 5px;
+}
+
+
+.chatInput {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.chatInput input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+}
+
+.chatInput button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.groupItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.groupItemActive {
+  background-color: #e6f0fa;
+}
+
+.groupAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.groupInfo {
+  flex: 1;
+}
+
+.groupName {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.groupTime {
+  color: #999;
+  font-size: 12px;
+}
+.post_modal_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Chiều rộng toàn màn hình */
+  height: 100vh; /* Chiều cao toàn màn hình */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal_background{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Chiều rộng toàn màn hình (viewport width) */
+  height: 100vh; /* Chiều cao toàn màn hình (viewport height) */
+  background: rgba(0, 0, 0, 0.9); /* Dark background with slight transparency */
+  z-index: 1;
+}
+.full_image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain; /* Ensure the image scales properly without cropping */
+  z-index: 2;
+}
+.close_button_full_image {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 3;
+  border-radius: 5px;
+  padding: 30px 30x;
+}
+.actionIcons {
+  background-color: transparent;
+  display: none;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 10;
+}
+
+.message:hover .actionIcons {
+  display: flex;
+}
+
+.reactionList {
+  bottom: 120%; /* phía trên icon */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 6px 10px;
+  display: flex;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.reactionItem {
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.reactionItem:hover {
+  transform: scale(1.3);
+}
+
+.replyPreview {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f1f0f0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}

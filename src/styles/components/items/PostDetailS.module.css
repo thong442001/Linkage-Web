@@ -1,0 +1,791 @@
+/* src/styles/components/items/PostDetailS.module.css */
+
+/* Modal Overlay */
+.postDetailModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.postDetailModal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 700px;
+  max-height: 80%;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  color: #333333;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* Modal Header */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #f0f2f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #333333;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s;
+}
+
+.closeButton:hover {
+  color: #000000;
+}
+
+/* Modal Body */
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  overflow-y: auto;
+  gap: 15px;
+}
+
+.sharedPostSection {
+  padding-inline-start: 10px;
+ 
+}
+
+.postContent {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.originalPost {
+  border: 1px solid #e0e0e0; 
+}
+
+/* Post Header */
+.postHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.name {
+  font-weight: 600;
+  color: #333333;
+  font-size: 14px;
+}
+
+.time {
+  font-size: 12px;
+  color: #666666;
+}
+
+.boxName {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.optionsButton {
+  background: none;
+  border: none;
+  color: #666666;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px;
+  transition: color 0.3s;
+}
+
+.optionsButton:hover {
+  color: #333333;
+}
+
+/* Caption */
+.caption {
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333333;
+  white-space: pre-wrap;
+}
+
+/* Media Grid */
+.mediaContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.mediaItem {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.image,
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  opacity: 0.8;
+  font-size: 40px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlayText {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Media Layouts */
+.singleMedia {
+  width: 100%;
+  height: 400px;
+}
+
+.doubleMedia {
+  width: calc(50% - 2.5px);
+  height: 300px;
+}
+
+.tripleMediaFirst {
+  width: 100%;
+  height: 300px;
+}
+
+.tripleMediaSecond {
+  width: calc(50% - 2.5px);
+  height: 150px;
+}
+
+.quadMedia {
+  width: calc(50% - 2.5px);
+  height: 200px;
+}
+
+.fivePlusMediaFirstRow {
+  width: calc(50% - 2.5px);
+  height: 250px;
+}
+
+.fivePlusMediaSecondRowLeft {
+  width: calc(33.33% - 3.33px);
+  height: 150px;
+}
+
+.fivePlusMediaSecondRowMiddle {
+  width: calc(33.33% - 3.33px);
+  height: 150px;
+}
+
+.fivePlusMediaSecondRowRight {
+  width: calc(33.33% - 3.33px);
+  height: 150px;
+}
+
+/* Full-screen Media Modal */
+.mediaOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.fullMedia {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+/* Footer */
+.footer { 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footerReactions,
+.commentCount {
+  color: #666666;
+  font-size: 14px;
+}
+
+/* Interactions */
+.interactions {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.action {
+  background: none;
+  border: none;
+  color: #666666;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.action:hover {
+  color: #333333;
+  background-color: #f0f2f5;
+}
+
+/* Reaction Bar */
+.reactionBar {
+  position: absolute;
+  display: flex;
+  gap: 8px;
+  background-color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.reactionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Comments Section */
+.commentsSection {
+  padding: 15px;
+  background: #ffffff;
+}
+
+.commentsSection h4 {
+  margin: 0 0 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.commentsList {
+  overflow-y: hidden;
+  margin-bottom: 15px;
+}
+
+.comment {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.commentAvatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.commentWrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+
+.commentContent {
+  background: #f0f2f5;
+  padding: 8px 12px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.commentBubble {
+  display: flex;
+  flex-direction: column;
+}
+
+.commentUser {
+  font-weight: 600;
+  font-size: 13px;
+  color: #333333;
+}
+
+.commentContent p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333333;
+}
+
+.commentTime {
+  font-size: 12px;
+  color: #666666;
+}
+
+.commentActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+  margin-left: 12px;
+}
+
+.commentActions span {
+  font-size: 12px;
+  color: #666666;
+  cursor: pointer;
+}
+
+.commentActions span:hover {
+  color: #333333;
+}
+
+.toggleReplies {
+  font-size: 12px;
+  color: #0064e0;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.toggleReplies:hover {
+  color: #003e80;
+}
+
+.replies {
+  margin-bottom: 15px;
+}
+
+/* Comment Input */
+.commentInput {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.inputContainer {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 10px 15px;
+  border-top: 1px solid #e0e0e0;
+  z-index: 100;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.inputContainer2 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+}
+
+.inputWrapper {
+  flex: 1;
+  position: relative;
+}
+
+.inputContainer input {
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  border: none;
+  background: #f0f2f5;
+  color: #333333;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.inputContainer input::placeholder {
+  color: #999999;
+}
+
+.inputIcons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.inputIcons svg {
+  color: #666666;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.inputIcons svg:hover {
+  color: #333333;
+}
+
+/* Shared Post Modal */
+.sharedPost {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 15px;
+  width: 90%;
+  max-width: 500px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #333333;
+}
+
+.sharedPostHeader {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.sharedPostHeader h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.sharedPostBody {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.statusButton {
+  background-color: #f0f2f5;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-top: 5px;
+  cursor: pointer;
+  color: #333333;
+}
+
+.captionInput {
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 10px;
+  resize: none;
+  background: #f0f2f5;
+  color: #333333;
+}
+
+.shareButton {
+  background-color: #0064e0;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.shareOptions {
+  margin-top: 15px;
+}
+
+.copyLinkButton {
+  background-color: #f0f2f5;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #333333;
+}
+
+.shareOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Modal thông báo */
+.successModal,
+.failedModal,
+.loadingModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 3000;
+  font-size: 14px;
+}
+
+.successModal {
+  background-color: #4caf50;
+  color: white;
+}
+
+.failedModal {
+  background-color: #f44336;
+  color: white;
+}
+
+.loadingModal {
+  background-color: #f0f2f5;
+  color: #333333;
+}
+
+/* Error and Loading */
+.loading,
+.error {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #333333;
+}
+
+.error {
+  color: #f44336;
+}
+
+/* Reply Preview */
+.replyPreview {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #666666;
+}
+
+.replyTitle {
+  font-weight: 600;
+}
+
+.replyName {
+  color: #333333;
+}
+
+.cancelReply {
+  background: none;
+  border: none;
+  color: #666666;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.cancelReply:hover {
+  color: #333333;
+}
+/* Options Menu */
+.optionsMenu {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  padding: 8px 0;
+  min-width: 150px;
+}
+
+.optionsMenu button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+}
+
+.optionsMenu button:hover {
+  background: #f0f2f5;
+}
+
+/* Success and Failed Modals */
+.successModal, .failedModal {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 2000;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.successModal {
+  color: #28a745;
+  border: 1px solid #28a745;
+}
+
+.failedModal {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+/* Shared Post Overlay */
+.shareOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.sharedPost {
+  background: #ffffff;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.sharedPostHeader {
+  margin-bottom: 15px;
+}
+
+.sharedPostHeader h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sharedPostBody {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.captionInput {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: none;
+}
+
+.shareButton {
+  background: #0064e0;
+  color: #ffffff;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.shareButton:hover {
+  background: #0052cc;
+}
+
+.shareButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.copyLinkButton {
+  background: none;
+  border: none;
+  color: #0064e0;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px 0;
+}
+
+.copyLinkButton:hover {
+  text-decoration: underline;
+}
