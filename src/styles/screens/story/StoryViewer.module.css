@@ -44,7 +44,7 @@
 
 .story-media {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   object-fit: contain;
   border-radius: 3px;
 }
@@ -110,25 +110,35 @@
   font-size: 14px; /* Kích thước biểu tượng */
 }
 
-.reaction-trigger {
+.reaction-bar {
+  display: flex;
+  justify-content: center;
   position: absolute;
   bottom: 20px;
-  right: 20px;
+  left: 0;
+  right: 0;
+  gap: 10px;
+  z-index: 10;
+}
+
+.reaction-button {
   background: rgba(0, 0, 0, 0.5);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reaction-button.selected {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+  border: 2px solid #007bff;
 }
 
 .reaction-text {
-  font-size: 20px;
+  font-size: 24px;
 }
-
 .reaction-modal {
   position: absolute;
   bottom: 80px;
@@ -139,16 +149,6 @@
   z-index: 10;
 }
 
-.reaction-bar {
-  display: flex;
-  gap: 10px;
-}
-
-.reaction-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
 
 .viewers-count-container {
   position: absolute;
@@ -288,8 +288,7 @@
   cursor: pointer;
   z-index: 10;
   transition: background 0.2s;
-  margin-right: 340px; 
-  margin-left: 340px; 
+  
 }
 
 .nav-button:hover {
