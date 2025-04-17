@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FaPlusCircle, FaVideo, FaPhotoVideo, FaSmile } from 'react-icons/fa';
+import { FaPlusCircle } from 'react-icons/fa';
 import StoryItem from './StoryItem';
-import style from '../../styles/components/items/HomeStories.module.css'; // Import CSS Modules
+import style from '../../styles/components/items/HomeStories.module.css';
+import UpPost from '../../components/dialogs/UpPost';
 
 const HomeStories = ({ stories, liveSessions }) => {
   const navigate = useNavigate();
   const me = useSelector((state) => state.app.user);
   const [liveID, setLiveID] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   // Tạo liveID ngẫu nhiên
   useEffect(() => {
@@ -30,17 +32,10 @@ const HomeStories = ({ stories, liveSessions }) => {
     });
   };
 
-  const handlePhotoVideoClick = () => {
-    navigate('/up-post'); // Điều hướng đến trang đăng ảnh/video
-  };
-
-  const handleFeelingActivityClick = () => {
-    // Logic cho nút "Cảm xúc/hoạt động" (có thể mở dialog hoặc điều hướng)
-    console.log('Feeling/Activity clicked');
-  };
-
   return (
-    <div className={style['home-stories-container']}>
+    <div className={style['home-stories-container']}
+
+    >
       {/* Input và các nút */}
       <div className={style['home-stories-header']}>
         <div className={style['user-avatar-container']}>
@@ -53,11 +48,14 @@ const HomeStories = ({ stories, liveSessions }) => {
         </div>
         <input
           className={style['post-input']}
-          placeholder="Quẳng ơi, bạn đang nghĩ gì thế?"
-          onClick={() => navigate('/up-post')}
+          placeholder="Bạn đang nghĩ gì thế?"
+          onClick={() => setIsOpen(true)}
           readOnly
         />
       </div>
+
+      {/* Dialog UpPost */}
+      <UpPost isOpen={isOpen} onClose={() => setIsOpen(false)} />
 
       {/* Danh sách Stories */}
       <div className={style['stories-list']}>

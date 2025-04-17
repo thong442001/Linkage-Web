@@ -70,6 +70,7 @@ const Home = ({ content }) => {
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    
 
     // lấy lịch sử tìm kiếm
     const searchHistory = useSelector((state) => state.app.history) || [];
