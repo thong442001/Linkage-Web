@@ -19,6 +19,7 @@ import {
     FaBookmark,
     FaPlayCircle,
     FaShoppingBag,
+    FaCog
 } from 'react-icons/fa';
 import {
     getAllNotificationOfUser,
@@ -579,36 +580,103 @@ const Home = ({ content }) => {
             <div className="body-container">
                 {location.pathname === '/' ? (
                     <div className="mid-sidebar">
-                        {/* Thêm HomeStories trước danh sách bài đăng */}
-                        <HomeStories stories={stories} liveSessions={liveSessions} />
-                        {loading ? (
-                            <p>Đang tải...</p>
-                        ) : posts.length > 0 ? (
-                            posts.map((post) => (
-                                <>
-                                    <Post
-                                        key={post._id}
-                                        post={post}
-                                        me={me}
-                                        reactions={reactions}
-                                        reasons={reasons}
-                                        currentTime={currentTime}
-                                        onDelete={() => handleDeletePost(post._id)}
-                                        onDeleteVinhVien={() => handleDeletePermanently(post._id)}
-                                        updatePostReaction={updatePostReaction}
-                                        deletePostReaction={deletePostReaction}
-                                    />
-                                </>
+                        <div className="mid-container-sidebar">
+                            {/* Phần tử 1: Avatar */}
+                            <div className="sidebar-section avatar-section">
+                                <div
+                                    className="avatar-wrapper"
+                                    onClick={() => {
+                                        setIsNotificationOpen(false);
+                                        setIsSearchOpen(false);
+                                        navigate('/profile');
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+                                        <div>
+                                            <img
+                                                src={me.avatar || 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg'}
+                                                alt="Hồ Sơ"
+                                                className="avatar"
+                                            />
+                                        </div>
+                                        <div style={{ marginLeft: '10px' }}>
+                                            <p>{me.first_name} {me.last_name}</p>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            ))
-                        ) : (
-                            <p>Chưa có bài đăng nào.</p>
-                        )}
+                                <div
+                                    className="avatar-wrapper"
+                                // onClick={() => {
+                                //     setIsNotificationOpen(false);
+                                //     setIsSearchOpen(false);
+                                //     navigate('/profile');
+                                // }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', marginTop: '30px' }}>
+                                        <FaCog className="nav-icon1" />
+                                        <p style={{ marginLeft: 10 }}>Cài đặt</p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleLogout}
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px',
+                                        backgroundColor: '#1e90ff',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        fontSize: '16px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        transition: 'background-color 0.3s',
+                                        marginTop: '30px',
+                                    }}
+                                    onMouseOver={(e) => (e.target.style.backgroundColor = '#1478d1')}
+                                    onMouseOut={(e) => (e.target.style.backgroundColor = '#1e90ff')}
+                                >
+                                    Log Out
+                                </button>
+                            </div>
+
+                            {/* Phần tử 2: Nội dung chính (Stories + Posts) */}
+                            <div className="sidebar-section">
+                                <div style={{ marginLeft: 30, marginRight: 30 }}>
+                                    <HomeStories stories={stories} liveSessions={liveSessions} />
+                                    {loading ? (
+                                        <p>Đang tải...</p>
+                                    ) : posts.length > 0 ? (
+                                        posts.map((post) => (
+                                            <Post
+                                                key={post._id}
+                                                post={post}
+                                                me={me}
+                                                reactions={reactions}
+                                                reasons={reasons}
+                                                currentTime={currentTime}
+                                                onDelete={() => handleDeletePost(post._id)}
+                                                onDeleteVinhVien={() => handleDeletePermanently(post._id)}
+                                                updatePostReaction={updatePostReaction}
+                                                deletePostReaction={deletePostReaction}
+                                            />
+                                        ))
+                                    ) : (
+                                        <p>Chưa có bài đăng nào.</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Phần tử 3: Placeholder hoặc nội dung khác */}
+                            <div className="sidebar-section placeholder-section">
+                                <p>Quảng cáo hoặc nội dung khác</p>
+                            </div>
+                        </div>
                     </div>
                 ) : (
                     content
                 )}
-
                 <ChangePasswordDialog open={open} onClose={handleClose} />
             </div>
         </div>
