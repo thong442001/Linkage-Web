@@ -522,7 +522,7 @@ const Post = ({
             >
               <div className="reaction-icon-box">
                 <span>
-                  {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={20} />}
+                  {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={15} />}
                 </span>
                 <span className={userReaction ? "reacted-text" : ""}>
                   {userReaction ? userReaction.ID_reaction.name : reactions[0]?.name || "Thích"}
@@ -562,11 +562,11 @@ const Post = ({
               setPostDetailModalVisible(true);
             }}
           >
-            <FaComment size={20} />
+            <FaComment size={17} />
             <span>Bình luận</span>
           </button>
           <button className="action" onClick={() => handleShare()}>
-            <FaShare size={20} />
+            <FaShare size={17} />
             <span>Chia sẻ</span>
           </button>
         </div>
@@ -713,7 +713,7 @@ const Post = ({
             style={{ width: "400px", maxHeight: "80vh", overflowY: "auto" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3>Cảm xúc về tin nhắn</h3>
+            <h3>Cảm xúc về bài viết</h3>
             {/* Thêm các tab lọc */}
             <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: '10px' }}>
               {reactionTabs.map((tab) => (

@@ -557,7 +557,8 @@ const Home = ({ content }) => {
                         setIsNotificationOpen(!isNotificationOpen)
                         setIsSearchOpen(false)
                     }}>
-                        <FaBell className="nav-icon1" />
+                        <FaBell className="nav-icon1" 
+                        />
                         {isNotificationOpen && (
                             <NotificationDialog
                                 notifications={formattedNotifications}
