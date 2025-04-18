@@ -4,6 +4,7 @@ import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-ico
 import { MdOutlineEmojiEmotions, MdOutlinePhoto, MdOutlineGif } from 'react-icons/md';
 import { IoPlayCircle } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 import styles from '../../styles/components/items/PostDetailS.module.css';
 import {
   getChiTietPost,
@@ -40,6 +41,68 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const reactionRef = useRef(null);
   const commentInputRef = useRef(null);
   const menuRef = useRef(null);
+  const [uploadingMedia, setUploadingMedia] = useState(null); // State cho file đang tải
+  const fileInputRef = useRef(null); // Ref cho input file
+
+
+
+  // Hàm tải file lên Cloudinary
+  const uploadFile = async (file) => {
+    if (!file || !file.type || !file.name) {
+      console.error("File không hợp lệ:", file);
+      return null;
+    }
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "ml_default"); // Thay bằng preset của bạn
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/ddasyg5z3/upload", // Thay bằng cloud name của bạn
+        data,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      return response.data.secure_url;
+    } catch (error) {
+      console.error("Lỗi tải file lên Cloudinary:", error.message);
+      setFailedMessage(
+        `Lỗi tải file: ${
+          error.response?.data?.error?.message || "Lỗi không xác định"
+        }`
+      );
+      setTimeout(() => setFailedMessage(''), 1500);
+      return null;
+    }
+  };
+
+  // Hàm xử lý chọn file
+  const handleMediaSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingMedia(file); // Lưu file tạm thời để hiển thị giao diện
+    const mediaUrl = await uploadFile(file);
+    if (mediaUrl) {
+      const type = file.type.startsWith('video/') ? 'video' : 'image';
+      await callAddComment(type, mediaUrl);
+    }
+    setUploadingMedia(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Reset input file
+    }
+  };
+
+  // reaction
+  const reactionCount = (post.post_reactions || []).reduce((acc, reaction) => {
+    if (!reaction.ID_reaction) return acc;
+    const id = reaction.ID_reaction._id;
+    acc[id] = acc[id]
+      ? { ...acc[id], count: acc[id].count + 1 }
+      : { ...reaction, count: 1 };
+    return acc;
+  }, {});
+  const topReactions = Object.values(reactionCount)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 2);
 
   const toggleReplies = (commentId) => {
     setShowReplies((prev) => ({
@@ -95,55 +158,99 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }
   };
 
-  const addReplyToComment = (commentsList, newReply) => {
+  const addReplyToComment = (commentsList, newReply, isPending = false) => {
     return commentsList.map((comment) => {
-      if (comment._id === newReply.ID_comment_reply._id) {
+      if (comment._id === newReply.ID_comment_reply?._id) {
         return {
           ...comment,
-          replys: [...(comment.replys ?? []), newReply],
+          replys: [...(comment.replys ?? []), { ...newReply, isPending }],
         };
       }
       if (Array.isArray(comment.replys) && comment.replys.length > 0) {
         return {
           ...comment,
-          replys: addReplyToComment(comment.replys, newReply),
+          replys: addReplyToComment(comment.replys, newReply, isPending),
         };
       }
       return comment;
     });
   };
 
+  const removePendingComment = (tempId) => {
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment._id !== tempId)
+    );
+  };
+
   const callAddComment = async (type, content) => {
-    if (!content.trim() && type === 'text') return;
+    if (!content && type === 'text') return; // Chỉ kiểm tra content cho type text
+  
+    const tempId = `temp_${Date.now()}_${Math.random()}`;
+    const tempComment = {
+      _id: tempId,
+      ID_user: {
+        _id: me._id,
+        first_name: me.first_name,
+        last_name: me.last_name,
+        avatar: me.avatar,
+      },
+      content,
+      type,
+      createdAt: new Date().toISOString(),
+      replys: [],
+      ID_comment_reply: replyingTo ? { _id: replyingTo._id } : null,
+      isPending: true,
+    };
+  
+    setComments((prevComments) => {
+      if (replyingTo) {
+        return addReplyToComment(prevComments, tempComment, true);
+      }
+      return [...prevComments, tempComment];
+    });
+    setCountComments((prev) => prev + 1);
+    setNewComment('');
+    setReplyingTo(null);
+  
     try {
       const paramsAPI = {
         ID_user: me._id,
         ID_post: post._id,
-        content: content,
-        type: type,
+        content,
+        type,
         ID_comment_reply: replyingTo?._id || null,
       };
-      await dispatch(addComment(paramsAPI))
-        .unwrap()
-        .then((response) => {
-          if (response.comment.ID_comment_reply) {
-            setComments((prevComments) => [...addReplyToComment(prevComments, response.comment)]);
-            setShowReplies((prev) => ({
-              ...prev,
-              [response.comment.ID_comment_reply._id]: true,
-            }));
-          } else {
-            setComments((prevComments) => [...prevComments, response.comment]);
-          }
-          setCountComments(countComments + 1);
-          setNewComment('');
-          setReplyingTo(null);
-        })
-        .catch((error) => {
-          console.log('Error addComment:', error);
-        });
+      const response = await dispatch(addComment(paramsAPI)).unwrap();
+      setComments((prevComments) => {
+        if (response.comment.ID_comment_reply) {
+          const updatedComments = addReplyToComment(prevComments, response.comment);
+          return updatedComments.filter((comment) => comment._id !== tempId);
+        }
+        return [
+          ...prevComments.filter((comment) => comment._id !== tempId),
+          response.comment,
+        ];
+      });
+      if (response.comment.ID_comment_reply) {
+        setShowReplies((prev) => ({
+          ...prev,
+          [response.comment.ID_comment_reply._id]: true,
+        }));
+      }
     } catch (error) {
       console.log('Lỗi khi callAddComment:', error);
+      setComments((prevComments) => {
+        if (replyingTo) {
+          return prevComments.map((comment) => ({
+            ...comment,
+            replys: comment.replys?.filter((reply) => reply._id !== tempId) || [],
+          }));
+        }
+        return prevComments.filter((comment) => comment._id !== tempId);
+      });
+      setCountComments((prev) => prev - 1);
+      setFailedMessage('Gửi bình luận thất bại. Vui lòng thử lại!');
+      setTimeout(() => setFailedMessage(''), 1500);
     }
   };
 
@@ -235,9 +342,9 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     const deeplinkPost = `https://linkage.id.vn/deeplink?url=linkage://post-chi-tiet?ID_post=${post._id.toString()}`;
 
     const status = [
-      { status: 1, name: 'Công khai', icon: 'user-alt' },
-      { status: 2, name: 'Bạn bè', icon: 'user-friends' },
-      { status: 3, name: 'Chỉ mình tôi', icon: 'user-lock' },
+      { status: 1, name: 'Công khai' },
+      { status: 2, name: 'Bạn bè' },
+      { status: 3, name: 'Chỉ mình tôi' },
     ];
 
     const handleSelectOption = (option) => {
@@ -319,12 +426,14 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
               <span className={styles.name}>
                 {me?.first_name} {me?.last_name}
               </span>
-              <button
-                className={styles.statusButton}
-                onClick={() => setModalVisible(true)}
-              >
-                {selectedOption.name}
-              </button>
+              <div className={styles.boxStatus}>
+                <button
+                  className={styles.btnStatus}
+                  onClick={() => setModalVisible(true)}
+                >
+                  {selectedOption.name}
+                </button>
+              </div>
             </div>
           </div>
           <textarea
@@ -351,10 +460,18 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             </button>
           </div>
         </div>
-
         {modalVisible && (
-          <div className={styles.modalOverlay} onClick={() => setModalVisible(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.overlay}
+            onClick={(e) => {
+              e.stopPropagation(); // Ngăn lan truyền sự kiện click
+              setModalVisible(false);
+            }}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()} // Đảm bảo modalContent không lan truyền
+            >
               {status.map((option, index) => (
                 <button
                   key={index}
@@ -515,7 +632,11 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
 
   const renderComment = (comment, level = 0) => (
     <>
-      <div key={comment._id} className={styles.comment} style={{ marginLeft: level * 20 }}>
+      <div
+        key={comment._id}
+        className={`${styles.comment} ${comment.isPending ? styles.pendingComment : ''}`}
+        style={{ marginLeft: level * 1.25 + 'rem' }}
+      >
         <img
           src={comment.ID_user?.avatar}
           className={styles.commentAvatar}
@@ -527,22 +648,50 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
               <span className={styles.commentUser}>
                 {comment.ID_user?.first_name} {comment.ID_user?.last_name}
               </span>
-              <p>{comment.content}</p>
+              {comment.type === 'text' ? (
+                <p>{comment.content}</p>
+              ) : comment.type === 'image' ? (
+                <img
+                  src={comment.content}
+                  alt="Comment Media"
+                  className={styles.commentMedia}
+                  onClick={() => {
+                    setSelectedImage(comment.content);
+                    setImageModalVisible(true);
+                  }}
+                />
+              ) : comment.type === 'video' ? (
+                <div className={styles.videoWrapper}>
+                  <video src={comment.content} className={styles.commentMedia} />
+                  <div
+                    className={styles.playButton}
+                    onClick={() => {
+                      setSelectedImage(comment.content);
+                      setImageModalVisible(true);
+                    }}
+                  >
+                    <IoPlayCircle size={40} color="white" />
+                  </div>
+                </div>
+              ) : null}
+              {comment.isPending && <span className={styles.pendingIndicator}>Đang gửi...</span>}
             </div>
           </div>
-          <div className={styles.commentActions}>
-            <span>Thích</span>
-            <span onClick={() => handleReply(comment)}>Trả lời</span>
-            <span className={styles.commentTime}>{getTimeAgo(comment.createdAt)}</span>
-            {comment.replys?.length > 0 && (
-              <span
-                className={styles.toggleReplies}
-                onClick={() => toggleReplies(comment._id)}
-              >
-                {showReplies[comment._id] ? 'Ẩn trả lời' : `Hiện ${comment.replys.length} trả lời`}
-              </span>
-            )}
-          </div>
+          {!comment.isPending && (
+            <div className={styles.commentActions}>
+              <span>Thích</span>
+              <span onClick={() => handleReply(comment)}>Trả lời</span>
+              <span className={styles.commentTime}>{getTimeAgo(comment.createdAt)}</span>
+              {comment.replys?.length > 0 && (
+                <span
+                  className={styles.toggleReplies}
+                  onClick={() => toggleReplies(comment._id)}
+                >
+                  {showReplies[comment._id] ? 'Ẩn trả lời' : `Hiện ${comment.replys.length} trả lời`}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
       {comment.replys?.length > 0 && showReplies[comment._id] && (
@@ -667,10 +816,21 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             )}
 
             <div className={styles.footer}>
-              {post.post_reactions?.length > 0 && (
-                <span className={styles.footerReactions}>
-                  {post.post_reactions.length} lượt thích
-                </span>
+              {post.post_reactions?.length > 0 ? (
+                <div className={styles.footerReactions}>
+                  {topReactions.map((reaction, index) => (
+                    <span key={index}>{reaction.ID_reaction.icon}</span>
+                  ))}
+                  <span>
+                    {post.post_reactions.some((r) => r.ID_user._id === me?._id)
+                      ? post.post_reactions.length === 1
+                        ? `${me?.first_name} ${me?.last_name}`
+                        : `Bạn và ${post.post_reactions.length - 1} người khác`
+                      : `${post.post_reactions.length}`}
+                  </span>
+                </div>
+              ) : (
+                <div className={styles.footerSpacer} />
               )}
               {comments.length > 0 && (
                 <span className={styles.commentCount}>
@@ -773,14 +933,27 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 onKeyPress={handleAddComment}
+                disabled={uploadingMedia}
               />
             </div>
             <div className={styles.inputIcons}>
               <MdOutlineEmojiEmotions size={20} />
-              <MdOutlinePhoto size={20} />
+              <MdOutlinePhoto
+                size={20}
+                onClick={() => fileInputRef.current?.click()}
+                style={{ cursor: 'pointer' }}
+              />
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,video/*"
+                style={{ display: 'none' }}
+                onChange={handleMediaSelect}
+              />
               <MdOutlineGif size={20} />
             </div>
           </div>
+       
         </div>
       </div>
 
@@ -813,23 +986,35 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
         </div>
       )}
 
-      {isImageModalVisible && (
-        <div className={styles.mediaOverlay} onClick={() => setImageModalVisible(false)}>
-          <div className={styles.fullMediaContainer} onClick={(e) => e.stopPropagation()}>
-            {isVideo(selectedImage) ? (
-              <video src={selectedImage} className={styles.fullMedia} controls autoPlay />
-            ) : (
-              <img src={selectedImage} className={styles.fullMedia} alt="Full Media" />
-            )}
-          </div>
-        </div>
+{isImageModalVisible && (
+  <div
+    className={styles.mediaOverlay}
+    onClick={(e) => {
+      e.stopPropagation(); // Ngăn lan truyền sự kiện click
+      setImageModalVisible(false);
+    }}
+  >
+    <div className={styles.fullMediaContainer} onClick={(e) => e.stopPropagation()}>
+      {isVideo(selectedImage) ? (
+        <video src={selectedImage} className={styles.fullMedia} controls autoPlay />
+      ) : (
+        <img src={selectedImage} className={styles.fullMedia} alt="Full Media" />
       )}
+    </div>
+  </div>
+)}
 
-      {shareVisible && (
-        <div className={styles.shareOverlay} onClick={() => setShareVisible(false)}>
-          <SharedPost post={post} me={me} setShareVisible={setShareVisible} />
-        </div>
-      )}
+{shareVisible && (
+  <div
+    className={styles.shareOverlay}
+    onClick={(e) => {
+      e.stopPropagation(); // Ngăn lan truyền sự kiện click
+      setShareVisible(false);
+    }}
+  >
+    <SharedPost post={post} me={me} setShareVisible={setShareVisible} />
+  </div>
+)}
 
       {successMessage && (
         <div className={styles.successModalOverlay} onClick={() => setSuccessMessage('')}>
@@ -838,7 +1023,7 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
           </div>
         </div>
       )}
-
+      
       {failedMessage && (
         <div className={styles.failedModalOverlay} onClick={() => setFailedMessage('')}>
           <div className={styles.failedModal} onClick={(e) => e.stopPropagation()}>
