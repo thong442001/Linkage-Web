@@ -480,7 +480,7 @@ const Post = ({
           ) : (
             <div className="footer-spacer" />
           )}
-            {post.comments?.length > 0 && (
+          {post.comments?.length > 0 && (
             <span
               className="comment-count"
               onClick={() => {
@@ -555,7 +555,7 @@ const Post = ({
               </div>
             )}
           </div>
-        <button
+          <button
             className="action"
             onClick={() => {
               setIsSharedSection(post.ID_post_shared ? true : false);
@@ -787,7 +787,7 @@ const Post = ({
         ID_user={null}
       />
 
-{isPostDetailModalVisible && (
+      {isPostDetailModalVisible && (
         <PostDetailModal
           post={post}
           me={me}
