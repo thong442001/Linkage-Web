@@ -1,4 +1,5 @@
 /* src/styles/components/items/PostDetailS.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap');
 
 /* Modal Overlay */
 .postDetailModalOverlay {
@@ -12,15 +13,16 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  font-family: 'Roboto', sans-serif;
 }
 
 .postDetailModal {
   background: #ffffff;
-  width: 100%;
-  max-width: 700px;
-  max-height: 80%;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 50rem; /* Thay 700px */
+  max-height: 80vh;
+  border-radius: 0.625rem; /* 10px */
+  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.2); /* 4px, 20px */
   display: flex;
   flex-direction: column;
   color: #333333;
@@ -33,14 +35,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
+  padding: 0.75rem 1.25rem; /* 12px, 20px */
   background: #f0f2f5;
   border-bottom: 1px solid #e0e0e0;
 }
 
 .modalHeader h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 1rem; /* 16px */
   font-weight: 600;
   color: #333333;
 }
@@ -49,9 +51,9 @@
   background: none;
   border: none;
   color: #333333;
-  font-size: 20px;
+  font-size: 1.25rem; /* 20px */
   cursor: pointer;
-  padding: 5px;
+  padding: 0.3125rem; /* 5px */
   transition: color 0.3s;
 }
 
@@ -63,24 +65,23 @@
 .modalBody {
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  padding: 0.9375rem; /* 15px */
   overflow-y: auto;
-  gap: 15px;
+  gap: 0.9375rem; /* 15px */
 }
 
 .sharedPostSection {
-  padding-inline-start: 10px;
- 
+  padding-inline-start: 0.625rem; /* 10px */
 }
 
 .postContent {
   background: #ffffff;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 0.625rem; /* 10px */
+  border-radius: 0.5rem; /* 8px */
 }
 
 .originalPost {
-  border: 1px solid #e0e0e0; 
+  border: 1px solid #e0e0e0; /* Giữ viền cho bài gốc */
 }
 
 /* Post Header */
@@ -88,43 +89,43 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 0.625rem; /* 10px */
 }
 
 .userInfo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.625rem; /* 10px */
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem; /* 40px */
+  height: 2.5rem;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 0.625rem; /* 10px */
 }
 
 .userDetails {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 0.1875rem; /* 3px */
 }
 
 .name {
   font-weight: 600;
   color: #333333;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
 }
 
 .time {
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px */
   color: #666666;
 }
 
 .boxName {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3125rem; /* 5px */
 }
 
 .optionsButton {
@@ -132,8 +133,8 @@
   border: none;
   color: #666666;
   cursor: pointer;
-  font-size: 16px;
-  padding: 5px;
+  font-size: 1rem; /* 16px */
+  padding: 0.3125rem; /* 5px */
   transition: color 0.3s;
 }
 
@@ -143,8 +144,8 @@
 
 /* Caption */
 .caption {
-  margin: 10px 0;
-  font-size: 14px;
+  margin: 0.625rem 0; /* 10px */
+  font-size: 0.875rem; /* 14px */
   line-height: 1.5;
   color: #333333;
   white-space: pre-wrap;
@@ -154,14 +155,14 @@
 .mediaContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin: 10px 0;
+  gap: 0.3125rem; /* 5px */
+  margin: 0.625rem 0; /* 10px */
 }
 
 .mediaItem {
   position: relative;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: 0.375rem; /* 6px */
 }
 
 .image,
@@ -169,7 +170,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 0.375rem; /* 6px */
 }
 
 .videoWrapper {
@@ -185,7 +186,7 @@
   transform: translate(-50%, -50%);
   color: white;
   opacity: 0.8;
-  font-size: 40px;
+  font-size: 2.5rem; /* 40px */
 }
 
 .overlay {
@@ -202,54 +203,46 @@
 
 .overlayText {
   color: white;
-  font-size: 24px;
+  font-size: 1.5rem; /* 24px */
   font-weight: bold;
 }
 
 /* Media Layouts */
 .singleMedia {
   width: 100%;
-  height: 400px;
+  height: 25rem; /* 400px */
 }
 
 .doubleMedia {
-  width: calc(50% - 2.5px);
-  height: 300px;
+  width: calc(50% - 0.15625rem); /* 2.5px */
+  height: 18.75rem; /* 300px */
 }
 
 .tripleMediaFirst {
   width: 100%;
-  height: 300px;
+  height: 18.75rem; /* 300px */
 }
 
 .tripleMediaSecond {
-  width: calc(50% - 2.5px);
-  height: 150px;
+  width: calc(50% - 0.15625rem); /* 2.5px */
+  height: 9.375rem; /* 150px */
 }
 
 .quadMedia {
-  width: calc(50% - 2.5px);
-  height: 200px;
+  width: calc(50% - 0.15625rem); /* 2.5px */
+  height: 12.5rem; /* 200px */
 }
 
 .fivePlusMediaFirstRow {
-  width: calc(50% - 2.5px);
-  height: 250px;
+  width: calc(50% - 0.15625rem); /* 2.5px */
+  height: 15.625rem; /* 250px */
 }
 
-.fivePlusMediaSecondRowLeft {
-  width: calc(33.33% - 3.33px);
-  height: 150px;
-}
-
-.fivePlusMediaSecondRowMiddle {
-  width: calc(33.33% - 3.33px);
-  height: 150px;
-}
-
+.fivePlusMediaSecondRowLeft,
+.fivePlusMediaSecondRowMiddle,
 .fivePlusMediaSecondRowRight {
-  width: calc(33.33% - 3.33px);
-  height: 150px;
+  width: calc(33.33% - 0.20833rem); /* 3.33px */
+  height: 9.375rem; /* 150px */
 }
 
 /* Full-screen Media Modal */
@@ -270,11 +263,11 @@
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
-  border-radius: 10px;
+  border-radius: 0.625rem; /* 10px */
 }
 
 /* Footer */
-.footer { 
+.footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -283,14 +276,14 @@
 .footerReactions,
 .commentCount {
   color: #666666;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
 }
 
 /* Interactions */
 .interactions {
   display: flex;
   justify-content: space-around;
-  padding: 10px 15px;
+  padding: 0.625rem 0.9375rem; /* 10px, 15px */
   border-top: 1px solid #e0e0e0;
 }
 
@@ -298,13 +291,13 @@
   background: none;
   border: none;
   color: #666666;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3125rem; /* 5px */
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 0.3125rem 0.625rem; /* 5px, 10px */
+  border-radius: 0.3125rem; /* 5px */
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -317,11 +310,11 @@
 .reactionBar {
   position: absolute;
   display: flex;
-  gap: 8px;
+  gap: 0.5rem; /* 8px */
   background-color: #ffffff;
-  padding: 5px 10px;
-  border-radius: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.3125rem 0.625rem; /* 5px, 10px */
+  border-radius: 1.25rem; /* 20px */
+  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1); /* 2px, 10px */
   z-index: 1000;
 }
 
@@ -329,38 +322,38 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 1.25rem; /* 20px */
 }
 
 /* Comments Section */
 .commentsSection {
-  padding: 15px;
+  padding: 0.9375rem; /* 15px */
   background: #ffffff;
 }
 
 .commentsSection h4 {
-  margin: 0 0 15px;
-  font-size: 16px;
+  margin: 0 0 0.9375rem; /* 15px */
+  font-size: 1rem; /* 16px */
   font-weight: 600;
   color: #333333;
 }
 
 .commentsList {
   overflow-y: hidden;
-  margin-bottom: 15px;
+  margin-bottom: 0.9375rem; /* 15px */
 }
 
 .comment {
   display: flex;
-  margin-bottom: 15px;
+  margin-bottom: 0.9375rem; /* 15px */
   align-items: flex-start;
 }
 
 .commentAvatar {
-  width: 35px;
-  height: 35px;
+  width: 2.1875rem; /* 35px */
+  height: 2.1875rem;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 0.625rem; /* 10px */
 }
 
 .commentWrapper {
@@ -371,8 +364,8 @@
 
 .commentContent {
   background: #f0f2f5;
-  padding: 8px 12px;
-  border-radius: 12px;
+  padding: 0.5rem 0.75rem; /* 8px, 12px */
+  border-radius: 0.75rem; /* 12px */
   display: inline-block;
 }
 
@@ -383,30 +376,30 @@
 
 .commentUser {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 0.8125rem; /* 13px */
   color: #333333;
 }
 
 .commentContent p {
-  margin: 5px 0;
-  font-size: 14px;
+  margin: 0.3125rem 0; /* 5px */
+  font-size: 0.875rem; /* 14px */
   color: #333333;
 }
 
 .commentTime {
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px */
   color: #666666;
 }
 
 .commentActions {
   display: flex;
-  gap: 10px;
-  margin-top: 5px;
-  margin-left: 12px;
+  gap: 0.625rem; /* 10px */
+  margin-top: 0.3125rem; /* 5px */
+  margin-left: 0.75rem; /* 12px */
 }
 
 .commentActions span {
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px */
   color: #666666;
   cursor: pointer;
 }
@@ -416,7 +409,7 @@
 }
 
 .toggleReplies {
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px */
   color: #0064e0;
   cursor: pointer;
   font-weight: 600;
@@ -427,7 +420,7 @@
 }
 
 .replies {
-  margin-bottom: 15px;
+  margin-bottom: 0.9375rem; /* 15px */
 }
 
 /* Comment Input */
@@ -435,7 +428,7 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  padding: 10px;
+  padding: 0.625rem; /* 10px */
 }
 
 .inputContainer {
@@ -447,17 +440,17 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  padding: 10px 15px;
+  padding: 0.625rem 0.9375rem; /* 10px, 15px */
   border-top: 1px solid #e0e0e0;
   z-index: 100;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.1); /* 2px, 5px */
 }
 
 .inputContainer2 {
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 10px;
+  gap: 0.625rem; /* 10px */
 }
 
 .inputWrapper {
@@ -467,12 +460,12 @@
 
 .inputContainer input {
   width: 100%;
-  padding: 10px 40px 10px 12px;
+  padding: 0.625rem 2.5rem 0.625rem 0.75rem; /* 10px, 40px, 10px, 12px */
   border: none;
   background: #f0f2f5;
   color: #333333;
-  border-radius: 20px;
-  font-size: 14px;
+  border-radius: 1.25rem; /* 20px */
+  font-size: 0.875rem; /* 14px */
 }
 
 .inputContainer input::placeholder {
@@ -481,14 +474,14 @@
 
 .inputIcons {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem; /* 8px */
   align-items: center;
 }
 
 .inputIcons svg {
   color: #666666;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 1.25rem; /* 20px */
 }
 
 .inputIcons svg:hover {
@@ -498,90 +491,212 @@
 /* Shared Post Modal */
 .sharedPost {
   background-color: #ffffff;
-  border-radius: 8px;
-  padding: 15px;
+  border-radius: 8px; /* 0.5rem, khớp với PostS.css */
+  padding: 16px; /* 1rem, khớp với PostS.css */
   width: 90%;
-  max-width: 500px;
+  max-width: 500px; /* 31.25rem, khớp với modal-container */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #333333;
+  color: #050505; /* Khớp với PostS.css */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Bóng nhẹ hơn, giống PostS.css */
 }
 
 .sharedPostHeader {
   border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
+  padding-bottom: 10px; /* 0.625rem */
+  margin-bottom: 16px; /* 1rem */
 }
 
 .sharedPostHeader h4 {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px; /* 0.9375rem, khớp với PostS.css */
   font-weight: 600;
-  color: #333333;
+  color: #050505; /* Khớp với PostS.css */
 }
 
 .sharedPostBody {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px; /* 1rem */
 }
 
-.statusButton {
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 0.75rem */
+}
+
+.avatar {
+  width: 40px; /* 2.5rem */
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 15px; /* 0.9375rem, khớp với PostS.css */
+  color: #050505; /* Khớp với PostS.css */
+}
+
+.boxStatus {
+  margin-top: 4px; /* 0.25rem */
+}
+
+.btnStatus {
   background-color: #f0f2f5;
   border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-top: 5px;
+  padding: 6px 12px; /* Khớp với btn-status */
+  border-radius: 6px; /* Khớp với btn-status */
+  font-size: 13px; /* Khớp với btn-status */
+  color: #050505; /* Khớp với PostS.css */
   cursor: pointer;
-  color: #333333;
+}
+
+.btnStatus:hover {
+  background-color: #e4e6eb; /* Thêm hover để nhất quán */
 }
 
 .captionInput {
   width: 100%;
-  min-height: 60px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  padding: 10px;
+  min-height: 100px; /* 6.25rem, khớp với content-share */
+  border: none;
   resize: none;
-  background: #f0f2f5;
-  color: #333333;
+  font-size: 15px; /* 0.9375rem */
+  padding: 8px; /* 0.5rem */
+  background-color: #f0f2f5;
+  border-radius: 8px; /* 0.5rem */
+  outline: none;
+  color: #050505;
 }
 
 .shareButton {
-  background-color: #0064e0;
-  color: white;
+  width: 100%;
+  padding: 12px; /* 0.75rem */
+  background-color: #1877f2;
+  color: #fff;
   border: none;
-  padding: 10px;
-  border-radius: 5px;
+  border-radius: 6px; /* 0.375rem */
+  font-size: 15px; /* 0.9375rem */
+  font-weight: 600;
   cursor: pointer;
 }
 
+.shareButton:hover {
+  background-color: #165db7;
+}
+
+.shareButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 .shareOptions {
-  margin-top: 15px;
+  margin-top: 16px; /* 1rem */
 }
 
 .copyLinkButton {
   background-color: #f0f2f5;
   border: none;
-  padding: 10px;
-  border-radius: 5px;
+  padding: 12px; /* 0.75rem */
+  border-radius: 6px; /* 0.375rem */
+  font-size: 15px; /* 0.9375rem */
+  color: #050505;
   cursor: pointer;
-  color: #333333;
 }
 
-.shareOverlay {
+.copyLinkButton:hover {
+  background-color: #e4e6eb;
+}
+
+/* Status Modal */
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2); /* Khớp với PostS.css */
+  z-index: 1000; /* Khớp với PostS.css */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+}
+
+.modalContent {
+  background-color: #fff;
+  border-radius: 8px; /* 0.5rem, khớp với modal-content */
+  width: 90%;
+  max-width: 400px; /* 25rem, khớp với modal-content */
+  overflow: hidden; /* Khớp với modal-content */
+}
+
+.optionButton {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px; /* 1rem, khớp với option-button */
+  background: none;
+  border: none;
+  font-size: 15px; /* 0.9375rem, khớp với option-button */
+  color: #050505; /* Khớp với option-button */
+  cursor: pointer;
+  text-align: left;
+}
+
+.optionButton:hover {
+  background-color: #f0f2f5; /* Khớp với option-button */
+}
+
+/* ... (các style khác giữ nguyên) */
+
+/* Media Queries */
+@media screen and (max-width: 768px) {
+  .sharedPost {
+    width: 95%;
+    max-width: 400px; /* 25rem */
+    padding: 12px; /* 0.75rem */
+  }
+
+  .modalContent {
+    width: 95%;
+    max-width: 350px; /* 21.875rem */
+  }
+
+  .optionButton {
+    padding: 12px; /* 0.75rem */
+    font-size: 14px; /* 0.875rem */
+  }
+
+  .btnStatus {
+    padding: 5px 10px; /* Điều chỉnh nhẹ */
+    font-size: 12px; /* 0.75rem */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sharedPost {
+    width: 98%;
+    max-width: 300px; /* 18.75rem */
+    padding: 8px; /* 0.5rem */
+  }
+
+  .modalContent {
+    width: 98%;
+    max-width: 300px; /* 18.75rem */
+  }
+
+  .optionButton {
+    padding: 10px; /* 0.625rem */
+    font-size: 13px; /* 0.8125rem */
+  }
+
+  .btnStatus {
+    padding: 4px 8px; /* Điều chỉnh nhỏ */
+    font-size: 11px; /* 0.6875rem */
+  }
 }
 
 /* Modal thông báo */
@@ -592,11 +707,11 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.9375rem; /* 15px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1); /* 2px, 10px */
   z-index: 3000;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
 }
 
 .successModal {
@@ -618,8 +733,8 @@
 .loading,
 .error {
   text-align: center;
-  padding: 20px;
-  font-size: 16px;
+  padding: 1.25rem; /* 20px */
+  font-size: 1rem; /* 16px */
   color: #333333;
 }
 
@@ -631,9 +746,9 @@
 .replyPreview {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-bottom: 10px;
-  font-size: 13px;
+  gap: 0.3125rem; /* 5px */
+  margin-bottom: 0.625rem; /* 10px */
+  font-size: 0.8125rem; /* 13px */
   color: #666666;
 }
 
@@ -650,31 +765,32 @@
   border: none;
   color: #666666;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.8125rem; /* 13px */
 }
 
 .cancelReply:hover {
   color: #333333;
 }
+
 /* Options Menu */
 .optionsMenu {
   position: absolute;
   background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1); /* 2px, 10px */
   z-index: 10;
-  padding: 8px 0;
-  min-width: 150px;
+  padding: 0.5rem 0; /* 8px */
+  min-width: 9.375rem; /* 150px */
 }
 
 .optionsMenu button {
   display: block;
   width: 100%;
-  padding: 10px 16px;
+  padding: 0.625rem 1rem; /* 10px, 16px */
   text-align: left;
   background: none;
   border: none;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
   color: #333333;
   cursor: pointer;
 }
@@ -684,17 +800,18 @@
 }
 
 /* Success and Failed Modals */
-.successModal, .failedModal {
+.successModal,
+.failedModal {
   position: fixed;
-  top: 20px;
+  top: 1.25rem; /* 20px */
   left: 50%;
   transform: translateX(-50%);
   background: #ffffff;
-  padding: 12px 24px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 0.75rem 1.5rem; /* 12px, 24px */
+  border-radius: 0.5rem; /* 8px */
+  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2); /* 2px, 10px */
   z-index: 2000;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
   font-weight: 500;
 }
 
@@ -724,46 +841,46 @@
 
 .sharedPost {
   background: #ffffff;
-  width: 100%;
-  max-width: 500px;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 31.25rem; /* 500px */
+  border-radius: 0.625rem; /* 10px */
+  padding: 1.25rem; /* 20px */
+  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.2); /* 4px, 20px */
 }
 
 .sharedPostHeader {
-  margin-bottom: 15px;
+  margin-bottom: 0.9375rem; /* 15px */
 }
 
 .sharedPostHeader h4 {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem; /* 18px */
   font-weight: 600;
 }
 
 .sharedPostBody {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 0.9375rem; /* 15px */
 }
 
 .captionInput {
   width: 100%;
-  min-height: 100px;
-  padding: 10px;
+  min-height: 6.25rem; /* 100px */
+  padding: 0.625rem; /* 10px */
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 0.5rem; /* 8px */
+  font-size: 0.875rem; /* 14px */
   resize: none;
 }
 
 .shareButton {
   background: #0064e0;
   color: #ffffff;
-  padding: 10px;
+  padding: 0.625rem; /* 10px */
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 0.5rem; /* 8px */
+  font-size: 0.875rem; /* 14px */
   cursor: pointer;
   transition: background 0.3s;
 }
@@ -781,11 +898,200 @@
   background: none;
   border: none;
   color: #0064e0;
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
   cursor: pointer;
-  padding: 5px 0;
+  padding: 0.3125rem 0; /* 5px */
 }
 
 .copyLinkButton:hover {
   text-decoration: underline;
+}
+
+/* Media Queries cho màn hình nhỏ */
+@media screen and (max-width: 768px) {
+  .postDetailModal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modalHeader {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .modalHeader h3 {
+    font-size: 0.875rem;
+  }
+
+  .closeButton {
+    font-size: 1rem;
+  }
+
+  .modalBody {
+    padding: 0.625rem;
+    gap: 0.625rem;
+  }
+
+  .avatar {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .name {
+    font-size: 0.75rem;
+  }
+
+  .time {
+    font-size: 0.625rem;
+  }
+
+  .caption {
+    font-size: 0.75rem;
+  }
+
+  .singleMedia {
+    height: 18.75rem; /* 300px */
+  }
+
+  .doubleMedia {
+    height: 12.5rem; /* 200px */
+  }
+
+  .tripleMediaFirst {
+    height: 12.5rem; /* 200px */
+  }
+
+  .tripleMediaSecond {
+    height: 6.25rem; /* 100px */
+  }
+
+  .quadMedia {
+    height: 9.375rem; /* 150px */
+  }
+
+  .fivePlusMediaFirstRow {
+    height: 12.5rem; /* 200px */
+  }
+
+  .fivePlusMediaSecondRowLeft,
+  .fivePlusMediaSecondRowMiddle,
+  .fivePlusMediaSecondRowRight {
+    height: 6.25rem; /* 100px */
+  }
+
+  .sharedPost {
+    width: 95%;
+    max-width: 25rem; /* 400px */
+    padding: 0.75rem;
+  }
+
+  .captionInput {
+    min-height: 5rem; /* 80px */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .postDetailModal {
+    width: 98%;
+    max-height: 90vh;
+  }
+
+  .modalBody {
+    padding: 0.5rem;
+  }
+
+  .avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .commentAvatar {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .commentContent {
+    padding: 0.375rem 0.5rem;
+  }
+
+  .inputContainer input {
+    padding: 0.5rem 2rem 0.5rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .singleMedia,
+  .doubleMedia,
+  .tripleMediaFirst,
+  .tripleMediaSecond,
+  .quadMedia,
+  .fivePlusMediaFirstRow,
+  .fivePlusMediaSecondRowLeft,
+  .fivePlusMediaSecondRowMiddle,
+  .fivePlusMediaSecondRowRight {
+    height: 10rem; /* Giảm kích thước media cho màn nhỏ */
+  }
+}
+.pendingComment {
+  opacity: 0.6;
+}
+
+.pendingIndicator {
+  font-size: 0.75rem; /* 12px */
+  color: #666666;
+  font-style: italic;
+  margin-top: 0.3125rem; /* 5px */
+}
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px; /* Khớp với PostS.css */
+}
+
+.footerReactions {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Khớp với PostS.css */
+  cursor: pointer; /* Khớp với PostS.css */
+  font-size: 0.875rem; /* 14px, khớp với PostS.css */
+  color: #65676b; /* Khớp với PostS.css */
+}
+
+.footerReactions span {
+  font-size: 0.875rem; /* 14px, đảm bảo chữ và biểu tượng đồng bộ */
+}
+
+.commentCount {
+  font-size: 0.875rem; /* 14px */
+  color: #65676b; /* Khớp với PostS.css */
+  cursor: pointer;
+}
+
+.footerSpacer {
+  flex: 1; /* Khớp với PostS.css */
+}
+.uploadingPreview {
+  margin-top: 0.5rem;
+  color: #606770;
+  font-size: 0.875rem;
+}
+.commentMedia {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+.comment .videoWrapper {
+  position: relative;
+  max-width: 100%;
+  max-height: 200px;
+}
+.comment .playButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
 }
