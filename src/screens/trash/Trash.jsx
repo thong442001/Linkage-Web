@@ -110,7 +110,6 @@ const Trash = () => {
           </div>
         ) : (
           <div className={Style.empty_container}>
-           
             <p className={Style.empty_text}>Chưa có bài nào</p>
           </div>
         )}
