@@ -10,322 +10,335 @@
   align-items: center;
   z-index: 1000;
 }
-  .modalContent {
-    background: white;
-    border-radius: 10px;
-    width: 500px;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 20px;
-    position: relative;
-  }
-  
-  .subModalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-  }
-  
-  .subModalContent {
-    background: white;
-    border-radius: 10px;
-    width: 400px;
-    max-height: 60vh;
-    overflow-y: auto;
-    padding: 20px;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .boxBack {
-    display: flex;
-    align-items: center;
-  }
-  
-  .backButton {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-  }
-  
-  .txtCreate {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .btnPost {
-    background: #ccc;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: not-allowed;
-  }
-  
-  .btnPostActive {
-    background: #007bff;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .line {
-    height: 1px;
-    background: #ccc;
-    margin: 10px 0;
-  }
-  
-  .boxMargin {
-    padding: 10px;
-  }
-  
-  .boxInfor {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-  }
-  
-  .userInfo {
-    margin-left: 10px;
-  }
-  
-  .txtName {
-    font-weight: bold;
-  }
-  
-  .grayText {
-    color: gray;
-  }
-  
-  .boldText {
-    font-weight: bold;
-  }
-  
-  .boxStatus {
-    margin-top: 5px;
-  }
-  
-  .btnStatus {
-    background: #f0f0f0;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .txtInput {
-    width: 100%;
-    height: 100px;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    margin-top: 10px;
-    resize: vertical;
-  }
-  
-  .mediaContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 10px;
-  }
-  
-  .singleMedia {
-    width: 100%;
-    height: 300px;
-  }
-  
-  .doubleMedia {
-    width: calc(50% - 2.5px);
-    height: 200px;
-  }
-  
-  .tripleMediaFirst {
-    width: 100%;
-    height: 200px;
-  }
-  
-  .tripleMediaSecond {
-    width: calc(50% - 2.5px);
-    height: 100px;
-  }
-  
-  .quadMedia {
-    width: calc(50% - 2.5px);
-    height: 150px;
-  }
-  
-  .fivePlusMediaFirstRow {
-    width: calc(50% - 2.5px);
-    height: 150px;
-  }
-  
-  .fivePlusMediaSecondRowLeft {
-    width: calc(33.33% - 3.33px);
-    height: 100px;
-  }
-  
-  .fivePlusMediaSecondRowMiddle {
-    width: calc(33.33% - 3.33px);
-    height: 100px;
-  }
-  
-  .fivePlusMediaSecondRowRight {
-    width: calc(33.33% - 3.33px);
-    height: 100px;
-  }
-  
-  .image, .video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .videoWrapper {
-    position: relative;
-  }
-  
-  .playButton {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .overlayText {
-    color: white;
-    font-size: 24px;
-  }
-  
-  .boxItems {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-  }
-  
-  .btnIcon {
-    background: none;
-    border: none;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-  
-  .txtIcon {
-    margin-left: 5px;
-  }
-  
-  .aiIcon {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .lineVertical {
-    width: 1px;
-    background: #ccc;
-    height: 24px;
-    align-self: center;
-  }
-  
-  .optionButton {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    cursor: pointer;
-    text-align: center;
-  }
-  
-  .boxTag {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .search {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    padding: 5px;
-    border-radius: 5px;
-  }
-  
-  .searchInput {
-    border: none;
-    outline: none;
-    margin-left: 5px;
-    flex: 1;
-  }
-  
-  .btnTag {
-    background: #007bff;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .btnGenerate {
-    background: #007bff;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .loader {
-    text-align: center;
-    margin: 10px 0;
-  }
 
+.modalContent {
+  background: white;
+  border-radius: 10px;
+  width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+}
+
+.subModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.subModalContent {
+  background: white;
+  border-radius: 10px;
+  width: 400px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.boxBack {
+  display: flex;
+  align-items: center;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.txtCreate {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.btnPost {
+  background: #ccc;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: not-allowed;
+}
+
+.btnPostActive {
+  background: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.line {
+  height: 1px;
+  background: #ccc;
+  margin: 10px 0;
+}
+
+.boxMargin {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Tạo khoảng cách giữa các thành phần con */
+}
+
+.boxInfor {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.userInfo {
+  margin-left: 10px;
+}
+
+.txtName {
+  font-weight: bold;
+}
+
+.grayText {
+  color: gray;
+}
+
+.boldText {
+  font-weight: bold;
+}
+
+.boxStatus {
+  margin-top: 5px;
+}
+
+.btnStatus {
+  background: #f0f0f0;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.txtInput {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.txtInput .MuiInputBase-root {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #1a1a1a;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.txtInput .MuiInputBase-input {
+  padding: 12px;
+}
+
+.txtInput .MuiInputBase-multiline {
+  padding: 0;
+}
+
+.mediaPreview {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px; /* Tăng khoảng cách với TextField */
+  max-width: 100%;
+}
+
+.mediaItem {
+  position: relative;
+  display: inline-block;
+}
+
+.previewImage {
+  object-fit: cover;
+  border-radius: 8px;
+  max-height: 200px;
+}
+
+.removeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease;
+}
+
+.removeButton:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* 1 Ảnh: Căn giữa, chiều rộng giới hạn */
+.media-preview-1 .previewImage {
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+}
+
+/* 2 Ảnh: Chia đều hai bên */
+.media-preview-2 {
+  justify-content: space-between;
+}
+.media-preview-2 .previewImage {
+  width: calc(50% - 4px);
+  height: 200px;
+}
+
+/* 3 Ảnh: Chia đều trong một hàng */
+.media-preview-3 .previewImage {
+  width: calc(33.33% - 5.33px);
+  height: 150px;
+}
+
+/* 4 Ảnh: Lưới 2x2 */
+.media-preview-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.media-preview-4 .previewImage {
+  width: 100%;
+  height: 150px;
+}
+
+/* 5 Ảnh: 3 trên, 2 dưới */
+.media-preview-5 {
+  display: flex;
+  flex-wrap: wrap;
+}
+.media-preview-5 .previewImage:nth-child(-n+3) {
+  width: calc(33.33% - 5.33px);
+  height: 120px;
+}
+.media-preview-5 .previewImage:nth-child(n+4) {
+  width: calc(50% - 4px);
+  height: 120px;
+  margin-top: 8px;
+}
+
+.boxItems {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.btnIcon {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.txtIcon {
+  margin-left: 5px;
+}
+
+.lineVertical {
+  width: 1px;
+  background: #ccc;
+  height: 24px;
+  align-self: center;
+}
+
+.optionButton {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #3b82f6;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.optionButton i {
+  margin-right: 12px;
+  color: #3b82f6;
+}
+
+.optionButton:hover {
+  background: #f8fafc;
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.optionButton:active {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+}
+
+.boxTag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  margin-left: 5px;
+  flex: 1;
+}
+
+.btnTag {
+  background: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
 .friendList {
   max-height: 300px;
@@ -364,4 +377,29 @@
   padding: 10px;
 }
 
-  
+/* Kiểu cho overlay loading */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  border-radius: 10px;
+}
+
+.spinner {
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.loadingText {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
