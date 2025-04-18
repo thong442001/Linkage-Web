@@ -81,7 +81,7 @@ const CreateGroupModal = ({ onClose, onCreateGroup }) => {
   // Xử lý tạo group
   const taogGroup = () => {
     if (selectedUsers.length > 0) {
-        setIsCreating(true); // Vô hiệu hóa nút ngay khi nhấn
+      setIsCreating(true); // Vô hiệu hóa nút ngay khi nhấn
       callAddGroup(nameGroup, selectedUsers);
     } else {
       return;
@@ -129,9 +129,9 @@ const CreateGroupModal = ({ onClose, onCreateGroup }) => {
 
         {/* Nút Tạo */}
         <button
-            className={styles.createButton}
-            onClick={taogGroup}
-            disabled={selectedUsers.length < 3 || isCreating}
+          className={styles.createButton}
+          onClick={taogGroup}
+          disabled={selectedUsers.length < 3 || isCreating}
         >
           Tạo
         </button>
