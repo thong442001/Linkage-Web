@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGroupOfUser, getMessagesGroup } from "../../rtk/API";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +43,7 @@ const Chat = () => {
   const fileInputRef = useRef(null); // Ref để điều khiển input file
   const [isModalCreate, setIsModalCreate] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -170,6 +171,13 @@ const Chat = () => {
   useEffect(() => {
     callGetAllGroupOfUser(user._id);
   }, [user]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    callGetAllGroupOfUser(user._id).finally(() => {
+      setRefreshing(false);
+    });
+  }, [refreshing]);
 
   const callGetAllGroupOfUser = async (ID_user) => {
     try {
@@ -629,7 +637,7 @@ const Chat = () => {
               ) : (
                 <p>Chưa có tin nhắn nào</p>
               )}
-               <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} />
             </div>
             {
               reply && (
@@ -742,11 +750,12 @@ const Chat = () => {
           onCreateGroup={handleCreateGroup}
         />
       )}
-      {isModalOpen && 
-        <GroupInfo 
+      {isModalOpen &&
+        <GroupInfo
           onClose={() => setIsModalOpen(false)}
           ID_group={selectedGroup._id}
-      />}
+          onRefresh={onRefresh}
+        />}
     </div>
   );
 };

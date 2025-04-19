@@ -14,7 +14,7 @@ import {
   FaQrcode
 } from 'react-icons/fa';
 
-const GroupInfo = ({ onClose, ID_group }) => {
+const GroupInfo = ({ onClose, ID_group, onRefresh }) => {
   const { socket } = useSocket();
   // console.log('Setting: ', ID_group);
   const dispatch = useDispatch();
@@ -165,7 +165,11 @@ const GroupInfo = ({ onClose, ID_group }) => {
       </div>
       {
         onModalEditInfo && (
-          <GroupEditInfoModal onClose={() => setonModalEditInfo(false)} ID_group={ID_group} />
+          <GroupEditInfoModal 
+          onClose={() => setonModalEditInfo(false)} 
+          ID_group={ID_group}
+          onRefresh={onRefresh}
+          />
         )
       }
       {

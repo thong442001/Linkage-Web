@@ -5,7 +5,7 @@ import { getGroupID, editAvtNameGroup } from "../../rtk/API";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function GroupEditInfoModal({ onClose, ID_group }) {
+export default function GroupEditInfoModal({ onClose, ID_group, onRefresh }) {
   const dispatch = useDispatch();
   const me = useSelector((state) => state.app.user);
   const token = useSelector((state) => state.app.token);
@@ -57,12 +57,13 @@ export default function GroupEditInfoModal({ onClose, ID_group }) {
       await dispatch(editAvtNameGroup(paramsAPI))
         .unwrap()
         .then((response) => {
-          console.log(response)
+          //console.log(response)
+          onRefresh();
           onClose(); // Đóng modal sau khi lưu thành công
         })
         .catch((error) => {
           console.log("Error1 editAvtNameGroup:", error);
-        }); 
+        });
     } catch (error) {
       console.log(error);
     }
@@ -117,7 +118,10 @@ export default function GroupEditInfoModal({ onClose, ID_group }) {
             Hủy
           </button>
           <h2 className={styles.title}>Thông tin nhóm</h2>
-          <button onClick={callEditAvtNameGroup} className={styles.saveBtn}>
+          <button
+            onClick={callEditAvtNameGroup}
+            className={styles.saveBtn}
+          >
             Lưu
           </button>
         </div>
