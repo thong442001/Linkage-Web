@@ -9,13 +9,16 @@ import axios from 'axios';
 import {
   FaPenAlt,
   FaImage,
-  FaPenSquare
+  FaPenSquare,
+  FaAlignJustify
 } from 'react-icons/fa';
 import MessageItem from "../../components/items/MessageItem";
 import CreateGroupModal from "../../components/dialogs/CreateGroupModal";
+import GroupInfo from "../../components/dialogs/GroupInfo";
 const Chat = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
 
   const { user, token } = useSelector((state) => state.app);
   const { socket, onlineUsers } = useSocket();
@@ -39,6 +42,14 @@ const Chat = () => {
   const [sendingFiles, setSendingFiles] = useState({});
   const fileInputRef = useRef(null); // Ref để điều khiển input file
   const [isModalCreate, setIsModalCreate] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleCreateGroup = (newGroup) => {
     console.log('Nhóm mới:', newGroup);
@@ -542,8 +553,10 @@ const Chat = () => {
           type="text"
           placeholder="Tìm kiếm trên đoạn chat"
           className={styles.searchBar}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
         />
-        {groups.map((item) => (
+        {filteredGroups.map((item) => (
           <Groupcomponent
             key={item._id}
             item={item}
@@ -589,8 +602,8 @@ const Chat = () => {
                 <p>Được mã hóa đầu cuối</p>
               </div>
               {selectedGroup.isPrivate == false && (
-                <div className={styles.chatHeaderActions}>
-                  <button><FaPenAlt /></button>
+                <div className={styles.chatHeaderActions} onClick={() => setIsModalOpen(true)}>
+                  <button><FaAlignJustify /></button>
                 </div>
               )
               }
@@ -616,6 +629,7 @@ const Chat = () => {
               ) : (
                 <p>Chưa có tin nhắn nào</p>
               )}
+               <div ref={messagesEndRef} />
             </div>
             {
               reply && (
@@ -679,7 +693,7 @@ const Chat = () => {
           <>
             <div className={styles.chatHeader}>
               <img
-                src="https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                src="https://i.pinimg.com/736x/75/11/c5/7511c5289164c5644782b76e9d122f20.jpg"
                 alt="Profile"
                 className={styles.avatar}
               />
@@ -695,7 +709,7 @@ const Chat = () => {
 
             <div className={styles.chatInput}>
               <input type="text" placeholder="Nhắn tin..." disabled />
-              <button disabled>👍</button>
+              <button disabled>Gửi</button>
             </div>
           </>
         )}
@@ -728,6 +742,11 @@ const Chat = () => {
           onCreateGroup={handleCreateGroup}
         />
       )}
+      {isModalOpen && 
+        <GroupInfo 
+          onClose={() => setIsModalOpen(false)}
+          ID_group={selectedGroup._id}
+      />}
     </div>
   );
 };

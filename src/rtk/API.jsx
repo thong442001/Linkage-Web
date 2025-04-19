@@ -638,3 +638,113 @@ export const getChiTietPost = createAsyncThunk(
     }
   }
 );
+
+//API của cảnh
+export const getGroupID = createAsyncThunk(
+  'group/getGroupID',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`group/getGroupID?ID_group=${data.ID_group}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const deleteMember = createAsyncThunk(
+  'group/deleteMember',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('group/deleteMember', data);
+      //console.log(response)
+      if (response.status == true) {
+        console.log(response?.message)
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const deleteGroup = createAsyncThunk(
+  'group/deleteGroup',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('group/deleteGroup', data);
+      //console.log(response)
+      if (response.status == true) {
+        console.log(response?.message)
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const editAvtNameGroup = createAsyncThunk(
+  'group/editAvtNameGroup',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('group/editAvtNameGroup', data);
+      //console.log(response)
+      if (response.status == true) {
+        console.log(response?.message)
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+// nhóm chat
+export const addMembers = createAsyncThunk(
+  'group/addMembers',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('group/addMembers', data);
+      //console.log(response)
+      if (response.status == true) {
+        console.log(response?.message)
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const passKey = createAsyncThunk(
+  'group/passKey',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('group/passKey', data);
+      //console.log(response)
+      if (response.status == true) {
+        console.log(response?.message)
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
