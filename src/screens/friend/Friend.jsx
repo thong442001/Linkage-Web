@@ -206,16 +206,33 @@ const Friend = () => {
             <div className={styles.friendRequests}>
               <h3 className={styles.friendRequestsTitle}>Lời mời kết bạn</h3>
               <div className={styles.friendRequestsList}>
-                {relationships.map((request) => (
-                  <FriendRequestItem
-                    key={request._id}
-                    data={request}
-                    me={me._id}
-                    currentTime={currentTime}
-                    onXacNhan={callChapNhanLoiMoiKetBan}
-                    onXoa={callHuyLoiMoiKetBan}
-                  />
-                ))}
+                {
+                  relationships.length === 0
+                    ? (
+                      <div
+                        className={styles.noRequests}
+                        // height: 100vh;
+                        // width: 100%;
+                        style={{
+                          // height: "100vh",
+                          // width: "100%",
+                          // border: "1px solid #ccc",
+                        }}
+                      >Không có lời mời nào</div>
+                    ) : (
+                      relationships.map((request) => (
+                        <FriendRequestItem
+                          key={request._id}
+                          data={request}
+                          me={me._id}
+                          currentTime={currentTime}
+                          onXacNhan={callChapNhanLoiMoiKetBan}
+                          onXoa={callHuyLoiMoiKetBan}
+                        />
+                      ))
+                    )
+                }
+
               </div>
             </div>
 
@@ -279,7 +296,7 @@ const Friend = () => {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 
