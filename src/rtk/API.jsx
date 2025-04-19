@@ -638,3 +638,74 @@ export const getChiTietPost = createAsyncThunk(
     }
   }
 );
+
+//check dang ki sdt
+export const checkPhone = createAsyncThunk(
+  'user/checkPhone',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response =
+        await AxiosHelper()
+          //.get('post/getMyPosts', data);
+          .get(`user/checkPhone?phone=${data.phone}`);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+//check dang ki email
+export const checkEmail = createAsyncThunk(
+  'user/checkEmail',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response =
+        await AxiosHelper()
+          //.get('post/getMyPosts', data);
+          .get(`user/checkEmail?email=${data.email}`);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+//check dang ki gg
+export const check_email = createAsyncThunk(
+  'gg/check-email',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response =
+        await AxiosHelper()
+          //.get('post/getMyPosts', data);
+          .get(`gg/check-email?uid=${data.uid}`);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+//dang ki
+export const register = createAsyncThunk(
+  'user/register',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper().post('user/addUser', data);
+      console.log('Raw response from POST /user/addUser:', response); // Log phản hồi gốc
+      if (response.status === true) {
+        return response.message;
+      } else {
+        console.log('Rejecting with value:', response.data.message); // Log giá trị reject
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      console.error('Error in register API:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
