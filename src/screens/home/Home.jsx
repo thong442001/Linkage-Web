@@ -19,7 +19,8 @@ import {
     FaBookmark,
     FaPlayCircle,
     FaShoppingBag,
-    FaCog
+    FaCog,
+    FaUser
 } from 'react-icons/fa';
 import {
     getAllNotificationOfUser,
@@ -67,7 +68,7 @@ const Home = ({ content }) => {
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    
+
 
     // lấy lịch sử tìm kiếm
     const searchHistory = useSelector((state) => state.app.history) || [];
@@ -459,7 +460,14 @@ const Home = ({ content }) => {
         <div className="home-container">
             <div className="header-container">
                 <div className="logo-search-container">
-                    <img src="/Logo_app.png" alt="Logo" className="logo" />
+                    <img src="/Logo_app.png" alt="Logo" className="logo"
+                        onClick={() => {
+                            setActiveIcon('home');
+                            navigate('/');
+                            setIsSearchOpen(false);
+                            setIsNotificationOpen(false)
+                        }}
+                    />
                     <div className="search-bar">
                         <FaSearch className="search-icon" />
                         <input
@@ -516,11 +524,12 @@ const Home = ({ content }) => {
                         className={`icon-wrapper ${activeIcon === 'menu' ? 'active' : ''}`}
                         onClick={() => {
                             setActiveIcon('menu')
-                            setIsSearchOpen(false)
                             setIsNotificationOpen(false);
+                            setIsSearchOpen(false)
+                            navigate('/profile');
                         }}
                     >
-                        <FaPlusCircle className="nav-icon" />
+                        <FaUser className="nav-icon" />
                     </div>
                     <div
                         className={`icon-wrapper ${activeIcon === 'bell' ? 'active' : ''}`}
@@ -534,13 +543,6 @@ const Home = ({ content }) => {
                     </div>
                 </div>
                 <div className="mid-header1">
-                    <div className="icon-wrapper1" onClick={() => {
-                        handleLogout()
-                        setIsSearchOpen(false)
-                        setIsNotificationOpen(false)
-                    }}>
-                        <FaTh className="nav-icon1" />
-                    </div>
                     <div
                         className="icon-wrapper1"
                         onClick={() => {
@@ -555,7 +557,8 @@ const Home = ({ content }) => {
                         setIsNotificationOpen(!isNotificationOpen)
                         setIsSearchOpen(false)
                     }}>
-                        <FaBell className="nav-icon1" />
+                        <FaBell className="nav-icon1" 
+                        />
                         {isNotificationOpen && (
                             <NotificationDialog
                                 notifications={formattedNotifications}
