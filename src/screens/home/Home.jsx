@@ -307,7 +307,7 @@ const Home = ({ content }) => {
                 .unwrap()
                 .then((response) => {
                     setNotifications(response.notifications || []);
-                    console.log('Notifications:', response.notifications);
+                    //console.log('Notifications:', response.notifications);
                 })
                 .catch((error) => {
                     console.log('Error getAllNotificationOfUser: ', error);
@@ -564,7 +564,7 @@ const Home = ({ content }) => {
                     >
                         <FaFacebookMessenger className="nav-icon1" />
                         {isChat && (
-                            <HomeChatModal 
+                            <HomeChatModal
                                 onClose={() => setIsChat(false)}
                                 onSelectGroup={(group) => {
                                     setIsChat(false); // Đóng HomeChatModal

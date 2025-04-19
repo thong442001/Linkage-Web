@@ -369,6 +369,7 @@
 
 .footer-reactions a:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .comment-count,
@@ -634,4 +635,154 @@
     padding: 8px;
     font-size: 14px;
   }
+
+  
 }
+.mediaOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fullMediaContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navButtonsContainer {
+  position: relative;
+  width: 100%;
+  max-width: 1200px; /* Giới hạn chiều rộng tối đa của container */
+  height: 100%;
+  display: flex;
+  justify-content: center; /* Đổi thành center để không ảnh hưởng đến mediaWrapper */
+  align-items: center;
+}
+
+.mediaWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: 90vw; /* Đảm bảo không vượt quá 90% chiều rộng viewport */
+  max-height: 90vh; /* Đảm bảo không vượt quá 90% chiều cao viewport */
+}
+
+.fullMedia {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto; /* Đảm bảo hình ảnh không bị méo */
+  height: auto; /* Đảm bảo hình ảnh không bị méo */
+  object-fit: contain; /* Giữ tỷ lệ hình ảnh */
+  border-radius: 8px;
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  padding: 12px;
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.navButton:first-child {
+  left: 20px; /* Cố định nút Previous ở bên trái */
+}
+
+.navButton:last-child {
+  right: 20px; /* Cố định nút Next ở bên phải */
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 1);
+  color: #000;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .mediaWrapper {
+    max-width: 95vw; /* Tăng nhẹ trên mobile để tận dụng không gian */
+    max-height: 85vh; /* Giảm chiều cao để chừa chỗ cho các nút */
+  }
+
+  .fullMedia {
+    max-width: 100%;
+    max-height: 85vh;
+  }
+
+  .navButton {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    padding: 10px;
+  }
+
+  .navButton:first-child {
+    left: 10px;
+  }
+
+  .navButton:last-child {
+    right: 10px;
+  }
+}
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  padding: 8px;
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 1);
+  color: #000;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .closeButton {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    padding: 6px;
+  }
+}
+

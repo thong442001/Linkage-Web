@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getGroupID, editAvtNameGroup } from "../../rtk/API";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-export default function GroupEditInfoModal({ onClose, ID_group, onRefresh }) {
+import { useSocket } from '../../context/socketContext';
+export default function GroupEditInfoModal({ onClose, ID_group }) {
   const dispatch = useDispatch();
   const me = useSelector((state) => state.app.user);
   const token = useSelector((state) => state.app.token);
   const navigation = useNavigate();
-
+  const { socket } = useSocket();
   const [AvtGroup, setAvtGroup] = useState(null);
   const [nameGroup, setNameGroup] = useState(null);
   const [isEditing, setIsEditing] = useState(false); // input name
@@ -18,14 +18,25 @@ export default function GroupEditInfoModal({ onClose, ID_group, onRefresh }) {
   useEffect(() => {
     // Call API khi lần đầu vào trang
     callGetGroupID();
-  }, []);
+
+    socket.emit("joinGroup", ID_group);
+
+    socket.on("lang_nghe_chat_edit_avt_name_group", (data) => {
+      console.log("lang_nghe_chat_edit_avt_name_group")
+    });
+
+    return () => {
+      socket.off("lang_nghe_chat_edit_avt_name_group");
+    };
+  }, [ID_group]);
+
   //call api getGroupID
   const callGetGroupID = async () => {
     try {
       await dispatch(getGroupID({ ID_group: ID_group, token: token }))
         .unwrap()
         .then((response) => {
-          console.log("adfhasjd", response.group.name);
+          //console.log("adfhasjd", response.group.name);
           setAvtGroup(response.group.avatar);
           // console.log("AvtGroup:", response.group.AvtGroup)
           if (response.group.name == null) {
@@ -44,29 +55,38 @@ export default function GroupEditInfoModal({ onClose, ID_group, onRefresh }) {
 
   //call api editAvtNameGroup
   const callEditAvtNameGroup = async () => {
-    try {
-      if (AvtGroup == null || nameGroup == null) {
-        return;
-      }
-      console.log(AvtGroup)
-      const paramsAPI = {
-        ID_group: ID_group,
-        AvtGroup: AvtGroup,
-        name: nameGroup == "Nhóm chưa có tên" ? null : nameGroup,
-      };
-      await dispatch(editAvtNameGroup(paramsAPI))
-        .unwrap()
-        .then((response) => {
-          //console.log(response)
-          onRefresh();
-          onClose(); // Đóng modal sau khi lưu thành công
-        })
-        .catch((error) => {
-          console.log("Error1 editAvtNameGroup:", error);
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   if (AvtGroup == null || nameGroup == null) {
+    //     return;
+    //   }
+    //   console.log(AvtGroup)
+    //   const paramsAPI = {
+    //     ID_group: ID_group,
+    //     AvtGroup: AvtGroup,
+    //     name: nameGroup == "Nhóm chưa có tên" ? null : nameGroup,
+    //   };
+    //   await dispatch(editAvtNameGroup(paramsAPI))
+    //     .unwrap()
+    //     .then((response) => {
+    //       //console.log(response)
+    //       onRefresh();
+    //       onClose(); // Đóng modal sau khi lưu thành công
+    //     })
+    //     .catch((error) => {
+    //       console.log("Error1 editAvtNameGroup:", error);
+    //     });
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    if (!socket) return;
+    const payload = {
+      ID_group: ID_group,
+      avatar: AvtGroup,
+      name: nameGroup == "Nhóm chưa có tên" ? null : nameGroup,
+    };
+    socket.emit('edit_avt_name-group', payload);
+    //onRefresh2();
+    onClose();
   };
 
   //up lên cloudiary
@@ -136,13 +156,13 @@ export default function GroupEditInfoModal({ onClose, ID_group, onRefresh }) {
           {AvtGroup != null && (
             <div className={styles.nameGroup}>
               <input
-                value={isEditing ? nameGroup : "Nhóm chưa có tên"}
-                onFocus={() => {
-                  if (!isEditing) {
-                    setNameGroup("");
-                    setIsEditing(true);
-                  }
-                }}
+                value={nameGroup}
+                // onFocus={() => {
+                //   if (!isEditing) {
+                //     setNameGroup("");
+                //     setIsEditing(true);
+                //   }
+                // }}
                 onChange={(e) => setNameGroup(e.target.value)}
               />
             </div>
