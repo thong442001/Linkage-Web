@@ -12,7 +12,7 @@ import { QRCodeCanvas } from "qrcode.react"; // Đã thay đổi từ QRCode san
 
 import {
   FaQrcode
-  } from 'react-icons/fa';
+} from 'react-icons/fa';
 
 const GroupInfo = ({ onClose, ID_group }) => {
   const { socket } = useSocket();
@@ -26,8 +26,8 @@ const GroupInfo = ({ onClose, ID_group }) => {
   const [qrVisible, setQrVisible] = useState(false); // 🔥 State để hiển thị modal QR
   const [onModalEditInfo, setonModalEditInfo] = useState(false); // 🔥 State để hiển thị modal QR
   const [onModalAddmemders, setonModalAddmemders] = useState(false); // 🔥 State để hiển thị modal QR
-  const [onModalMembers, setonModalMembers] = useState(false); 
-  const [onModalQR, setonModalQR] = useState(false); 
+  const [onModalMembers, setonModalMembers] = useState(false);
+  const [onModalQR, setonModalQR] = useState(false);
 
   useEffect(() => {
     // Call API khi lần đầu vào trang
@@ -115,7 +115,7 @@ const GroupInfo = ({ onClose, ID_group }) => {
 
   const handleGiaiTan = () => {
     callDeleteGroup();
-   
+
   };
   return (
     <div className={styles.overlay}>
@@ -138,44 +138,44 @@ const GroupInfo = ({ onClose, ID_group }) => {
             )}
             {group.members[0]._id == me._id && (
               <div className={styles.addSection}>
-                <div className={styles.addIcon} onClick={() =>setonModalAddmemders(true)}>+</div>
+                <div className={styles.addIcon} onClick={() => setonModalAddmemders(true)}>+</div>
                 <span className={styles.addLabel}>Thêm</span>
-                <div className={styles.qrFake} onClick={() => setonModalQR(true)}><FaQrcode/></div>
+                <div className={styles.qrFake} onClick={() => setonModalQR(true)}><FaQrcode /></div>
               </div>
             )}
-           
+
             <div className={styles.actionSection}>
               <button className={styles.viewMembers} onClick={() => {
                 setonModalMembers(true)
-               }}>
+              }}>
                 Xem thành viên trong nhóm chat
               </button>
               <button className={styles.leaveGroup} onClick={handleRoiNhom}>Rời khỏi nhóm chat</button>
-                {
-                    group.members[0]._id == me._id
-                    && (
-                        <button className={styles.disbandGroup} onClick={handleGiaiTan}>
-                            Giải tán nhóm chat
-                        </button>
-                    )
-                }
+              {
+                group.members[0]._id == me._id
+                && (
+                  <button className={styles.disbandGroup} onClick={handleGiaiTan}>
+                    Giải tán nhóm chat
+                  </button>
+                )
+              }
             </div>
           </div>
         )}
       </div>
       {
         onModalEditInfo && (
-            <GroupEditInfoModal onClose={() => setonModalEditInfo(false)} ID_group = {ID_group}/>
+          <GroupEditInfoModal onClose={() => setonModalEditInfo(false)} ID_group={ID_group} />
         )
       }
       {
         onModalAddmemders && (
-            <AddFriendGroupModal onClose={() => setonModalAddmemders(false)} ID_group = {ID_group}/>
+          <AddFriendGroupModal onClose={() => setonModalAddmemders(false)} ID_group={ID_group} />
         )
       }
       {
         onModalMembers && (
-            <GroupMembersModal onClose={() => setonModalMembers(false)} ID_group = {ID_group}/>
+          <GroupMembersModal onClose={() => setonModalMembers(false)} ID_group={ID_group} />
         )
       }
       {onModalQR && (
@@ -183,7 +183,7 @@ const GroupInfo = ({ onClose, ID_group }) => {
           <div className={styles.modalContent}>
             <h1 style={{ color: "#1e90ff", margin: 0 }}>Linkage</h1>
             <h3 className={styles.modalTitle}>Quét mã QR để đăng nhập</h3>
-            <QRCodeCanvas  value={`linkage://addgroup/${ID_group}`} size={180} />
+            <QRCodeCanvas value={`linkage://addgroup/${ID_group}`} size={180} />
             <button
               onClick={() => setonModalQR(false)}
               className={styles.closeButtonQR}
