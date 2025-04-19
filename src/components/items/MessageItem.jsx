@@ -18,11 +18,10 @@ const MessageItem = ({
   const popupRef = useRef(null); // tạo ref cho popup
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedReactions, setSelectedReactions] = useState([]);
-  console.log("message", message);
   const handleOpenModal = () => {
     setSelectedReactions(message.message_reactionList);
     setModalOpen(true);
-  };
+  };    
   // hàm thu hồi tin nhắn
   const handleonRevoke = () => {
     console.log("tin nhắn đã xóa", message._id);
@@ -119,7 +118,7 @@ const MessageItem = ({
         <img
           src={
             message.sender.avatar ||
-            "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+            "https://i.pinimg.com/736x/75/11/c5/7511c5289164c5644782b76e9d122f20.jpg"
           }
           alt="Profile"
           className={styles.avatar}
@@ -178,22 +177,22 @@ const MessageItem = ({
                         marginBottom: "5px",
                       }}
                     >
-                      <p style={{ paddingTop: "45px" }}>Google Maps Preview</p>
+                      <p style={{ paddingTop: "45px" }}>Chia sẻ vị trí</p>
                     </div>
-                    {/* <button
-              // onClick={() =>
-              //   handlePressLocation(message.content)
-              // }
-              style={{
-                backgroundColor: "#2196F3",
-                color: "#fff",
-                padding: "6px 12px",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              Mở Google Maps
-            </button> */}
+                    <a
+                    style={{
+                      color: "black",
+                      padding: "6px 12px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                    }}
+                    href={message.ID_message_reply.content} target="_blank" rel="noopener noreferrer"
+                    >
+                       {message.ID_message_reply.content.length > 20
+                        ? message.ID_message_reply.content.slice(0, 20) + "..."
+                        : message.ID_message_reply.content}
+                  </a>
                   </div>
                 ) : (
                   <div>
@@ -222,20 +221,20 @@ const MessageItem = ({
                 >
                   <p style={{ paddingTop: "45px" }}>Google Maps Preview</p>
                 </div>
-                {/* <button
-                // onClick={() =>
-                //   handlePressLocation(message.content)
-                // }
-                style={{
-                  backgroundColor: "#2196F3",
-                  color: "#fff",
-                  padding: "6px 12px",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Mở Google Maps
-              </button> */}
+                <a
+                    style={{
+                      color: "white",
+                      padding: "6px 12px",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                    }}
+                    href={message.content} target="_blank" rel="noopener noreferrer"
+                    >
+                       {message.content.length > 20
+                        ? message.content.slice(0, 20) + "..."
+                        : message.content}
+                  </a>
               </div>
             ) : isLink(message.content) ? (
               <a

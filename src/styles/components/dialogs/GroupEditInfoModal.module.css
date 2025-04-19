@@ -1,0 +1,121 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+  }
+  
+  .modal {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .cancelBtn, .saveBtn {
+    color: blue;
+    font-weight: 500;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .avatarWrapper {
+    width: 96px;
+    height: 96px;
+    border: 2px solid #2563eb;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    color: #2563eb;
+    background-color: white;
+    overflow: hidden;
+  }
+  
+  .avatarImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+  .avatarLetter {
+    font-weight: bold;
+  }
+  
+  .groupName {
+    padding: 0.5rem 1rem;
+    background-color: #f3f4f6;
+    border-radius: 9999px;
+    border: 1px solid #ccc;
+    color: #333;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  
+  .uploadLabel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  
+  .uploadIcon {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 50%;
+  }
+  
+  .iconImage {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .uploadText {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    color: #000;
+  }
+  
+  .hiddenInput {
+    display: none;
+  }
+
+  .avatar {
+    font-size: 40px;
+    color: #2563eb;
+    border: 4px solid #60a5fa;
+    border-radius: 50%;
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
