@@ -748,3 +748,54 @@ export const passKey = createAsyncThunk(
     }
   }
 );
+
+export const checkPhone = createAsyncThunk(
+  'user/checkPhone',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response =
+        await AxiosHelper()
+          //.get('post/getMyPosts', data);
+          .get(`user/checkPhone?phone=${data.phone}`);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+export const checkEmail = createAsyncThunk(
+  'user/checkEmail',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response =
+        await AxiosHelper()
+          //.get('post/getMyPosts', data);
+          .get(`user/checkEmail?email=${data.email}`);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+export const register = createAsyncThunk(
+  'user/register',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response =
+        await AxiosHelper()
+          .post('user/addUser', data)
+      //console.log(response)
+      if (response.status == true) {
+        return response.message;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+)

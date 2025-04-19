@@ -1,5 +1,9 @@
-/* src/styles/components/items/PostDetailS.module.css */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap');
+
+/* Đặt font-size gốc cho html để rem hoạt động nhất quán */
+:root {
+  font-size: 16px; /* 1rem = 16px */
+}
 
 /* Modal Overlay */
 .postDetailModalOverlay {
@@ -18,14 +22,11 @@
 
 .postDetailModal {
   background: #ffffff;
-  width: 90%;
-  max-width: 70vw;
-  /* Thay 700px */
-  max-height: 50vw;
+  width: 90%; /* Tăng width để tận dụng không gian */
+  max-width: clamp(600px, 50vw, 800px); /* Giới hạn tối đa 800px, phù hợp với MacBook */
+  max-height: 90vh; /* Giảm max-height để không chiếm quá nhiều không gian */
   border-radius: 0.625rem;
-  /* 10px */
   box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
-  /* 4px, 20px */
   display: flex;
   flex-direction: column;
   color: #333333;
@@ -38,16 +39,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1.25rem;
-  /* 12px, 20px */
+  padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.75rem, 1.5vw, 1.25rem);
   background: #f0f2f5;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 0.0625rem solid #e0e0e0; /* 1px */
 }
 
 .modalHeader h3 {
   margin: 0;
-  font-size: 1rem;
-  /* 16px */
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
   font-weight: 600;
   color: #333333;
 }
@@ -56,11 +55,9 @@
   background: none;
   border: none;
   color: #333333;
-  font-size: 1.25rem;
-  /* 20px */
+  font-size: clamp(1rem, 2vw, 1.25rem);
   cursor: pointer;
-  padding: 0.3125rem;
-  /* 5px */
+  padding: clamp(0.25rem, 0.5vw, 0.3125rem);
   transition: color 0.3s;
 }
 
@@ -72,29 +69,23 @@
 .modalBody {
   display: flex;
   flex-direction: column;
-  padding: 0.9375rem;
-  /* 15px */
+  padding: clamp(0.625rem, 1vw, 0.9375rem);
   overflow-y: auto;
-  gap: 0.9375rem;
-  /* 15px */
+  gap: clamp(0.625rem, 1vw, 0.9375rem);
 }
 
 .sharedPostSection {
   padding-inline-start: 0.625rem;
-  /* 10px */
 }
 
 .postContent {
   background: #ffffff;
   padding: 0.625rem;
-  /* 10px */
   border-radius: 0.5rem;
-  /* 8px */
 }
 
 .originalPost {
-  border: 1px solid #e0e0e0;
-  /* Giữ viền cho bài gốc */
+  border: 0.0625rem solid #e0e0e0; /* 1px */
 }
 
 /* Post Header */
@@ -103,42 +94,36 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.625rem;
-  /* 10px */
 }
 
 .userInfo {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  /* 10px */
 }
 
 .avatar {
-  width: 2.5rem;
-  /* 40px */
-  height: 2.5rem;
+  width: clamp(2rem, 3vw, 2.5rem);
+  height: clamp(2rem, 3vw, 2.5rem);
   border-radius: 50%;
   margin-right: 0.625rem;
-  /* 10px */
+  object-fit: cover;
 }
 
 .userDetails {
   display: flex;
   flex-direction: column;
   gap: 0.1875rem;
-  /* 3px */
 }
 
 .name {
   font-weight: 600;
   color: #333333;
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem); /* Linh hoạt font-size */
 }
 
 .time {
-  font-size: 0.75rem;
-  /* 12px */
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   color: #666666;
 }
 
@@ -146,7 +131,6 @@
   display: flex;
   align-items: center;
   gap: 0.3125rem;
-  /* 5px */
 }
 
 .optionsButton {
@@ -154,10 +138,8 @@
   border: none;
   color: #666666;
   cursor: pointer;
-  font-size: 1rem;
-  /* 16px */
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
   padding: 0.3125rem;
-  /* 5px */
   transition: color 0.3s;
 }
 
@@ -168,9 +150,7 @@
 /* Caption */
 .caption {
   margin: 0.625rem 0;
-  /* 10px */
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   line-height: 1.5;
   color: #333333;
   white-space: pre-wrap;
@@ -178,28 +158,56 @@
 
 /* Media Grid */
 .mediaContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3125rem;
-  /* 5px */
+  display: grid;
+  gap: 0.5rem;
   margin: 0.625rem 0;
-  /* 10px */
+}
+
+/* Định dạng lưới cho số lượng ảnh */
+.mediaContainer[data-media-count="1"] {
+  grid-template-columns: 1fr;
+}
+
+.mediaContainer[data-media-count="2"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.mediaContainer[data-media-count="3"] {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto auto;
+}
+
+.mediaContainer[data-media-count="4"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.mediaContainer[data-media-count="5"] {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+}
+
+/* Khi hiển thị nhiều hơn 5 ảnh */
+.mediaContainer[data-media-count="6"],
+.mediaContainer[data-media-count="7"],
+.mediaContainer[data-media-count="8"],
+.mediaContainer[data-media-count="9"],
+.mediaContainer[data-media-count="10"] {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .mediaItem {
   position: relative;
   overflow: hidden;
   border-radius: 0.375rem;
-  /* 6px */
+  aspect-ratio: 1 / 1; /* Đảm bảo tỷ lệ 1:1 cho mọi ảnh */
 }
 
 .image,
 .video {
-  width: 100%;
+  width: 100%; /* Lấp đầy mediaItem */
   height: 100%;
   object-fit: cover;
   border-radius: 0.375rem;
-  /* 6px */
 }
 
 .videoWrapper {
@@ -215,8 +223,7 @@
   transform: translate(-50%, -50%);
   color: white;
   opacity: 0.8;
-  font-size: 2.5rem;
-  /* 40px */
+  font-size: clamp(2rem, 5vw, 2.5rem);
 }
 
 .overlay {
@@ -233,59 +240,59 @@
 
 .overlayText {
   color: white;
-  font-size: 1.5rem;
-  /* 24px */
+  font-size: clamp(1rem, 3vw, 1.5rem);
   font-weight: bold;
 }
 
 /* Media Layouts */
 .singleMedia {
-  width: 100%;
-  height: 25rem;
-  /* 400px */
+  grid-column: span 2; /* Chiếm toàn bộ chiều rộng */
+  aspect-ratio: 16 / 9; /* Tỷ lệ cho 1 ảnh */
 }
 
 .doubleMedia {
-  width: calc(50% - 0.15625rem);
-  /* 2.5px */
-  height: 18.75rem;
-  /* 300px */
+  grid-column: span 1; /* Mỗi ảnh chiếm 1 cột */
 }
 
 .tripleMediaFirst {
-  width: 100%;
-  height: 18.75rem;
-  /* 300px */
+  grid-column: span 2; /* Ảnh đầu chiếm 2 cột */
 }
 
 .tripleMediaSecond {
-  width: calc(50% - 0.15625rem);
-  /* 2.5px */
-  height: 9.375rem;
-  /* 150px */
+  grid-column: span 1; /* Hai ảnh sau chiếm 1 cột */
 }
 
 .quadMedia {
-  width: calc(50% - 0.15625rem);
-  /* 2.5px */
-  height: 12.5rem;
-  /* 200px */
+  grid-column: span 1; /* Mỗi ảnh chiếm 1 cột */
 }
 
 .fivePlusMediaFirstRow {
-  width: calc(50% - 0.15625rem);
-  /* 2.5px */
-  height: 15.625rem;
-  /* 250px */
+  grid-column: span 1; /* Hai ảnh đầu chiếm 1 cột */
 }
 
 .fivePlusMediaSecondRowLeft,
 .fivePlusMediaSecondRowMiddle,
 .fivePlusMediaSecondRowRight {
-  width: calc(33.33% - 0.20833rem);
-  /* 3.33px */
-  height: 9.375rem;
-  /* 150px */
+  grid-column: span 1; /* Ba ảnh dưới chiếm 1 cột */
+}
+
+/* Nút Thu bớt */
+.collapseButton {
+  width: 100%;
+  padding: 0.625rem;
+  background-color: #f0f2f5;
+  color: #333333;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.collapseButton:hover {
+  background-color: #e4e6eb;
 }
 
 /* Full-screen Media Modal */
@@ -302,12 +309,100 @@
   z-index: 2000;
 }
 
+.fullMediaContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.navButtonsContainer {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mediaWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: clamp(500px, 85vw, 1000px); /* Giới hạn chiều rộng tối đa */
+  max-height: clamp(400px, 80vh, 600px); /* Giới hạn chiều cao tối đa */
+}
+
 .fullMedia {
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: 0.625rem;
-  /* 10px */
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  padding: clamp(8px, 1vw, 12px);
+  font-size: clamp(18px, 2vw, 24px);
+  cursor: pointer;
+  border-radius: 50%;
+  width: clamp(36px, 4vw, 48px);
+  height: clamp(36px, 4vw, 48px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.navButton:first-child {
+  left: clamp(10px, 2vw, 20px);
+}
+
+.navButton:last-child {
+  right: clamp(10px, 2vw, 20px);
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 1);
+  color: #000;
+}
+
+.closeButton {
+  position: absolute;
+  top: clamp(10px, 2vw, 20px);
+  right: clamp(10px, 2vw, 20px);
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  padding: clamp(6px, 0.8vw, 8px);
+  font-size: clamp(18px, 2vw, 24px);
+  cursor: pointer;
+  border-radius: 50%;
+  width: clamp(32px, 3vw, 40px);
+  height: clamp(32px, 3vw, 40px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 1);
+  color: #000;
 }
 
 /* Footer */
@@ -320,8 +415,12 @@
 .footerReactions,
 .commentCount {
   color: #666666;
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+}
+
+.reactionContainer {
+  position: relative;
+  display: inline-block;
 }
 
 /* Interactions */
@@ -329,69 +428,72 @@
   display: flex;
   justify-content: space-around;
   padding: 0.625rem 0.9375rem;
-  /* 10px, 15px */
-  border-top: 1px solid #e0e0e0;
+  border-top: 0.0625rem solid #e0e0e0;
 }
 
 .action {
-  background: none;
-  border: none;
-  color: #666666;
-  font-size: 0.875rem;
-  /* 14px */
   display: flex;
   align-items: center;
-  gap: 0.3125rem;
-  /* 5px */
+  gap: 0.375rem; /* 6px */
+  background: none;
+  border: none;
   cursor: pointer;
-  padding: 0.3125rem 0.625rem;
-  /* 5px, 10px */
-  border-radius: 0.3125rem;
-  /* 5px */
-  transition: background-color 0.3s, color 0.3s;
+  padding: 0.5rem 0.75rem; /* 8px 12px */
+  color: #65676b;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 500;
+  border-radius: 0.25rem; /* 4px */
+  transition: background-color 0.2s;
 }
 
 .action:hover {
-  color: #333333;
   background-color: #f0f2f5;
 }
 
 /* Reaction Bar */
 .reactionBar {
   position: absolute;
+  top: -3.125rem; /* -50px, đặt phía trên nút Thích */
+  left: 0;
   display: flex;
-  gap: 0.5rem;
-  /* 8px */
-  background-color: #ffffff;
-  padding: 0.3125rem 0.625rem;
-  /* 5px, 10px */
-  border-radius: 1.25rem;
-  /* 20px */
-  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
-  /* 2px, 10px */
+  gap: 0.5rem; /* 8px */
+  background: white;
+  border-radius: 1.25rem; /* 20px */
+  padding: 0.25rem 0.5rem; /* 4px 8px */
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15); /* 2px 8px */
   z-index: 1000;
+  transform: scale(0.8);
+  animation: popIn 0.2s ease forwards;
 }
 
 .reactionButton {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.25rem;
-  /* 20px */
+  font-size: clamp(1.25rem, 2vw, 1.5rem); /* 24px */
+  padding: 0.25rem; /* 4px */
+  transition: transform 0.2s;
+}
+
+.reactionButton:hover {
+  transform: scale(1.2);
+}
+
+@keyframes popIn {
+  to {
+    transform: scale(1);
+  }
 }
 
 /* Comments Section */
 .commentsSection {
   padding: 0.9375rem;
-  /* 15px */
   background: #ffffff;
 }
 
 .commentsSection h4 {
   margin: 0 0 0.9375rem;
-  /* 15px */
-  font-size: 1rem;
-  /* 16px */
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
   font-weight: 600;
   color: #333333;
 }
@@ -399,23 +501,19 @@
 .commentsList {
   overflow-y: hidden;
   margin-bottom: 0.9375rem;
-  /* 15px */
 }
 
 .comment {
   display: flex;
   margin-bottom: 0.9375rem;
-  /* 15px */
   align-items: flex-start;
 }
 
 .commentAvatar {
-  width: 2.1875rem;
-  /* 35px */
-  height: 2.1875rem;
+  width: clamp(1.75rem, 2.5vw, 2.1875rem);
+  height: clamp(1.75rem, 2.5vw, 2.1875rem);
   border-radius: 50%;
   margin-right: 0.625rem;
-  /* 10px */
 }
 
 .commentWrapper {
@@ -426,10 +524,8 @@
 
 .commentContent {
   background: #f0f2f5;
-  padding: 0.5rem 0.75rem;
-  /* 8px, 12px */
+  padding: clamp(0.375rem, 1vw, 0.5rem) clamp(0.5rem, 1.5vw, 0.75rem);
   border-radius: 0.75rem;
-  /* 12px */
   display: inline-block;
 }
 
@@ -440,38 +536,30 @@
 
 .commentUser {
   font-weight: 600;
-  font-size: 0.8125rem;
-  /* 13px */
+  font-size: clamp(0.75rem, 1.2vw, 0.8125rem);
   color: #333333;
 }
 
 .commentContent p {
   margin: 0.3125rem 0;
-  /* 5px */
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   color: #333333;
 }
 
 .commentTime {
-  font-size: 0.75rem;
-  /* 12px */
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   color: #666666;
 }
 
 .commentActions {
   display: flex;
   gap: 0.625rem;
-  /* 10px */
   margin-top: 0.3125rem;
-  /* 5px */
   margin-left: 0.75rem;
-  /* 12px */
 }
 
 .commentActions span {
-  font-size: 0.75rem;
-  /* 12px */
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   color: #666666;
   cursor: pointer;
 }
@@ -481,8 +569,7 @@
 }
 
 .toggleReplies {
-  font-size: 0.75rem;
-  /* 12px */
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   color: #0064e0;
   cursor: pointer;
   font-weight: 600;
@@ -494,7 +581,6 @@
 
 .replies {
   margin-bottom: 0.9375rem;
-  /* 15px */
 }
 
 /* Comment Input */
@@ -503,7 +589,6 @@
   align-items: center;
   background: #ffffff;
   padding: 0.625rem;
-  /* 10px */
 }
 
 .inputContainer {
@@ -516,11 +601,9 @@
   align-items: center;
   background: #ffffff;
   padding: 0.625rem 0.9375rem;
-  /* 10px, 15px */
-  border-top: 1px solid #e0e0e0;
+  border-top: 0.0625rem solid #e0e0e0;
   z-index: 100;
   box-shadow: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.1);
-  /* 2px, 5px */
 }
 
 .inputContainer2 {
@@ -528,7 +611,6 @@
   align-items: center;
   width: 100%;
   gap: 0.625rem;
-  /* 10px */
 }
 
 .inputWrapper {
@@ -538,15 +620,12 @@
 
 .inputContainer input {
   width: 100%;
-  padding: 0.625rem 2.5rem 0.625rem 0.75rem;
-  /* 10px, 40px, 10px, 12px */
+  padding: clamp(0.5rem, 1vw, 0.625rem) clamp(2rem, 3vw, 2.5rem) clamp(0.5rem, 1vw, 0.625rem) clamp(0.5rem, 1vw, 0.75rem);
   border: none;
   background: #f0f2f5;
   color: #333333;
   border-radius: 1.25rem;
-  /* 20px */
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
 }
 
 .inputContainer input::placeholder {
@@ -556,15 +635,13 @@
 .inputIcons {
   display: flex;
   gap: 0.5rem;
-  /* 8px */
   align-items: center;
 }
 
 .inputIcons svg {
   color: #666666;
   cursor: pointer;
-  font-size: 1.25rem;
-  /* 20px */
+  font-size: clamp(1rem, 2vw, 1.25rem);
 }
 
 .inputIcons svg:hover {
@@ -574,122 +651,76 @@
 /* Shared Post Modal */
 .sharedPost {
   background-color: #ffffff;
-  border-radius: 8px;
-  /* 0.5rem, khớp với PostS.css */
-  padding: 16px;
-  /* 1rem, khớp với PostS.css */
-  width: 90%;
-  max-width: 500px;
-  /* 31.25rem, khớp với modal-container */
+  width: 95%; /* Tăng width để tận dụng không gian */
+  max-width: clamp(400px, 40vw, 500px); /* Giới hạn tối đa 500px */
+  border-radius: 0.625rem;
+  padding: 1rem;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #050505;
-  /* Khớp với PostS.css */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  /* Bóng nhẹ hơn, giống PostS.css */
+  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
 }
 
 .sharedPostHeader {
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 10px;
-  /* 0.625rem */
-  margin-bottom: 16px;
-  /* 1rem */
+  border-bottom: 0.0625rem solid #e0e0e0;
+  padding-bottom: 0.625rem;
+  margin-bottom: 1rem;
 }
 
 .sharedPostHeader h4 {
   margin: 0;
-  font-size: 15px;
-  /* 0.9375rem, khớp với PostS.css */
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
   font-weight: 600;
   color: #050505;
-  /* Khớp với PostS.css */
 }
 
 .sharedPostBody {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  /* 1rem */
-}
-
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  /* 0.75rem */
-}
-
-.avatar {
-  width: 40px;
-  /* 2.5rem */
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.name {
-  font-weight: 600;
-  font-size: 15px;
-  /* 0.9375rem, khớp với PostS.css */
-  color: #050505;
-  /* Khớp với PostS.css */
+  gap: 1rem;
 }
 
 .boxStatus {
-  margin-top: 4px;
-  /* 0.25rem */
+  margin-top: 0.25rem;
 }
 
 .btnStatus {
   background-color: #f0f2f5;
   border: none;
-  padding: 6px 12px;
-  /* Khớp với btn-status */
-  border-radius: 6px;
-  /* Khớp với btn-status */
-  font-size: 13px;
-  /* Khớp với btn-status */
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: clamp(0.75rem, 1.2vw, 0.8125rem);
   color: #050505;
-  /* Khớp với PostS.css */
   cursor: pointer;
 }
 
 .btnStatus:hover {
-  background-color: #e4e6eb;
-  /* Thêm hover để nhất quán */
+  background-color: #e4e6eb; /* Sửa màu hover cho hợp lý */
 }
 
 .captionInput {
   width: 100%;
-  min-height: 100px;
-  /* 6.25rem, khớp với content-share */
+  min-height: 6.25rem;
   border: none;
   resize: none;
-  font-size: 15px;
-  /* 0.9375rem */
-  padding: 8px;
-  /* 0.5rem */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  padding: clamp(0.5rem, 1vw, 0.625rem);
   background-color: #f0f2f5;
-  border-radius: 8px;
-  /* 0.5rem */
+  border-radius: 0.5rem;
   outline: none;
   color: #050505;
 }
 
 .shareButton {
   width: 100%;
-  padding: 12px;
-  /* 0.75rem */
+  padding: 0.75rem;
   background-color: #1877f2;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  /* 0.375rem */
-  font-size: 15px;
-  /* 0.9375rem */
+  border-radius: 0.375rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   font-weight: 600;
   cursor: pointer;
 }
@@ -704,19 +735,15 @@
 }
 
 .shareOptions {
-  margin-top: 16px;
-  /* 1rem */
+  margin-top: 1rem;
 }
 
 .copyLinkButton {
   background-color: #f0f2f5;
   border: none;
-  padding: 12px;
-  /* 0.75rem */
-  border-radius: 6px;
-  /* 0.375rem */
-  font-size: 15px;
-  /* 0.9375rem */
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   color: #050505;
   cursor: pointer;
 }
@@ -733,107 +760,34 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.2);
-  /* Khớp với PostS.css */
-  z-index: 1000;
-  /* Khớp với PostS.css */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .modalContent {
-  background-color: #fff;
-  border-radius: 8px;
-  /* 0.5rem, khớp với modal-content */
-  width: 90%;
-  max-width: 400px;
-  /* 25rem, khớp với modal-content */
+  width: 95%;
+  max-width: clamp(300px, 30vw, 400px);
+  border-radius: 0.5rem;
   overflow: hidden;
-  /* Khớp với modal-content */
+  background-color: #fff;
 }
 
 .optionButton {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 16px;
-  /* 1rem, khớp với option-button */
+  padding: 1rem;
   background: none;
   border: none;
-  font-size: 15px;
-  /* 0.9375rem, khớp với option-button */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   color: #050505;
-  /* Khớp với option-button */
   cursor: pointer;
   text-align: left;
 }
 
 .optionButton:hover {
   background-color: #f0f2f5;
-  /* Khớp với option-button */
-}
-
-/* ... (các style khác giữ nguyên) */
-
-/* Media Queries */
-@media screen and (max-width: 768px) {
-  .sharedPost {
-    width: 95%;
-    max-width: 400px;
-    /* 25rem */
-    padding: 12px;
-    /* 0.75rem */
-  }
-
-  .modalContent {
-    width: 95%;
-    max-width: 350px;
-    /* 21.875rem */
-  }
-
-  .optionButton {
-    padding: 12px;
-    /* 0.75rem */
-    font-size: 14px;
-    /* 0.875rem */
-  }
-
-  .btnStatus {
-    padding: 5px 10px;
-    /* Điều chỉnh nhẹ */
-    font-size: 12px;
-    /* 0.75rem */
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .sharedPost {
-    width: 98%;
-    max-width: 300px;
-    /* 18.75rem */
-    padding: 8px;
-    /* 0.5rem */
-  }
-
-  .modalContent {
-    width: 98%;
-    max-width: 300px;
-    /* 18.75rem */
-  }
-
-  .optionButton {
-    padding: 10px;
-    /* 0.625rem */
-    font-size: 13px;
-    /* 0.8125rem */
-  }
-
-  .btnStatus {
-    padding: 4px 8px;
-    /* Điều chỉnh nhỏ */
-    font-size: 11px;
-    /* 0.6875rem */
-  }
 }
 
 /* Modal thông báo */
@@ -845,14 +799,10 @@
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 0.9375rem;
-  /* 15px */
   border-radius: 0.5rem;
-  /* 8px */
   box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
-  /* 2px, 10px */
   z-index: 3000;
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
 }
 
 .successModal {
@@ -875,9 +825,7 @@
 .error {
   text-align: center;
   padding: 1.25rem;
-  /* 20px */
-  font-size: 1rem;
-  /* 16px */
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
   color: #333333;
 }
 
@@ -890,11 +838,8 @@
   display: flex;
   align-items: center;
   gap: 0.3125rem;
-  /* 5px */
   margin-bottom: 0.625rem;
-  /* 10px */
-  font-size: 0.8125rem;
-  /* 13px */
+  font-size: clamp(0.75rem, 1.2vw, 0.8125rem);
   color: #666666;
 }
 
@@ -911,8 +856,7 @@
   border: none;
   color: #666666;
   cursor: pointer;
-  font-size: 0.8125rem;
-  /* 13px */
+  font-size: clamp(0.75rem, 1.2vw, 0.8125rem);
 }
 
 .cancelReply:hover {
@@ -924,26 +868,20 @@
   position: absolute;
   background: #ffffff;
   border-radius: 0.5rem;
-  /* 8px */
   box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
-  /* 2px, 10px */
   z-index: 10;
   padding: 0.5rem 0;
-  /* 8px */
   min-width: 9.375rem;
-  /* 150px */
 }
 
 .optionsMenu button {
   display: block;
   width: 100%;
   padding: 0.625rem 1rem;
-  /* 10px, 16px */
   text-align: left;
   background: none;
   border: none;
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   color: #333333;
   cursor: pointer;
 }
@@ -957,30 +895,25 @@
 .failedModal {
   position: fixed;
   top: 1.25rem;
-  /* 20px */
   left: 50%;
   transform: translateX(-50%);
   background: #ffffff;
   padding: 0.75rem 1.5rem;
-  /* 12px, 24px */
   border-radius: 0.5rem;
-  /* 8px */
   box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
-  /* 2px, 10px */
   z-index: 2000;
-  font-size: 0.875rem;
-  /* 14px */
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   font-weight: 500;
 }
 
 .successModal {
   color: #28a745;
-  border: 1px solid #28a745;
+  border: 0.0625rem solid #28a745;
 }
 
 .failedModal {
   color: #dc3545;
-  border: 1px solid #dc3545;
+  border: 0.0625rem solid #dc3545;
 }
 
 /* Shared Post Overlay */
@@ -997,91 +930,213 @@
   z-index: 1000;
 }
 
-.sharedPost {
-  background: #ffffff;
-  width: 90%;
-  max-width: 31.25rem;
-  /* 500px */
-  border-radius: 0.625rem;
-  /* 10px */
-  padding: 1.25rem;
-  /* 20px */
-  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
-  /* 4px, 20px */
+/* Modal Content cho danh sách biểu cảm */
+.modalContent1 {
+  width: 95%;
+  max-width: clamp(350px, 35vw, 450px);
+  max-height: 80vh;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-y: auto;
+  box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
+  background: white;
 }
 
-.sharedPostHeader {
-  margin-bottom: 0.9375rem;
-  /* 15px */
+.modalContent1 h3 {
+  margin: 0 0 10px;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
 }
 
-.sharedPostHeader h4 {
-  margin: 0;
-  font-size: 1.125rem;
-  /* 18px */
-  font-weight: 600;
-}
-
-.sharedPostBody {
+/* Tabs lọc biểu cảm */
+.reactionTabs {
   display: flex;
-  flex-direction: column;
-  gap: 0.9375rem;
-  /* 15px */
+  z-index: 1000;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 10px;
 }
 
-.captionInput {
-  width: 100%;
-  min-height: 6.25rem;
-  /* 100px */
-  padding: 0.625rem;
-  /* 10px */
-  border: 1px solid #e0e0e0;
-  border-radius: 0.5rem;
-  /* 8px */
-  font-size: 0.875rem;
-  /* 14px */
-  resize: none;
-}
-
-.shareButton {
-  background: #0064e0;
-  color: #ffffff;
-  padding: 0.625rem;
-  /* 10px */
-  border: none;
-  border-radius: 0.5rem;
-  /* 8px */
-  font-size: 0.875rem;
-  /* 14px */
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.shareButton:hover {
-  background: #0052cc;
-}
-
-.shareButton:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
-}
-
-.copyLinkButton {
+.tab {
+  padding: 8px 16px;
   background: none;
   border: none;
-  color: #0064e0;
-  font-size: 0.875rem;
-  /* 14px */
+  color: #65676b;
+  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
   cursor: pointer;
-  padding: 0.3125rem 0;
-  /* 5px */
+  display: flex;
+  align-items: center;
 }
 
-.copyLinkButton:hover {
+.tab span:last-child {
+  margin-left: 5px;
+}
+
+.activeTab {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid #1877f2;
+  color: #1877f2;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.activeTab span:last-child {
+  margin-left: 5px;
+}
+
+/* Danh sách người thả biểu cảm */
+.reactionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reactionItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.reactionItem:hover {
+  background-color: #f0f2f5;
+}
+
+.reactionAvatar {
+  width: clamp(32px, 4vw, 40px);
+  height: clamp(32px, 4vw, 40px);
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.reactionUserName {
+  font-weight: bold;
+  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+}
+
+/* Style cho footer reactions */
+.footerReactions a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #65676b;
+}
+
+.footerReactions span {
+  margin-right: 4px;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+.footerReactions a:hover {
+  cursor: pointer;
   text-decoration: underline;
 }
 
-/* Media Queries cho màn hình nhỏ */
+.reacted {
+  color: #1877f2;
+  font-weight: 600;
+}
+
+.reactionIconBox {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Comment Media */
+.commentMedia {
+  max-width: clamp(200px, 30vw, 300px);
+  max-height: clamp(200px, 30vw, 300px);
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 0.375rem;
+}
+
+.commentMedia .videoWrapper {
+  max-width: clamp(200px, 30vw, 300px);
+  max-height: clamp(200px, 30vw, 300px);
+  position: relative;
+}
+
+.commentMedia .video {
+  width: 100%;
+  height: auto;
+  max-height: clamp(200px, 30vw, 300px);
+}
+
+.pendingComment {
+  opacity: 0.6;
+}
+
+.pendingIndicator {
+  font-size: clamp(0.625rem, 1.2vw, 0.75rem);
+  color: #666666;
+  font-style: italic;
+  margin-top: 0.3125rem;
+}
+
+/* Media Queries */
+@media screen and (min-width: 1200px) and (max-width: 1440px) {
+  .postDetailModal {
+    width: 85%;
+    max-width: 700px; /* Giảm kích thước tối đa để phù hợp với MacBook */
+    max-height: 85vh;
+  }
+
+  .sharedPost {
+    width: 90%;
+    max-width: 450px;
+  }
+
+  .modalContent {
+    max-width: 350px;
+  }
+
+  .modalContent1 {
+    max-width: 400px;
+  }
+
+  .mediaWrapper {
+    max-width: 80vw;
+    max-height: 75vh;
+  }
+
+  .singleMedia {
+    height: clamp(250px, 35vw, 300px);
+  }
+
+  .doubleMedia {
+    height: clamp(150px, 20vw, 200px);
+  }
+
+  .tripleMediaFirst {
+    height: clamp(150px, 20vw, 200px);
+  }
+
+  .tripleMediaSecond {
+    height: clamp(100px, 15vw, 150px);
+  }
+
+  .quadMedia {
+    height: clamp(120px, 18vw, 180px);
+  }
+
+  .fivePlusMediaFirstRow {
+    height: clamp(150px, 20vw, 200px);
+  }
+
+  .fivePlusMediaSecondRowLeft,
+  .fivePlusMediaSecondRowMiddle,
+  .fivePlusMediaSecondRowRight {
+    height: clamp(100px, 15vw, 150px);
+  }
+}
+
 @media screen and (max-width: 768px) {
   .postDetailModal {
     width: 95%;
@@ -1093,11 +1148,7 @@
   }
 
   .modalHeader h3 {
-    font-size: 0.875rem;
-  }
-
-  .closeButton {
-    font-size: 1rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   }
 
   .modalBody {
@@ -1105,70 +1156,80 @@
     gap: 0.625rem;
   }
 
-  .avatar {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .name {
-    font-size: 0.75rem;
-  }
-
-  .time {
-    font-size: 0.625rem;
-  }
-
-  .caption {
-    font-size: 0.75rem;
-  }
-
   .singleMedia {
     height: 18.75rem;
-    /* 300px */
   }
 
   .doubleMedia {
     height: 12.5rem;
-    /* 200px */
   }
 
   .tripleMediaFirst {
     height: 12.5rem;
-    /* 200px */
   }
 
   .tripleMediaSecond {
     height: 6.25rem;
-    /* 100px */
   }
 
   .quadMedia {
     height: 9.375rem;
-    /* 150px */
   }
 
   .fivePlusMediaFirstRow {
     height: 12.5rem;
-    /* 200px */
   }
 
   .fivePlusMediaSecondRowLeft,
   .fivePlusMediaSecondRowMiddle,
   .fivePlusMediaSecondRowRight {
     height: 6.25rem;
-    /* 100px */
   }
 
   .sharedPost {
     width: 95%;
     max-width: 25rem;
-    /* 400px */
     padding: 0.75rem;
   }
 
   .captionInput {
     min-height: 5rem;
-    /* 80px */
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .mediaWrapper {
+    max-width: 95vw;
+    max-height: 85vh;
+  }
+
+  .fullMedia {
+    max-width: 100%;
+    max-height: 85vh;
+  }
+
+  .navButton {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    padding: 10px;
+  }
+
+  .navButton:first-child {
+    left: 10px;
+  }
+
+  .navButton:last-child {
+    right: 10px;
+  }
+
+  .closeButton {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    padding: 6px;
   }
 }
 
@@ -1182,23 +1243,9 @@
     padding: 0.5rem;
   }
 
-  .avatar {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-
-  .commentAvatar {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-
-  .commentContent {
-    padding: 0.375rem 0.5rem;
-  }
-
   .inputContainer input {
     padding: 0.5rem 2rem 0.5rem 0.5rem;
-    font-size: 0.75rem;
+    font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   }
 
   .singleMedia,
@@ -1211,88 +1258,5 @@
   .fivePlusMediaSecondRowMiddle,
   .fivePlusMediaSecondRowRight {
     height: 10rem;
-    /* Giảm kích thước media cho màn nhỏ */
   }
-}
-
-.pendingComment {
-  opacity: 0.6;
-}
-
-.pendingIndicator {
-  font-size: 0.75rem;
-  /* 12px */
-  color: #666666;
-  font-style: italic;
-  margin-top: 0.3125rem;
-  /* 5px */
-}
-
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  /* Khớp với PostS.css */
-}
-
-.footerReactions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  /* Khớp với PostS.css */
-  cursor: pointer;
-  /* Khớp với PostS.css */
-  font-size: 0.875rem;
-  /* 14px, khớp với PostS.css */
-  color: #65676b;
-  /* Khớp với PostS.css */
-}
-
-.footerReactions span {
-  font-size: 0.875rem;
-  /* 14px, đảm bảo chữ và biểu tượng đồng bộ */
-}
-
-.commentCount {
-  font-size: 0.875rem;
-  /* 14px */
-  color: #65676b;
-  /* Khớp với PostS.css */
-  cursor: pointer;
-}
-
-.footerSpacer {
-  flex: 1;
-  /* Khớp với PostS.css */
-}
-
-.uploadingPreview {
-  margin-top: 0.5rem;
-  color: #606770;
-  font-size: 0.875rem;
-}
-
-.commentMedia {
-  max-width: 100%;
-  max-height: 200px;
-  object-fit: contain;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
-
-.comment .videoWrapper {
-  position: relative;
-  max-width: 100%;
-  max-height: 200px;
-}
-
-.comment .playButton {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
 }

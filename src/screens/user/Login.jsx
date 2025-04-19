@@ -1,12 +1,11 @@
-// src/components/Login.js
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginWeb } from "../../rtk/API";
-import { QRCodeCanvas } from "qrcode.react"; // Đã thay đổi từ QRCode sang QRCodeCanvas
+import { QRCodeCanvas } from "qrcode.react";
 import { loginQR } from "../../rtk/Reducer";
 import { io } from "socket.io-client";
-import styles from "../../styles/screens/user/LoginS.module.css"; // Đường dẫn đến file CSS
+import styles from "../../styles/screens/user/LoginS.module.css";
 import {
     TextField,
     IconButton,
@@ -14,6 +13,7 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 // Hàm tạo token ngẫu nhiên
 const taoTokenNgauNhien = (doDai = 16) => {
     const kyTu = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -23,6 +23,7 @@ const taoTokenNgauNhien = (doDai = 16) => {
     }
     return token;
 };
+
 const DangNhap = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -34,12 +35,11 @@ const DangNhap = () => {
     const [loiEmailDienThoai, setLoiEmailDienThoai] = useState("");
     const [errorPassword, setErrorPassword] = useState('');
     const [hienThiQR, setHienThiQR] = useState(false);
-    const [qrToken, setQrToken] = useState(""); // State để lưu token cho QR
+    const [qrToken, setQrToken] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // Kết nối tới server
         const newSocket = io("https://linkage.id.vn", {
             transports: ["websocket"],
             reconnection: true,
@@ -64,8 +64,8 @@ const DangNhap = () => {
                 dispatch(
                     loginQR({
                         user: data.user,
-                        token: data.token || "", // Backend cần gửi token
-                        refreshToken: data.refreshToken || "", // Backend cần gửi refreshToken
+                        token: data.token || "",
+                        refreshToken: data.refreshToken || "",
                     })
                 );
             } else {
@@ -78,7 +78,6 @@ const DangNhap = () => {
         };
     }, [qrToken]);
 
-    // Tạo token mới mỗi khi modal QR được mở
     useEffect(() => {
         if (hienThiQR) {
             setQrToken(taoTokenNgauNhien());
@@ -145,6 +144,10 @@ const DangNhap = () => {
             });
     };
 
+    const handleNavigateToRegister = () => {
+        navigate('/register');
+    };
+
     return (
         <div
             style={{
@@ -183,24 +186,6 @@ const DangNhap = () => {
                 >
                     {/* Ứng dụng web */}
                 </p>
-                {/* <input
-                    type="text" // Đổi từ "email" sang "text" vì chấp nhận cả email và số điện thoại
-                    value={emailHoacDienThoai}
-                    onChange={(e) => setEmailHoacDienThoai(e.target.value)}
-                    placeholder="Email hoặc số điện thoại"
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginBottom: "15px",
-                        border: "1px solid #d9d9d9",
-                        borderRadius: "5px",
-                        fontSize: "14px",
-                        backgroundColor: "#f5faff",
-                    }}
-                />
-                {loiEmailDienThoai && (
-                    <p style={{ color: "red", fontWeight: "400" }}>{loiEmailDienThoai}</p>
-                )} */}
                 <TextField
                     label="Email hoặc số điện thoại"
                     type={'text'}
@@ -212,24 +197,6 @@ const DangNhap = () => {
                     helperText={loiEmailDienThoai}
                     sx={{ mb: 2 }}
                 />
-                {/* <input
-                    type="password"
-                    value={matKhau}
-                    onChange={(e) => setMatKhau(e.target.value)}
-                    placeholder="Mật khẩu"
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        marginBottom: "20px",
-                        border: "1px solid #d9d9d9",
-                        borderRadius: "5px",
-                        fontSize: "14px",
-                        backgroundColor: "#f5faff",
-                    }}
-                />
-                {loiMatKhau && (
-                    <p style={{ color: "red", fontWeight: "400" }}>{loiMatKhau}</p>
-                )} */}
                 <TextField
                     label="Mật khẩu"
                     type={showPassword ? 'text' : 'password'}
@@ -282,6 +249,28 @@ const DangNhap = () => {
                     onMouseOut={(e) => (e.target.style.backgroundColor = "#1e90ff")}
                 >
                     Đăng Nhập
+                </button>
+                <p style={{ margin: "10px 0", fontSize: "14px", color: "#555" }}>
+                    Hoặc
+                </p>
+                <button
+                    onClick={handleNavigateToRegister}
+                    style={{
+                        width: "100%",
+                        padding: "10px",
+                        backgroundColor: "#00a400",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        transition: "background-color 0.3s",
+                    }}
+                    onMouseOver={(e) => (e.target.style.backgroundColor = "#009100")}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = "#00a400")}
+                >
+                    Đăng Ký
                 </button>
             </div>
             {hienThiQR && (

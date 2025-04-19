@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from 'react-icons/fa';
 import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-icons/ai';
-import { MdOutlineEmojiEmotions, MdOutlinePhoto, MdOutlineGif } from 'react-icons/md';
+import { MdOutlinePhoto } from 'react-icons/md';
 import { IoPlayCircle } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from '../../styles/components/items/PostDetailS.module.css';
 import {
@@ -19,6 +20,7 @@ import ReportDialog from '../../components/dialogs/ReportDialog';
 
 const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClose, isSharedSection, reasons }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const token = useSelector((state) => state.app.token);
   const [post, setPost] = useState(initialPost);
   const [comments, setComments] = useState([]);
@@ -38,15 +40,100 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [showReplies, setShowReplies] = useState({});
+  const [reactionListModalVisible, setReactionListModalVisible] = useState(false);
+  const [selectedReactionTab, setSelectedReactionTab] = useState('all');
   const reactionRef = useRef(null);
   const commentInputRef = useRef(null);
   const menuRef = useRef(null);
-  const [uploadingMedia, setUploadingMedia] = useState(null); // State cho file đang tải
-  const fileInputRef = useRef(null); // Ref cho input file
+  const fileInputRef = useRef(null);
+  const [uploadingMedia, setUploadingMedia] = useState(null);
+  const [mediaList, setMediaList] = useState([]); // Danh sách media
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0); // Chỉ số của media đang xem
+
+  const MAX_REPLY_LEVEL = 2; // Giới hạn tối đa cấp reply
+
+  const getReplyLevel = (comment, commentsList, level = 0) => {
+    if (!comment.ID_comment_reply) return level;
+    const parentComment = commentsList.find(
+      (c) => c._id === comment.ID_comment_reply._id
+    );
+    if (!parentComment) return level;
+    return getReplyLevel(parentComment, commentsList, level + 1);
+  };
+  
+
+  
 
 
+  const removeTempComment = (commentsList, tempId) => {
+    return commentsList
+      .map((comment) => {
+        // Nếu comment hiện tại là temp comment, loại bỏ nó
+        if (comment._id === tempId) {
+          return null;
+        }
+        // Nếu comment có replys, tiếp tục xóa đệ quy trong replys
+        if (Array.isArray(comment.replys) && comment.replys.length > 0) {
+          return {
+            ...comment,
+            replys: removeTempComment(comment.replys, tempId).filter(Boolean),
+          };
+        }
+        return comment;
+      })
+      .filter(Boolean); // Loại bỏ các comment null (temp comment đã bị xóa)
+  };
 
-  // Hàm tải file lên Cloudinary
+  // Cập nhật danh sách media khi post thay đổi
+useEffect(() => {
+  const medias = post.ID_post_shared ? post.ID_post_shared.medias : post.medias;
+  setMediaList(medias || []);
+}, [post]);
+
+
+  const handleMouseEnter = () => {
+    setReactionsVisible(true);
+  };
+
+  const handleMouseLeave = () => {
+    setTimeout(() => {
+      if (
+        !document.querySelector(`.${styles.reactionBar}:hover`) &&
+        !document.querySelector(`.${styles.reactionContainer}:hover`)
+      ) {
+        setReactionsVisible(false);
+      }
+    }, 200);
+  };
+
+  // Logic tính toán reaction count và top reactions
+  const reactionCount = (post.post_reactions || []).reduce((acc, reaction) => {
+    if (!reaction.ID_reaction) return acc;
+    const id = reaction.ID_reaction._id;
+    acc[id] = acc[id]
+      ? { ...acc[id], count: acc[id].count + 1 }
+      : { ...reaction, count: 1 };
+    return acc;
+  }, {});
+  const topReactions = Object.values(reactionCount)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 2);
+
+  const reactionTabs = [
+    { id: 'all', name: 'Tất cả', count: post.post_reactions?.length || 0 },
+    ...Object.values(reactionCount).map(reaction => ({
+      id: reaction.ID_reaction._id,
+      icon: reaction.ID_reaction.icon,
+      count: reaction.count,
+    })),
+  ];
+
+  const filteredReactions = selectedReactionTab === 'all'
+    ? post.post_reactions
+    : post.post_reactions?.filter(
+        reaction => reaction.ID_reaction._id === selectedReactionTab
+      );
+
   const uploadFile = async (file) => {
     if (!file || !file.type || !file.name) {
       console.error("File không hợp lệ:", file);
@@ -55,9 +142,9 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     try {
       const data = new FormData();
       data.append("file", file);
-      data.append("upload_preset", "ml_default"); // Thay bằng preset của bạn
+      data.append("upload_preset", "ml_default");
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/ddasyg5z3/upload", // Thay bằng cloud name của bạn
+        "https://api.cloudinary.com/v1_1/ddasyg5z3/upload",
         data,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -74,12 +161,11 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }
   };
 
-  // Hàm xử lý chọn file
   const handleMediaSelect = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setUploadingMedia(file); // Lưu file tạm thời để hiển thị giao diện
+    setUploadingMedia(file);
     const mediaUrl = await uploadFile(file);
     if (mediaUrl) {
       const type = file.type.startsWith('video/') ? 'video' : 'image';
@@ -87,22 +173,9 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }
     setUploadingMedia(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Reset input file
+      fileInputRef.current.value = '';
     }
   };
-
-  // reaction
-  const reactionCount = (post.post_reactions || []).reduce((acc, reaction) => {
-    if (!reaction.ID_reaction) return acc;
-    const id = reaction.ID_reaction._id;
-    acc[id] = acc[id]
-      ? { ...acc[id], count: acc[id].count + 1 }
-      : { ...reaction, count: 1 };
-    return acc;
-  }, {});
-  const topReactions = Object.values(reactionCount)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 2);
 
   const toggleReplies = (commentId) => {
     setShowReplies((prev) => ({
@@ -176,14 +249,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     });
   };
 
-  const removePendingComment = (tempId) => {
-    setComments((prevComments) =>
-      prevComments.filter((comment) => comment._id !== tempId)
-    );
-  };
-
   const callAddComment = async (type, content) => {
-    if (!content && type === 'text') return; // Chỉ kiểm tra content cho type text
+    if (!content && type === 'text') return;
   
     const tempId = `temp_${Date.now()}_${Math.random()}`;
     const tempComment = {
@@ -202,6 +269,7 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       isPending: true,
     };
   
+    // Thêm temp comment vào danh sách
     setComments((prevComments) => {
       if (replyingTo) {
         return addReplyToComment(prevComments, tempComment, true);
@@ -221,16 +289,20 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
         ID_comment_reply: replyingTo?._id || null,
       };
       const response = await dispatch(addComment(paramsAPI)).unwrap();
+  
+      // Xóa temp comment trước khi thêm comment thật
       setComments((prevComments) => {
+        // Xóa temp comment ở tất cả các cấp độ
+        const updatedComments = removeTempComment(prevComments, tempId);
+  
+        // Thêm comment thật vào danh sách
         if (response.comment.ID_comment_reply) {
-          const updatedComments = addReplyToComment(prevComments, response.comment);
-          return updatedComments.filter((comment) => comment._id !== tempId);
+          return addReplyToComment(updatedComments, response.comment);
         }
-        return [
-          ...prevComments.filter((comment) => comment._id !== tempId),
-          response.comment,
-        ];
+        return [...updatedComments, response.comment];
       });
+  
+      // Nếu là reply, mở rộng hiển thị replies
       if (response.comment.ID_comment_reply) {
         setShowReplies((prev) => ({
           ...prev,
@@ -239,15 +311,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       }
     } catch (error) {
       console.log('Lỗi khi callAddComment:', error);
-      setComments((prevComments) => {
-        if (replyingTo) {
-          return prevComments.map((comment) => ({
-            ...comment,
-            replys: comment.replys?.filter((reply) => reply._id !== tempId) || [],
-          }));
-        }
-        return prevComments.filter((comment) => comment._id !== tempId);
-      });
+      // Xóa temp comment nếu API thất bại
+      setComments((prevComments) => removeTempComment(prevComments, tempId));
       setCountComments((prev) => prev - 1);
       setFailedMessage('Gửi bình luận thất bại. Vui lòng thử lại!');
       setTimeout(() => setFailedMessage(''), 1500);
@@ -464,13 +529,13 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
           <div
             className={styles.overlay}
             onClick={(e) => {
-              e.stopPropagation(); // Ngăn lan truyền sự kiện click
+              e.stopPropagation();
               setModalVisible(false);
             }}
           >
             <div
               className={styles.modalContent}
-              onClick={(e) => e.stopPropagation()} // Đảm bảo modalContent không lan truyền
+              onClick={(e) => e.stopPropagation()}
             >
               {status.map((option, index) => (
                 <button
@@ -540,47 +605,48 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   };
 
   const getMediaStyle = (count, index) => {
-    if (count === 1) return styles.singleMedia;
-    else if (count === 2) return styles.doubleMedia;
+    if (count === 1) return "single-media";
+    else if (count === 2) return "double-media";
     else if (count === 3)
-      return index === 0 ? styles.tripleMediaFirst : styles.tripleMediaSecond;
-    else if (count === 4) return styles.quadMedia;
+      return index === 0 ? "triple-media-first" : "triple-media-second";
+    else if (count === 4) return "quad-media";
     else {
-      if (index < 2) return styles.fivePlusMediaFirstRow;
-      else if (index === 2) return styles.fivePlusMediaSecondRowLeft;
-      else if (index === 3) return styles.fivePlusMediaSecondRowMiddle;
-      else return styles.fivePlusMediaSecondRowRight;
+      if (index < 2) return "five-plus-media-first-row";
+      else if (index === 2) return "five-plus-media-second-row-left";
+      else if (index === 3) return "five-plus-media-second-row-middle";
+      else return "five-plus-media-second-row-right";
     }
   };
-
+  
   const renderMediaGrid = (medias) => {
     const mediaCount = medias.length;
     if (mediaCount === 0) return null;
-
+  
     return (
-      <div className={styles.mediaContainer}>
+      <div className="media-container">
         {medias.slice(0, 5).map((uri, index) => (
           <div
             key={index}
-            className={`${styles.mediaItem} ${getMediaStyle(mediaCount, index)}`}
+            className={`media-item ${getMediaStyle(mediaCount, index)}`}
             onClick={() => {
-              setSelectedImage(uri);
+              setCurrentMediaIndex(index);
               setImageModalVisible(true);
             }}
           >
             {isVideo(uri) ? (
-              <div className={styles.videoWrapper}>
-                <video src={uri} className={styles.video} />
-                <div className={styles.playButton}>
+              <div className="video-wrapper">
+                <video src={uri} className="video" />
+                <div className="play-button">
                   <IoPlayCircle size={40} color="white" />
                 </div>
               </div>
             ) : (
-              <img src={uri} alt="Post Media" className={styles.image} />
+              <img src={uri} alt="Post Media" className="image" />
             )}
+            {/* Thêm overlay hiển thị +1, +2 khi có hơn 5 hình */}
             {index === 4 && mediaCount > 5 && (
-              <div className={styles.overlay}>
-                <span className={styles.overlayText}>+{mediaCount - 5}</span>
+              <div className="overlay-container">
+                <span className="overlay-text">+{mediaCount - 5}</span>
               </div>
             )}
           </div>
@@ -595,23 +661,18 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }
   };
 
+
   const handleReply = (comment) => {
+    const level = getReplyLevel(comment, comments);
+    if (level >= MAX_REPLY_LEVEL) {
+      setFailedMessage(`Không thể trả lời thêm. Giới hạn tối đa là ${MAX_REPLY_LEVEL} cấp reply.`);
+      setTimeout(() => setFailedMessage(''), 1500);
+      return;
+    }
     setReplyingTo(comment);
     setNewComment(`@${comment.ID_user.first_name} ${comment.ID_user.last_name} `);
     commentInputRef.current?.focus();
   };
-
-  const handleLongPress = () => {
-    if (reactionRef.current) {
-      const rect = reactionRef.current.getBoundingClientRect();
-      setMenuPosition({
-        top: rect.top - 40,
-        left: rect.left,
-      });
-      setReactionsVisible(true);
-    }
-  };
-
   const handleOptionsClick = (e) => {
     if (menuVisible) {
       setMenuVisible(false);
@@ -656,7 +717,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
                   alt="Comment Media"
                   className={styles.commentMedia}
                   onClick={() => {
-                    setSelectedImage(comment.content);
+                    setMediaList([comment.content]); // Chỉ có 1 media trong trường hợp này
+                    setCurrentMediaIndex(0);
                     setImageModalVisible(true);
                   }}
                 />
@@ -666,7 +728,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
                   <div
                     className={styles.playButton}
                     onClick={() => {
-                      setSelectedImage(comment.content);
+                      setMediaList([comment.content]); // Chỉ có 1 media trong trường hợp này
+                      setCurrentMediaIndex(0);
                       setImageModalVisible(true);
                     }}
                   >
@@ -804,7 +867,7 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
                   className={styles.optionsButton}
                   onClick={handleOptionsClick}
                 >
-                    <FaEllipsisH size={16} />
+                  <FaEllipsisH size={16} />
                 </button>
               )}
             </div>
@@ -818,16 +881,21 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             <div className={styles.footer}>
               {post.post_reactions?.length > 0 ? (
                 <div className={styles.footerReactions}>
-                  {topReactions.map((reaction, index) => (
-                    <span key={index}>{reaction.ID_reaction.icon}</span>
-                  ))}
-                  <span>
-                    {post.post_reactions.some((r) => r.ID_user._id === me?._id)
-                      ? post.post_reactions.length === 1
-                        ? `${me?.first_name} ${me?.last_name}`
-                        : `Bạn và ${post.post_reactions.length - 1} người khác`
-                      : `${post.post_reactions.length}`}
-                  </span>
+                  <a
+                    onClick={() => setReactionListModalVisible(true)}
+                    style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
+                  >
+                    {topReactions.map((reaction, index) => (
+                      <span key={index}>{reaction.ID_reaction.icon}</span>
+                    ))}
+                    <span>
+                      {post.post_reactions.some((r) => r.ID_user._id === me?._id)
+                        ? post.post_reactions.length === 1
+                          ? `${me?.first_name} ${me?.last_name}`
+                          : `Bạn và ${post.post_reactions.length - 1} người khác`
+                        : `${post.post_reactions.length}`}
+                    </span>
+                  </a>
                 </div>
               ) : (
                 <div className={styles.footerSpacer} />
@@ -840,19 +908,45 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             </div>
 
             <div className={styles.interactions}>
-              <button
-                ref={reactionRef}
-                className={styles.action}
-                onMouseEnter={handleLongPress}
-                onClick={() =>
-                  userReaction
-                    ? callDeletePost_reaction(userReaction._id)
-                    : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
-                }
-              >
-                {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
-                <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
-              </button>
+              <div className={styles.reactionContainer}>
+                <button
+                  ref={reactionRef}
+                  className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  onClick={() =>
+                    userReaction
+                      ? callDeletePost_reaction(userReaction._id)
+                      : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
+                  }
+                >
+                  <div className={styles.reactionIconBox}>
+                    {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
+                    <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
+                  </div>
+                </button>
+                {reactionsVisible && (
+                  <div
+                    className={styles.reactionBar}
+                    onMouseEnter={() => setReactionsVisible(true)}
+                    onMouseLeave={() => setReactionsVisible(false)}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {reactions.map((reaction, index) => (
+                      <button
+                        key={index}
+                        className={styles.reactionButton}
+                        onClick={() => {
+                          callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
+                          setReactionsVisible(false);
+                        }}
+                      >
+                        {reaction.icon}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <button className={styles.action}>
                 <FaComment size={16} /> Bình luận
               </button>
@@ -863,28 +957,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
                 <FaShare size={16} /> Chia sẻ
               </button>
             </div>
-
-            {reactionsVisible && (
-              <div
-                className={styles.reactionBar}
-                style={{ top: menuPosition.top, left: menuPosition.left }}
-                onMouseLeave={() => setReactionsVisible(false)}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {reactions.map((reaction, index) => (
-                  <button
-                    key={index}
-                    className={styles.reactionButton}
-                    onClick={() => {
-                      callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
-                      setReactionsVisible(false);
-                    }}
-                  >
-                    {reaction.icon}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           <div className={styles.commentsSection}>
@@ -937,7 +1009,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
               />
             </div>
             <div className={styles.inputIcons}>
-              <MdOutlineEmojiEmotions size={20} />
               <MdOutlinePhoto
                 size={20}
                 onClick={() => fileInputRef.current?.click()}
@@ -950,10 +1021,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
                 style={{ display: 'none' }}
                 onChange={handleMediaSelect}
               />
-              <MdOutlineGif size={20} />
             </div>
           </div>
-       
         </div>
       </div>
 
@@ -987,34 +1056,68 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       )}
 
 {isImageModalVisible && (
-  <div
-    className={styles.mediaOverlay}
-    onClick={(e) => {
-      e.stopPropagation(); // Ngăn lan truyền sự kiện click
-      setImageModalVisible(false);
-    }}
-  >
+  <div className={styles.mediaOverlay} onClick={() => setImageModalVisible(false)}>
     <div className={styles.fullMediaContainer} onClick={(e) => e.stopPropagation()}>
-      {isVideo(selectedImage) ? (
-        <video src={selectedImage} className={styles.fullMedia} controls autoPlay />
-      ) : (
-        <img src={selectedImage} className={styles.fullMedia} alt="Full Media" />
-      )}
+      {/* Nút đóng modal */}
+      <button
+        className={styles.closeButton}
+        onClick={() => setImageModalVisible(false)}
+      >
+        ✕
+      </button>
+
+      {/* Container cho các nút điều hướng */}
+      <div className={styles.navButtonsContainer}>
+        {/* Nút Previous */}
+        {mediaList.length > 1 && (
+          <button
+            className={styles.navButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
+            }}
+          >
+            ❮
+          </button>
+        )}
+
+        {/* Hiển thị media hiện tại */}
+        <div className={styles.mediaWrapper}>
+          {isVideo(mediaList[currentMediaIndex]) ? (
+            <video src={mediaList[currentMediaIndex]} className={styles.fullMedia} controls autoPlay />
+          ) : (
+            <img src={mediaList[currentMediaIndex]} className={styles.fullMedia} alt="Full Media" />
+          )}
+        </div>
+
+        {/* Nút Next */}
+        {mediaList.length > 1 && (
+          <button
+            className={styles.navButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
+            }}
+          >
+            ❯
+          </button>
+        )}
+      </div>
     </div>
   </div>
 )}
 
-{shareVisible && (
-  <div
-    className={styles.shareOverlay}
-    onClick={(e) => {
-      e.stopPropagation(); // Ngăn lan truyền sự kiện click
-      setShareVisible(false);
-    }}
-  >
-    <SharedPost post={post} me={me} setShareVisible={setShareVisible} />
-  </div>
-)}
+      {shareVisible && (
+        <div
+          className={styles.shareOverlay}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShareVisible(false);
+          }}
+        >
+          <SharedPost post={post} me={me} setShareVisible={setShareVisible} />
+        </div>
+      )}
 
       {successMessage && (
         <div className={styles.successModalOverlay} onClick={() => setSuccessMessage('')}>
@@ -1045,6 +1148,61 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
           ID_post={post._id}
           ID_user={null}
         />
+      )}
+
+      {reactionListModalVisible && (
+        <div
+          className={styles.overlay}
+          onClick={(e) => {
+            e.stopPropagation();
+            setReactionListModalVisible(false);
+          }}
+        >
+          <div
+            className={styles.modalContent1}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Cảm xúc về bài viết</h3>
+            <div className={styles.reactionTabs}>
+              {reactionTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  className={selectedReactionTab === tab.id ? styles.activeTab : styles.tab}
+                  onClick={() => setSelectedReactionTab(tab.id)}
+                >
+                  {tab.icon && <span>{tab.icon}</span>}
+                  {tab.name || ''}
+                  <span>{tab.count}</span>
+                </button>
+              ))}
+            </div>
+            {filteredReactions?.length > 0 ? (
+              <ul className={styles.reactionList}>
+                {filteredReactions.map((reaction, index) => (
+                  <li
+                    key={index}
+                    className={styles.reactionItem}
+                    onClick={() => navigate(`/profile/${reaction.ID_user._id}`)}
+                  >
+                    <img
+                      src={reaction.ID_user.avatar}
+                      alt="User Avatar"
+                      className={styles.reactionAvatar}
+                    />
+                    <div>
+                      <span className={styles.reactionUserName}>
+                        {reaction.ID_user.first_name} {reaction.ID_user.last_name}
+                      </span>
+                      <div>{reaction.ID_reaction.icon} {reaction.ID_reaction.name}</div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Chưa có biểu cảm nào.</p>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
