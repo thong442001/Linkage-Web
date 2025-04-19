@@ -1,0 +1,125 @@
+.modalOverlay {
+    position: fixed;
+    top: 30px;
+    left: 0;
+    right: 70px;
+    bottom: 0;
+    background: transparent; /* Bỏ lớp phủ mờ */
+    display: flex;
+    justify-content: flex-end; /* Căn phải */
+    align-items: flex-start; /* Căn dưới */
+    z-index: 1000;
+  }
+  
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 320px; /* Kích thước nhỏ gọn hơn, giống ảnh 2 */
+    max-height: 60vh; /* Chiều cao tối đa */
+    margin: 16px; /* Khoảng cách từ mép màn hình */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Bóng nhẹ */
+  }
+  
+  .modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f5f5f5; /* Màu nền header giống ảnh 2 */
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .modalHeader h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #555;
+  }
+  
+  .closeButton:hover {
+    color: #000;
+  }
+  
+  .chatList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+  }
+  
+  .chatListHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .searchBar {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    font-size: 13px;
+    outline: none;
+    background: #fff;
+  }
+  
+  .searchBar:focus {
+    border-color: #0084ff; /* Màu xanh giống ảnh 2 */
+  }
+  
+  .createGroupButton {
+    background: #0084ff; /* Màu xanh giống ảnh 2 */
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .createGroupButton:hover {
+    background: #006bb3;
+  }
+  
+  .groupList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 480px) {
+    .modal {
+      max-width: 90%;
+      margin: 8px;
+    }
+  
+    .modalHeader h2 {
+      font-size: 14px;
+    }
+  
+    .searchBar {
+      font-size: 12px;
+    }
+  
+    .createGroupButton {
+      width: 28px;
+      height: 28px;
+    }
+  }

@@ -213,11 +213,6 @@ const Friend = () => {
                         className={styles.noRequests}
                         // height: 100vh;
                         // width: 100%;
-                        style={{
-                          // height: "100vh",
-                          // width: "100%",
-                          // border: "1px solid #ccc",
-                        }}
                       >Không có lời mời nào</div>
                     ) : (
                       relationships.map((request) => (

@@ -19,7 +19,8 @@ import {
     FaBookmark,
     FaPlayCircle,
     FaShoppingBag,
-    FaCog
+    FaCog,
+    FaUser
 } from 'react-icons/fa';
 import {
     getAllNotificationOfUser,
@@ -32,7 +33,7 @@ import Post from '../../components/items/Post';
 import NotificationDialog from '../../components/items/NotificationDialog';
 import SearchDialog from '../../components/items/SearchDialog';
 import ChangePasswordDialog from '../../components/dialogs/ChangePasswordDialog';
-import HomeStories from '../../components/items/HomeStories'; // Import HomeStories
+import HomeStories from '../../components/items/HomeStories';
 import { addSearch, removeSearch, clearHistory } from "../../rtk/Reducer";
 import ChangeNameDialog from '../../components/dialogs/ChangeNameDialog';
 import {
@@ -42,6 +43,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LogoutIcon from '@mui/icons-material/Logout';
+import HomeChatModal from '../../components/dialogs/HomeChatModal';
+import ChatModal from '../../components/dialogs/ChatModal'; // Import ChatModal
+
 const Home = ({ content }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -53,12 +57,12 @@ const Home = ({ content }) => {
 
     const [activeIcon, setActiveIcon] = useState('home');
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isChat, setIsChat] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [formattedNotifications, setFormattedNotifications] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    //search
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stories, setStories] = useState([]);
@@ -67,40 +71,46 @@ const Home = ({ content }) => {
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    
 
-    // lấy lịch sử tìm kiếm
+    // Thêm state để quản lý danh sách ChatModal
+    const [chatModals, setChatModals] = useState([]);
+
+    // Hàm mở ChatModal
+    const openChatModal = (group) => {
+        if (!chatModals.some((modal) => modal._id === group._id)) {
+            setChatModals([...chatModals, group]);
+        }
+    };
+
+    // Hàm đóng ChatModal
+    const closeChatModal = (groupId) => {
+        setChatModals(chatModals.filter((modal) => modal._id !== groupId));
+    };
+
     const searchHistory = useSelector((state) => state.app.history) || [];
-    //thêm làm lịch sử tìm kiếm
     const saveSearch = (user) => {
         dispatch(addSearch(user));
     };
-    //xóa người tìm kiếm được chọn
     const deleteSearchItem = (userID) => {
         dispatch(removeSearch(userID));
     };
-    // xóa tất cả lịch sử
     const clearHistorySearch = () => {
         setModalVisible(true);
     };
 
-    // Search
     const [data, setData] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
 
-    // dialog đổi mật khẩu
     const [openChangePasswordDialog, setOpenChangePasswordDialog] = useState(false);
     const handleOpenChangePasswordDialog = () => setOpenChangePasswordDialog(true);
     const handleCloseChangePasswordDialog = () => setOpenChangePasswordDialog(false);
 
-    // dialog đổi name
     const [openChangeNameDialog, setOpenChangeNameDialog] = useState(false);
     const handleOpenChangeNameDialog = () => setOpenChangeNameDialog(true);
     const handleCloseChangeNameDialog = () => setOpenChangeNameDialog(false);
 
-    // Đồng bộ activeIcon với URL
     useEffect(() => {
         if (location.pathname === '/') setActiveIcon('home');
         else if (location.pathname === '/friend') setActiveIcon('users');
@@ -113,7 +123,6 @@ const Home = ({ content }) => {
         navigate('/');
     };
 
-    // Gọi API
     const callGetAllPostsInHome = async (ID_user) => {
         try {
             if (!refreshing) setLoading(true);
@@ -122,7 +131,7 @@ const Home = ({ content }) => {
                 .then((response) => {
                     setPosts(response.posts || []);
                     setStories(response.stories || []);
-                    setLiveSessions([]); // Nếu có dữ liệu liveSessions từ API, cập nhật tại đây
+                    setLiveSessions([]);
                     setLoading(false);
                 })
                 .catch((error) => {
@@ -144,11 +153,9 @@ const Home = ({ content }) => {
         }
     }, [me._id, location.pathname]);
 
-    // Search
     useEffect(() => {
         getData();
     }, []);
-
 
     const getData = async () => {
         try {
@@ -162,11 +169,12 @@ const Home = ({ content }) => {
     const normalizeText = (text) => {
         return text
             .toLowerCase()
-            .normalize('NFD') // Tách dấu ra khỏi chữ
-            .replace(/[\u0300-\u036f]/g, '') // Xóa dấu
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
             .replace(/đ/g, 'd')
             .replace(/Đ/g, 'D');
     };
+
     const handleInputChange = (e) => {
         const value = e.target.value;
         setSearchQuery(value);
@@ -189,7 +197,6 @@ const Home = ({ content }) => {
         }
     };
 
-    // Hàm cập nhật reaction
     const updatePostReaction = (postId, reaction, reactionId) => {
         setPosts((prev) =>
             prev.map((post) =>
@@ -197,11 +204,9 @@ const Home = ({ content }) => {
                     ? {
                         ...post,
                         post_reactions: [
-                            // Lọc bỏ reaction cũ của người dùng hiện tại
                             ...post.post_reactions.filter(
                                 (r) => r.ID_user._id !== me._id
                             ),
-                            // Thêm reaction mới
                             {
                                 _id: reactionId,
                                 ID_user: {
@@ -220,7 +225,6 @@ const Home = ({ content }) => {
         );
     };
 
-    // Hàm xóa reaction
     const deletePostReaction = (postId, reactionId) => {
         setPosts((prev) =>
             prev.map((post) =>
@@ -234,7 +238,6 @@ const Home = ({ content }) => {
         );
     };
 
-    // Hàm xóa bài đăng
     const handleDeletePost = async (postId) => {
         try {
             dispatch(changeDestroyPost({ _id: postId }))
@@ -253,7 +256,6 @@ const Home = ({ content }) => {
         }
     };
 
-    // Hàm xóa vĩnh viễn bài đăng
     const handleDeletePermanently = async (postId) => {
         try {
             dispatch(changeDestroyPost({ _id: postId, permanent: true }))
@@ -459,7 +461,16 @@ const Home = ({ content }) => {
         <div className="home-container">
             <div className="header-container">
                 <div className="logo-search-container">
-                    <img src="/Logo_app.png" alt="Logo" className="logo" />
+                    <img src="/Logo_app.png" alt="Logo" className="logo"
+                        onClick={() => {
+                            setActiveIcon('home');
+                            navigate('/');
+                            setIsSearchOpen(false);
+                            setIsNotificationOpen(false);
+                            setIsChat(false);
+                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                        }}
+                    />
                     <div className="search-bar">
                         <FaSearch className="search-icon" />
                         <input
@@ -484,7 +495,6 @@ const Home = ({ content }) => {
                                         saveSearch={saveSearch}
                                     />
                                 )}
-
                             </div>
                         )}
                     </div>
@@ -496,7 +506,9 @@ const Home = ({ content }) => {
                             setActiveIcon('home');
                             navigate('/');
                             setIsSearchOpen(false);
-                            setIsNotificationOpen(false)
+                            setIsNotificationOpen(false);
+                            setIsChat(false);
+                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                         }}
                     >
                         <FaHome className="nav-icon" />
@@ -507,7 +519,9 @@ const Home = ({ content }) => {
                             setActiveIcon('users');
                             navigate('/friend');
                             setIsSearchOpen(false);
-                            setIsNotificationOpen(false)
+                            setIsNotificationOpen(false);
+                            setIsChat(false);
+                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                         }}
                     >
                         <FaUsers className="nav-icon" />
@@ -515,45 +529,54 @@ const Home = ({ content }) => {
                     <div
                         className={`icon-wrapper ${activeIcon === 'menu' ? 'active' : ''}`}
                         onClick={() => {
-                            setActiveIcon('menu')
-                            setIsSearchOpen(false)
+                            setActiveIcon('menu');
+                            setIsChat(false);
                             setIsNotificationOpen(false);
+                            setIsSearchOpen(false);
+                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            navigate('/profile');
                         }}
                     >
-                        <FaPlusCircle className="nav-icon" />
+                        <FaUser className="nav-icon" />
                     </div>
                     <div
                         className={`icon-wrapper ${activeIcon === 'bell' ? 'active' : ''}`}
                         onClick={() => {
-                            setActiveIcon('bell')
-                            setIsSearchOpen(false)
-                            setIsNotificationOpen(false)
+                            setActiveIcon('bell');
+                            setIsSearchOpen(false);
+                            setIsNotificationOpen(false);
+                            setIsChat(false);
+                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                         }}
                     >
                         <FaBell className="nav-icon" />
                     </div>
                 </div>
                 <div className="mid-header1">
-                    <div className="icon-wrapper1" onClick={() => {
-                        handleLogout()
-                        setIsSearchOpen(false)
-                        setIsNotificationOpen(false)
-                    }}>
-                        <FaTh className="nav-icon1" />
-                    </div>
                     <div
                         className="icon-wrapper1"
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation();
                             setIsNotificationOpen(false);
                             setActiveIcon('chat');
-                            navigate('/chat');
+                            setIsChat(!isChat);
                         }}
                     >
                         <FaFacebookMessenger className="nav-icon1" />
+                        {isChat && (
+                            <HomeChatModal 
+                                onClose={() => setIsChat(false)}
+                                onSelectGroup={(group) => {
+                                    setIsChat(false); // Đóng HomeChatModal
+                                    openChatModal(group); // Mở ChatModal
+                                }}
+                            />
+                        )}
                     </div>
                     <div className="icon-wrapper1" onClick={() => {
-                        setIsNotificationOpen(!isNotificationOpen)
-                        setIsSearchOpen(false)
+                        setIsNotificationOpen(!isNotificationOpen);
+                        setIsSearchOpen(false);
+                        setIsChat(false);
                     }}>
                         <FaBell className="nav-icon1" />
                         {isNotificationOpen && (
@@ -567,7 +590,9 @@ const Home = ({ content }) => {
                         className="avatar-wrapper"
                         onClick={() => {
                             setIsNotificationOpen(false);
-                            setIsSearchOpen(false)
+                            setIsSearchOpen(false);
+                            setIsChat(false);
+                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                             navigate('/profile');
                         }}
                     >
@@ -583,13 +608,14 @@ const Home = ({ content }) => {
                 {location.pathname === '/' ? (
                     <div className="mid-sidebar">
                         <div className="mid-container-sidebar">
-                            {/* Phần tử 1: Avatar */}
                             <div className="sidebar-section avatar-section">
                                 <div
                                     className="avatar-wrapper"
                                     onClick={() => {
                                         setIsNotificationOpen(false);
                                         setIsSearchOpen(false);
+                                        setIsChat(false);
+                                        setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                                         navigate('/profile');
                                     }}
                                 >
@@ -606,7 +632,6 @@ const Home = ({ content }) => {
                                         </div>
                                     </div>
                                 </div>
-
                                 <div
                                     className="avatar-wrapper"
                                     onClick={() => {
@@ -618,7 +643,6 @@ const Home = ({ content }) => {
                                         Thay đổi tên
                                     </div>
                                 </div>
-
                                 <div
                                     className="avatar-wrapper"
                                     onClick={() => {
@@ -630,7 +654,6 @@ const Home = ({ content }) => {
                                         Thay đổi mật khẩu
                                     </div>
                                 </div>
-
                                 <div
                                     className="avatar-wrapper"
                                     onClick={() => navigate("/trash")}
@@ -640,7 +663,6 @@ const Home = ({ content }) => {
                                         Thùng rác
                                     </div>
                                 </div>
-
                                 <div
                                     className="avatar-wrapper"
                                     onClick={handleLogout}
@@ -651,8 +673,6 @@ const Home = ({ content }) => {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Phần tử 2: Nội dung chính (Stories + Posts) */}
                             <div className="sidebar-section">
                                 <div style={{ marginLeft: 30, marginRight: 30 }}>
                                     <HomeStories stories={stories} liveSessions={liveSessions} />
@@ -678,8 +698,6 @@ const Home = ({ content }) => {
                                     )}
                                 </div>
                             </div>
-
-                            {/* Phần tử 3: Placeholder hoặc nội dung khác */}
                             <div className="sidebar-section placeholder-section">
                                 <p>Quảng cáo hoặc nội dung khác</p>
                             </div>
@@ -688,9 +706,17 @@ const Home = ({ content }) => {
                 ) : (
                     content
                 )}
-
                 <ChangeNameDialog open={openChangeNameDialog} onClose={handleCloseChangeNameDialog} />
                 <ChangePasswordDialog open={openChangePasswordDialog} onClose={handleCloseChangePasswordDialog} />
+                {/* Hiển thị các ChatModal */}
+                {chatModals.map((group, index) => (
+                    <ChatModal
+                        key={group._id}
+                        group={group}
+                        onClose={() => closeChatModal(group._id)}
+                        style={{ "--index": index }}
+                    />
+                ))}
             </div>
         </div>
     );

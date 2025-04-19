@@ -186,7 +186,7 @@ const GroupInfo = ({ onClose, ID_group }) => {
           <div className={styles.modalContent}>
             <h1 style={{ color: "#1e90ff", margin: 0 }}>Linkage</h1>
             <h3 className={styles.modalTitle}>Quét mã QR để đăng nhập</h3>
-            <QRCodeCanvas value={`chatapp://login/${ID_group}`} size={180} />
+            <QRCodeCanvas  value={`linkage://addgroup/${ID_group}`} size={180} />
             <button
               onClick={() => setonModalQR(false)}
               className={styles.closeButtonQR}
