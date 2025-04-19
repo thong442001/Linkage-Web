@@ -1,0 +1,245 @@
+.chatModalOverlay {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    z-index: 1000;
+    margin-right: calc(var(--index) * 340px); /* Tăng khoảng cách giữa các modal */
+}
+
+.chatModal {
+    width: 340px; /* Tăng chiều rộng từ 300px lên 340px để giống Facebook */
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* Font giống Facebook */
+}
+
+.expanded {
+    height: 500px; /* Tăng chiều cao từ 400px lên 500px để hiển thị nhiều tin nhắn hơn */
+}
+
+.collapsed {
+    height: 44px; /* Tăng nhẹ chiều cao khi thu gọn để giống Facebook */
+}
+
+.chatModalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background-color: #0084ff;
+    color: #fff;
+    border-radius: 8px 8px 0 0;
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.avatar {
+    width: 32px; /* Tăng kích thước avatar lên 32px */
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.chatHeaderInfo {
+    flex: 1;
+}
+
+.chatHeaderInfo h3 {
+    margin: 0;
+    font-size: 16px; /* Tăng kích thước chữ tên nhóm */
+    font-weight: 600;
+}
+
+.chatHeaderInfo p {
+    margin: 0;
+    font-size: 12px; /* Tăng kích thước chữ "Được mã hóa..." */
+    opacity: 0.8;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+}
+
+.toggleButton,
+.closeButton {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.toggleButton {
+    margin-right: 4px;
+}
+
+.closeButton {
+    font-size: 20px;
+}
+
+.chatModalBody {
+    flex: 1;
+    padding: 12px; /* Tăng padding để thoáng hơn */
+    overflow-y: auto;
+    background-color: #f0f2f5;
+    display: flex;
+    flex-direction: column; /* Đảm bảo tin nhắn hiển thị từ trên xuống dưới */
+}
+
+/* Thêm class để giới hạn nội dung tin nhắn */
+.messageContent {
+    max-width: 240px; /* Giới hạn chiều rộng tối đa của tin nhắn */
+    word-break: break-all; /* Đảm bảo các link dài sẽ xuống dòng */
+    white-space: pre-wrap; /* Cho phép xuống dòng tự nhiên */
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 8px 12px;
+    border-radius: 18px;
+    margin: 2px 0;
+}
+
+/* Tin nhắn của người gửi (bên phải, màu xanh) */
+.messageContent.sender {
+    background-color: #0084ff;
+    color: #fff;
+    margin-left: auto; /* Đẩy sang bên phải */
+}
+
+/* Tin nhắn của người nhận (bên trái, màu xám) */
+.messageContent.receiver {
+    background-color: #e4e6eb;
+    color: #050505;
+    margin-right: auto; /* Đẩy sang bên trái */
+}
+
+/* Thời gian tin nhắn */
+.messageTime {
+    font-size: 10px;
+    color: #65676b;
+    margin-top: 2px;
+    text-align: right;
+}
+
+.chatModalBody p {
+    text-align: center;
+    color: #65676b;
+    font-size: 14px;
+    margin: 0;
+}
+
+.replyPreview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #e4e6eb;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.replyTitle {
+    font-size: 12px;
+    color: #65676b;
+    margin: 0;
+}
+
+.replyContent {
+    font-size: 13px; /* Tăng nhẹ kích thước chữ nội dung reply */
+    color: #050505;
+    margin: 0;
+}
+
+.replyRight {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.chatModalFooter {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-top: 1px solid #ddd;
+    background-color: #fff;
+}
+
+.attachIcon {
+    font-size: 22px; /* Tăng kích thước icon */
+    color: #0084ff;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.chatModalFooter input {
+    flex: 1;
+    padding: 10px 14px; /* Tăng padding để ô input rộng rãi hơn */
+    border: none;
+    border-radius: 20px;
+    background-color: #f0f2f5;
+    font-size: 14px;
+    outline: none;
+}
+
+.chatModalFooter button {
+    padding: 8px 16px;
+    background-color: #0084ff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+.chatModalFooter button:hover {
+    background-color: #006bbf;
+}
+
+.imageModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modalBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.fullImage {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+}
+
+.closeButtonFullImage {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
