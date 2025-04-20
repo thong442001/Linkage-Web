@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { checkPhone, checkEmail, register } from '../../rtk/API';
+import { useNavigate } from 'react-router-dom';
+import { checkPhone, checkEmail, sendOTP_dangKi_phone, sendOTP_dangKi_gmail } from '../../rtk/API';
 
 const Register = () => {
     const [ho, setHo] = useState('');
@@ -19,11 +20,11 @@ const Register = () => {
     const [errorDate, setErrorDate] = useState('');
     const [errorGioiTinh, setErrorGioiTinh] = useState('');
 
-    const [successVisible, setSuccessVisible] = useState(false);
     const [failedVisible, setFailedVisible] = useState(false);
     const [failedMessage, setFailedMessage] = useState('');
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const validateName = (name) => {
         const regex = /^[A-Za-zÀ-Ỹà-ỹ\s]+$/;
@@ -89,13 +90,9 @@ const Register = () => {
         try {
             let response;
             if (kiemTraEmailHopLe(emailOrPhone)) {
-                console.log('Checking email:', emailOrPhone);
                 response = await dispatch(checkEmail({ email: emailOrPhone })).unwrap();
-                console.log('checkEmail response:', response);
             } else if (kiemTraDienThoaiHopLe(emailOrPhone)) {
-                console.log('Checking phone:', emailOrPhone);
                 response = await dispatch(checkPhone({ phone: emailOrPhone })).unwrap();
-                console.log('checkPhone response:', response);
             }
 
             if (!response || typeof response.status !== 'boolean') {
@@ -111,7 +108,6 @@ const Register = () => {
             setErrorEmailOrPhone('');
             return true;
         } catch (error) {
-            console.error('Error checking email/phone:', error);
             setErrorEmailOrPhone(error.message || 'Lỗi kiểm tra email/số điện thoại. Vui lòng thử lại.');
             return false;
         }
@@ -192,27 +188,23 @@ const Register = () => {
                 password: matKhau
             };
 
-            console.log('Registering with:', userData);
-
             try {
-                const response = await dispatch(register(userData)).unwrap();
-                console.log('Register response:', response);
-                setSuccessVisible(true);
-                setTimeout(() => {
-                    setSuccessVisible(false);
-                    window.location.href = '/';
-                }, 2000);
+                // Gửi OTP
+                let otpResponse;
+                if (kiemTraEmailHopLe(emailOrPhone)) {
+                    otpResponse = await dispatch(sendOTP_dangKi_gmail({ gmail: emailOrPhone })).unwrap();
+                } else if (kiemTraDienThoaiHopLe(emailOrPhone)) {
+                    otpResponse = await dispatch(sendOTP_dangKi_phone({ phone: emailOrPhone })).unwrap();
+                }
+
+                if (otpResponse.status) {
+                    // Điều hướng đến màn hình OTP, truyền userData qua state
+                    navigate('/verify-otp', { state: { userData, emailOrPhone } });
+                } else {
+                    throw new Error(otpResponse.message || 'Gửi OTP thất bại.');
+                }
             } catch (error) {
-                console.error('Register error (full object):', error); // Log toàn bộ đối tượng error
-                console.error('Register error value:', error.message || error); // Log giá trị error cụ thể
-
-                // Kiểm tra giá trị error chính xác hơn
-                const errorValue = error.message || error;
-                const errorMessage = errorValue === 'Tài khoản đã tồn tại'
-                    ? 'Email hoặc số điện thoại đã được sử dụng. Vui lòng thử lại với email/số điện thoại khác.'
-                    : (errorValue || 'Đăng ký thất bại. Vui lòng thử lại.');
-
-                setFailedMessage(errorMessage);
+                setFailedMessage(error.message || 'Gửi OTP thất bại. Vui lòng thử lại.');
                 setFailedVisible(true);
                 setTimeout(() => setFailedVisible(false), 2000);
             }
@@ -271,13 +263,11 @@ const Register = () => {
                         background-color: #f0f2f5;
                         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     }
-
                     .header {
                         justify-content: center;
                         text-align: center;
                         margin-bottom: 20px;    
                     }
-
                     .logo {
                         font-size: 40px;
                         font-weight: 700;
@@ -286,18 +276,15 @@ const Register = () => {
                         text-align: center;
                         width: 100%;
                     }
-
                     .title {
                         font-size: 24px;
                         font-weight: 600;
                         color: #1c1e21;
                     }
-
                     .subtitle {
                         font-size: 15px;
                         color: #606770;
                     }
-
                     .form {
                         background-color: #fff;
                         padding: 20px;
@@ -306,13 +293,11 @@ const Register = () => {
                         width: 100%;
                         max-width: 400px;
                     }
-
                     .nameFields {
                         display: flex;
                         gap: 10px;
                         margin-bottom: 10px;
                     }
-
                     .input {
                         width: 100%;
                         padding: 12px;
@@ -322,7 +307,6 @@ const Register = () => {
                         outline: none;
                         margin-bottom: 2px;
                     }
-
                     .inputError {
                         width: 100%;
                         padding: 12px;
@@ -332,17 +316,14 @@ const Register = () => {
                         outline: none;
                         margin-bottom: 2px;
                     }
-
                     .input:focus {
                         border-color: #1877f2;
                     }
-
                     .dateFields {
                         display: flex;
                         gap: 10px;
                         margin-bottom: 10px;
                     }
-
                     .select {
                         flex: 1;
                         padding: 12px;
@@ -353,7 +334,6 @@ const Register = () => {
                         outline: none;
                         margin-bottom: 2px;
                     }
-
                     .selectError {
                         flex: 1;
                         padding: 12px;
@@ -364,13 +344,11 @@ const Register = () => {
                         outline: none;
                         margin-bottom: 2px;
                     }
-
                     .genderFields {
                         display: flex;
                         gap: 10px;
                         margin-bottom: 10px;
                     }
-
                     .genderFields label {
                         flex: 1;
                         display: flex;
@@ -382,7 +360,6 @@ const Register = () => {
                         font-size: 15px;
                         cursor: pointer;
                     }
-
                     .genderError label {
                         flex: 1;
                         display: flex;
@@ -394,18 +371,15 @@ const Register = () => {
                         font-size: 15px;
                         cursor: pointer;
                     }
-
                     .radio {
                         margin-right: 8px;
                     }
-
                     .text {
                         font-size: 12px;
                         color: #606770;
                         margin-bottom: 15px;
                         line-height: 1.4;
                     }
-
                     .submitButton {
                         width: 100%;
                         padding: 12px;
@@ -417,26 +391,21 @@ const Register = () => {
                         font-weight: 600;
                         cursor: pointer;
                     }
-
                     .submitButton:hover {
                         background-color: #009100;
                     }
-
                     .loginLink {
                         text-align: center;
                         margin-top: 15px;
                         font-size: 14px;
                     }
-
                     .loginLink a {
                         color: #1877f2;
                         text-decoration: none;
                     }
-
                     .loginLink a:hover {
                         text-decoration: underline;
                     }
-
                     .errorText {
                         color: red;
                         font-size: 12px;
@@ -444,7 +413,6 @@ const Register = () => {
                         margin-bottom: 5px;
                         line-height: 1.2;
                     }
-
                     .modal {
                         position: fixed;
                         top: 0;
@@ -457,7 +425,6 @@ const Register = () => {
                         justify-content: center;
                         z-index: 1000;
                     }
-
                     .modalContent {
                         background-color: #fff;
                         padding: 20px;
@@ -466,15 +433,9 @@ const Register = () => {
                         max-width: 300px;
                         width: 100%;
                     }
-
-                    .modalSuccess {
-                        background-color: #e7f3e7;
-                    }
-
                     .modalFailed {
                         background-color: #f3e7e7;
                     }
-
                     .modalText {
                         font-size: 16px;
                         margin-bottom: 10px;
@@ -662,13 +623,6 @@ const Register = () => {
                         <a href="/">Bạn đã có tài khoản?</a>
                     </p>
                 </form>
-                {successVisible && (
-                    <div className="modal">
-                        <div className="modalContent modalSuccess">
-                            <p className="modalText">Tạo tài khoản thành công!</p>
-                        </div>
-                    </div>
-                )}
                 {failedVisible && (
                     <div className="modal">
                         <div className="modalContent modalFailed">
