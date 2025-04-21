@@ -44,7 +44,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HomeChatModal from '../../components/dialogs/HomeChatModal';
-import ChatModal from '../../components/dialogs/ChatModal'; // Import ChatModal
+import ChatModal from '../../components/dialogs/ChatModal';
 
 const Home = ({ content }) => {
     const dispatch = useDispatch();
@@ -72,17 +72,14 @@ const Home = ({ content }) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Thêm state để quản lý danh sách ChatModal
     const [chatModals, setChatModals] = useState([]);
 
-    // Hàm mở ChatModal
     const openChatModal = (group) => {
         if (!chatModals.some((modal) => modal._id === group._id)) {
             setChatModals([...chatModals, group]);
         }
     };
 
-    // Hàm đóng ChatModal
     const closeChatModal = (groupId) => {
         setChatModals(chatModals.filter((modal) => modal._id !== groupId));
     };
@@ -468,7 +465,7 @@ const Home = ({ content }) => {
                             setIsSearchOpen(false);
                             setIsNotificationOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            setChatModals([]);
                         }}
                     />
                     <div className="search-bar">
@@ -508,7 +505,7 @@ const Home = ({ content }) => {
                             setIsSearchOpen(false);
                             setIsNotificationOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            setChatModals([]);
                         }}
                     >
                         <FaHome className="nav-icon" />
@@ -521,7 +518,7 @@ const Home = ({ content }) => {
                             setIsSearchOpen(false);
                             setIsNotificationOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            setChatModals([]);
                         }}
                     >
                         <FaUsers className="nav-icon" />
@@ -533,7 +530,7 @@ const Home = ({ content }) => {
                             setIsChat(false);
                             setIsNotificationOpen(false);
                             setIsSearchOpen(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            setChatModals([]);
                             navigate('/profile');
                         }}
                     >
@@ -546,7 +543,7 @@ const Home = ({ content }) => {
                             setIsSearchOpen(false);
                             setIsNotificationOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            setChatModals([]);
                         }}
                     >
                         <FaBell className="nav-icon" />
@@ -557,9 +554,12 @@ const Home = ({ content }) => {
                         className="icon-wrapper1"
                         onClick={(e) => {
                             e.stopPropagation();
-                            setIsNotificationOpen(false);
-                            setActiveIcon('chat');
-                            setIsChat(!isChat);
+                            // Chỉ kích hoạt modal chat nếu đường dẫn hiện tại không phải '/chat'
+                            if (location.pathname !== '/chat') {
+                                setIsNotificationOpen(false);
+                                setActiveIcon('chat');
+                                setIsChat(!isChat);
+                            }
                         }}
                     >
                         <FaFacebookMessenger className="nav-icon1" />
@@ -567,8 +567,8 @@ const Home = ({ content }) => {
                             <HomeChatModal
                                 onClose={() => setIsChat(false)}
                                 onSelectGroup={(group) => {
-                                    setIsChat(false); // Đóng HomeChatModal
-                                    openChatModal(group); // Mở ChatModal
+                                    setIsChat(false);
+                                    openChatModal(group);
                                 }}
                             />
                         )}
@@ -592,7 +592,7 @@ const Home = ({ content }) => {
                             setIsNotificationOpen(false);
                             setIsSearchOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            setChatModals([]);
                             navigate('/profile');
                         }}
                     >
@@ -615,7 +615,7 @@ const Home = ({ content }) => {
                                         setIsNotificationOpen(false);
                                         setIsSearchOpen(false);
                                         setIsChat(false);
-                                        setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                                        setChatModals([]);
                                         navigate('/profile');
                                     }}
                                 >
@@ -673,7 +673,7 @@ const Home = ({ content }) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="sidebar-section">
+                            <div className="sidebar-section main-content-section">
                                 <div style={{ marginLeft: 30, marginRight: 30 }}>
                                     <HomeStories stories={stories} liveSessions={liveSessions} />
                                     {loading ? (
@@ -704,11 +704,12 @@ const Home = ({ content }) => {
                         </div>
                     </div>
                 ) : (
-                    content
+                    <div className="content-container">
+                        {content}
+                    </div>
                 )}
                 <ChangeNameDialog open={openChangeNameDialog} onClose={handleCloseChangeNameDialog} />
                 <ChangePasswordDialog open={openChangePasswordDialog} onClose={handleCloseChangePasswordDialog} />
-                {/* Hiển thị các ChatModal */}
                 {chatModals.map((group, index) => (
                     <ChatModal
                         key={group._id}

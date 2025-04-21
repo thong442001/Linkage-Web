@@ -5,19 +5,17 @@
   box-sizing: border-box;
 }
 
-.main-content {
+.mainContent {
   max-width: 500px;
-  /* Giới hạn chiều rộng giống Facebook */
   margin: 0 auto;
   padding: 8px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: #f8f9fb;
-  /* Màu nền giống Facebook */
   min-height: 100vh;
 }
 
 /* Phần tạo bài viết */
-.create-post {
+.createPost {
   display: flex;
   align-items: center;
   background-color: #fff;
@@ -27,7 +25,7 @@
   margin-bottom: 12px;
 }
 
-.create-post .avatar {
+.createPost .avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -35,7 +33,7 @@
   object-fit: cover;
 }
 
-.post-input {
+.postInput {
   flex: 1;
   padding: 10px 16px;
   border: none;
@@ -45,7 +43,7 @@
   outline: none;
 }
 
-.post-input::placeholder {
+.postInput::placeholder {
   color: #65676b;
 }
 
@@ -58,7 +56,7 @@
 }
 
 /* Không có bài viết */
-.no-posts {
+.noPosts {
   text-align: center;
   padding: 16px;
   color: #65676b;
@@ -66,58 +64,47 @@
 }
 
 /* Container bài viết */
-.post-container {
+.postContainer {
   background-color: #fff;
   border-radius: 8px;
   margin-bottom: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  /* Đổ bóng nhẹ */
   width: 100%;
 }
 
-.post-container-profile {
+.postContainerProfile {
   background-color: #fff;
   border-radius: 8px;
   margin-bottom: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  /* Đổ bóng nhẹ */
 }
 
 /* Header bài viết */
-.header-content,
-.header-share,
-.header-shared {
+.headerContent,
+.headerShare,
+.headerShared {
   padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.header-shared {
+.headerShared {
   border-top: 1px solid #e0e0e0;
-  /* Add a light border to distinguish shared posts */
   border-right: 1px solid #e0e0e0;
-  /* Add a light border to distinguish shared posts */
   border-left: 1px solid #e0e0e0;
-  /* Add a light border to distinguish shared posts */
   border-top-right-radius: 8px;
-  /* Optional: Add rounded corners for a smoother look */
   border-top-left-radius: 8px;
-  /* Optional: Add rounded corners for a smoother look */
   padding: 10px;
-  /* Add some padding inside the border */
-  /* background-color: #f9f9f9; Optional: Add a light background color for contrast */
   margin: 10px 10px 0px 10px;
-  /* Add some margin to separate it from other content */
 }
 
-
-.user-info {
+.userInfo {
   display: flex;
   align-items: flex-start;
 }
 
-.user-info .avatar {
+.userInfo .avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -125,11 +112,11 @@
   object-fit: cover;
 }
 
-.user-details {
+.userDetails {
   flex: 1;
 }
 
-.user-details .name {
+.userDetails .name {
   font-weight: 600;
   font-size: 15px;
   color: #050505;
@@ -137,11 +124,11 @@
   line-height: 1.2;
 }
 
-.user-details .name:hover {
+.userDetails .name:hover {
   text-decoration: underline;
 }
 
-.box-name {
+.boxName {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -154,7 +141,7 @@
   margin-right: 4px;
 }
 
-.options-button {
+.optionsButton {
   background: none;
   border: none;
   cursor: pointer;
@@ -163,7 +150,7 @@
   border-radius: 50%;
 }
 
-.options-button:hover {
+.optionsButton:hover {
   background-color: #f0f2f5;
 }
 
@@ -187,77 +174,75 @@
 }
 
 /* Media Container */
-.media-container {
+.mediaContainer {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 2px;
-  /* Khoảng cách giữa các media */
   width: 100%;
-  /* Đảm bảo container không vượt quá kích thước cha */
 }
 
 /* Media Item */
-.media-item {
+.mediaItem {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  width: 1000px;
+  width: 100%;
 }
 
 /* Single Media (1 ảnh/video) */
-.single-media {
+.singleMedia {
   width: 100%;
   height: 400px;
 }
 
 /* Double Media (2 ảnh/video) */
-.double-media {
+.doubleMedia {
   width: 49.5%;
   height: 400px;
   padding: 1px;
 }
 
 /* Triple Media (3 ảnh/video) */
-.triple-media-first {
+.tripleMediaFirst {
   width: 100%;
   height: 330px;
   padding: 1px;
 }
 
-.triple-media-second {
+.tripleMediaSecond {
   width: 49.5%;
   height: 200px;
   padding: 1px;
 }
 
 /* Quad Media (4 ảnh/video) */
-.quad-media {
+.quadMedia {
   width: 49.5%;
   height: 200px;
   padding: 1px;
 }
 
 /* Five Plus Media (5+ ảnh/video) */
-.five-plus-media-first-row {
+.fivePlusMediaFirstRow {
   width: 49.5%;
   height: 200px;
   padding: 1px;
 }
 
-.five-plus-media-second-row-left {
+.fivePlusMediaSecondRowLeft {
   width: 32.66%;
   height: 200px;
   padding: 1px;
 }
 
-.five-plus-media-second-row-middle {
+.fivePlusMediaSecondRowMiddle {
   width: 32.66%;
   height: 200px;
   padding: 1px;
 }
 
-.five-plus-media-second-row-right {
+.fivePlusMediaSecondRowRight {
   width: 32.66%;
   height: 200px;
   padding: 1px;
@@ -272,7 +257,7 @@
 }
 
 /* Video Wrapper */
-.video-wrapper {
+.videoWrapper {
   position: relative;
   width: 100%;
   height: 100%;
@@ -280,7 +265,7 @@
 }
 
 /* Play Button */
-.play-button {
+.playButton {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -288,23 +273,21 @@
 }
 
 /* Overlay cho 5+ media */
-.overlay-container {
+.overlayContainer {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.1);
-  /* Thêm lại nền mờ */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10;
-  /* Đảm bảo overlay nằm trên hình ảnh */
 }
 
 /* Overlay Text */
-.overlay-text {
+.overlayText {
   color: #fff;
   font-size: 24px;
   font-weight: 600;
@@ -312,34 +295,33 @@
 
 /* Responsive */
 @media (max-width: 600px) {
-  .single-media {
-    height: 300px;
-    /* Giảm chiều cao trên mobile */
-  }
-
-  .double-media {
+  .singleMedia {
     height: 300px;
   }
 
-  .triple-media-first {
+  .doubleMedia {
+    height: 300px;
+  }
+
+  .tripleMediaFirst {
     height: 250px;
   }
 
-  .triple-media-second {
+  .tripleMediaSecond {
     height: 150px;
   }
 
-  .quad-media {
+  .quadMedia {
     height: 150px;
   }
 
-  .five-plus-media-first-row {
+  .fivePlusMediaFirstRow {
     height: 150px;
   }
 
-  .five-plus-media-second-row-left,
-  .five-plus-media-second-row-middle,
-  .five-plus-media-second-row-right {
+  .fivePlusMediaSecondRowLeft,
+  .fivePlusMediaSecondRowMiddle,
+  .fivePlusMediaSecondRowRight {
     height: 150px;
   }
 }
@@ -354,31 +336,30 @@
   color: #65676b;
 }
 
-.footer-reactions a {
+.footerReactions a {
   display: flex;
   align-items: center;
   text-decoration: none;
   color: #65676b;
 }
 
-.footer-reactions span {
+.footerReactions span {
   margin-right: 4px;
   font-size: 16px;
-  /* Kích thước biểu tượng cảm xúc */
 }
 
-.footer-reactions a:hover {
+.footerReactions a:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.comment-count,
-.share-count {
+.commentCount,
+.shareCount {
   cursor: pointer;
 }
 
-.comment-count:hover,
-.share-count:hover {
+.commentCount:hover,
+.shareCount:hover {
   text-decoration: underline;
 }
 
@@ -415,7 +396,7 @@
   font-weight: 600;
 }
 
-.interactions .action.reacted-text {
+.interactions .action .reactedText {
   color: #1877f2;
 }
 
@@ -433,21 +414,29 @@
   align-items: center;
 }
 
-.reaction-icon-box {
+.reactionContainer {
+  position: relative;
+}
+
+.reactionIconBox {
   padding-left: 50px;
   padding-right: 50px;
 }
 
-.reaction-bar {
+.reactionBar {
   display: flex;
   background-color: #fff;
   border-radius: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   padding: 8px;
   position: absolute;
+  top: -60px; /* Đặt thanh reaction phía trên nút Like */
+  left: 70%;
+  transform: translateX(-50%); /* Căn giữa theo chiều ngang */
+  z-index: 1001; /* Đảm bảo hiển thị trên các phần tử khác */
 }
 
-.reaction-button {
+.reactionButton {
   background: none;
   border: none;
   font-size: 24px;
@@ -455,12 +444,12 @@
   cursor: pointer;
 }
 
-.reaction-button:hover {
+.reactionButton:hover {
   transform: scale(1.2);
 }
 
 /* Share Modal */
-.modal-container {
+.modalContainer {
   background-color: #fff;
   border-radius: 8px;
   width: 90%;
@@ -468,33 +457,33 @@
   padding: 16px;
 }
 
-.share-header {
+.shareHeader {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.share-header .avatar {
+.shareHeader .avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-right: 12px;
 }
 
-.share-header .name {
+.shareHeader .name {
   font-weight: 600;
   font-size: 15px;
 }
 
-.box-status {
+.boxStatus {
   margin-top: 4px;
 }
 
-.box-status-detail {
+.boxStatusDetail {
   margin-top: 7px;
 }
 
-.btn-status {
+.btnStatus {
   background-color: #f0f2f5;
   border: none;
   padding: 6px 12px;
@@ -503,7 +492,7 @@
   cursor: pointer;
 }
 
-.content-share {
+.contentShare {
   width: 100%;
   min-height: 100px;
   border: none;
@@ -515,7 +504,7 @@
   outline: none;
 }
 
-.share-button {
+.shareButton {
   width: 100%;
   padding: 12px;
   background-color: #1877f2;
@@ -527,12 +516,12 @@
   cursor: pointer;
 }
 
-.share-button:hover {
+.shareButton:hover {
   background-color: #165db7;
 }
 
 /* Status Modal */
-.modal-content {
+.modalContent {
   background-color: #fff;
   border-radius: 8px;
   width: 90%;
@@ -540,7 +529,7 @@
   overflow: hidden;
 }
 
-.modal-content-1 {
+.modalContent1 {
   background: white;
   border-radius: 8px;
   padding: 20px;
@@ -550,12 +539,12 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.modal-content-1 h3 {
+.modalContent1 h3 {
   margin: 0 0 10px;
   font-size: 18px;
 }
 
-.option-button {
+.optionButton {
   display: flex;
   align-items: center;
   width: 100%;
@@ -568,16 +557,16 @@
   text-align: left;
 }
 
-.option-button i {
+.optionButton i {
   margin-right: 12px;
 }
 
-.option-button:hover {
+.optionButton:hover {
   background-color: #f0f2f5;
 }
 
 /* Image/Video Modal */
-.full-media {
+.fullMedia {
   max-width: 90%;
   max-height: 90vh;
   border-radius: 8px;
@@ -585,9 +574,9 @@
 }
 
 /* Success/Failed/Loading Modal */
-.success-modal,
-.failed-modal,
-.loading-modal {
+.successModal,
+.failedModal,
+.loadingModal {
   background-color: #fff;
   padding: 16px 24px;
   border-radius: 8px;
@@ -595,31 +584,31 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.success-modal {
+.successModal {
   color: #2e7d32;
 }
 
-.failed-modal {
+.failedModal {
   color: #d32f2f;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
-  .main-content {
+  .mainContent {
     padding: 4px;
   }
 
-  .create-post {
+  .createPost {
     padding: 8px 12px;
   }
 
-  .post-container {
+  .postContainer {
     margin-bottom: 8px;
   }
 
-  .header-content,
-  .header-share,
-  .header-shared {
+  .headerContent,
+  .headerShare,
+  .headerShared {
     padding: 8px 12px;
   }
 
@@ -636,153 +625,7 @@
     font-size: 14px;
   }
 
-  
-}
-.mediaOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.fullMediaContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.navButtonsContainer {
-  position: relative;
-  width: 100%;
-  max-width: 1200px; /* Giới hạn chiều rộng tối đa của container */
-  height: 100%;
-  display: flex;
-  justify-content: center; /* Đổi thành center để không ảnh hưởng đến mediaWrapper */
-  align-items: center;
-}
-
-.mediaWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  max-width: 90vw; /* Đảm bảo không vượt quá 90% chiều rộng viewport */
-  max-height: 90vh; /* Đảm bảo không vượt quá 90% chiều cao viewport */
-}
-
-.fullMedia {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto; /* Đảm bảo hình ảnh không bị méo */
-  height: auto; /* Đảm bảo hình ảnh không bị méo */
-  object-fit: contain; /* Giữ tỷ lệ hình ảnh */
-  border-radius: 8px;
-}
-
-.navButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  border: none;
-  padding: 12px;
-  font-size: 24px;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-}
-
-.navButton:first-child {
-  left: 20px; /* Cố định nút Previous ở bên trái */
-}
-
-.navButton:last-child {
-  right: 20px; /* Cố định nút Next ở bên phải */
-}
-
-.navButton:hover {
-  background: rgba(255, 255, 255, 1);
-  color: #000;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .mediaWrapper {
-    max-width: 95vw; /* Tăng nhẹ trên mobile để tận dụng không gian */
-    max-height: 85vh; /* Giảm chiều cao để chừa chỗ cho các nút */
-  }
-
-  .fullMedia {
-    max-width: 100%;
-    max-height: 85vh;
-  }
-
-  .navButton {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    padding: 10px;
-  }
-
-  .navButton:first-child {
-    left: 10px;
-  }
-
-  .navButton:last-child {
-    right: 10px;
+  .reactionBar {
+    top: -36px; /* Điều chỉnh cho màn hình nhỏ */
   }
 }
-.closeButton {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  border: none;
-  padding: 8px;
-  font-size: 24px;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-}
-
-.closeButton:hover {
-  background: rgba(255, 255, 255, 1);
-  color: #000;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .closeButton {
-    top: 10px;
-    right: 10px;
-    width: 36px;
-    height: 36px;
-    font-size: 20px;
-    padding: 6px;
-  }
-}
-
