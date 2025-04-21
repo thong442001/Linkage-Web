@@ -785,4 +785,43 @@
     padding: 6px;
   }
 }
+/* Reactions Modal */
+.reaction-container {
+  position: relative;
+  display: inline-block;
+}
 
+.reaction-bar {
+  position: absolute;
+  top: -50px; /* Đặt phía trên nút Thích, giống PostDetailModal */
+  left: 0;
+  display: flex;
+  gap: 8px; /* Khoảng cách giữa các reaction */
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 4px 8px;
+  z-index: 1000;
+  transform: scale(0.8);
+  animation: popIn 0.2s ease forwards; /* Hiệu ứng phóng to */
+}
+
+.reaction-button {
+  background: none;
+  border: none;
+  font-size: 24px; /* Kích thước biểu tượng */
+  padding: 4px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.reaction-button:hover {
+  transform: scale(1.2); /* Phóng to khi hover */
+}
+
+/* Hiệu ứng popIn */
+@keyframes popIn {
+  to {
+    transform: scale(1);
+  }
+}

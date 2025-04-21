@@ -33,7 +33,6 @@ const Post = ({
   const [isImageModalVisible, setImageModalVisible] = useState(false);
   const [isPostDetailModalVisible, setPostDetailModalVisible] = useState(false);
   const [isSharedSection, setIsSharedSection] = useState(false);
-
   const [selectedImage, setSelectedImage] = useState(null);
   const [captionShare, setCaptionShare] = useState("");
   const [selectedOption, setSelectedOption] = useState({
@@ -45,22 +44,20 @@ const Post = ({
   const [listTagData, setListTagData] = useState([]);
   const reactionRef = useRef(null);
   const [reactionListModalVisible, setReactionListModalVisible] = useState(false);
-  // Thêm state để quản lý tab đang chọn
-  const [selectedReactionTab, setSelectedReactionTab] = useState('all'); // 'all' hoặc ID_reaction
-
-  // Dialog report
+  const [selectedReactionTab, setSelectedReactionTab] = useState('all');
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [mediaList, setMediaList] = useState([]); // Danh sách media
-const [currentMediaIndex, setCurrentMediaIndex] = useState(0); // Chỉ số của media đang xem
+  const [mediaList, setMediaList] = useState([]);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
+  // Ref để lưu timer của setTimeout
+  const hoverTimeoutRef = useRef(null);
 
-// Cập nhật danh sách media khi post thay đổi
-useEffect(() => {
-  const medias = post.ID_post_shared ? post.ID_post_shared.medias : post.medias;
-  setMediaList(medias || []);
-}, [post]);
+  useEffect(() => {
+    const medias = post.ID_post_shared ? post.ID_post_shared.medias : post.medias;
+    setMediaList(medias || []);
+  }, [post]);
 
   const status = [
     { status: 1, name: "Công khai" },
@@ -124,7 +121,7 @@ useEffect(() => {
             key={index}
             className={`media-item ${getMediaStyle(mediaCount, index)}`}
             onClick={() => {
-              setCurrentMediaIndex(index); // Lưu chỉ số của media được nhấn
+              setCurrentMediaIndex(index);
               setImageModalVisible(true);
             }}
           >
@@ -148,12 +145,6 @@ useEffect(() => {
   };
 
   const postContainerClass = location.pathname.includes('/profile') ? 'post-container-profile' : 'post-container';
-
-  // const handleLongPress = (e) => {
-  //   const rect = reactionRef.current.getBoundingClientRect();
-  //   setMenuPosition({ top: rect.top - 50, left: rect.left });
-  //   setReactionsVisible(true);
-  // };
 
   const handleShare = () => {
     setSelectedOption({ status: 1, name: "Công khai" });
@@ -254,7 +245,6 @@ useEffect(() => {
     .sort((a, b) => b.count - a.count)
     .slice(0, 2);
 
-  // Tạo danh sách các tab dựa trên các loại biểu cảm
   const reactionTabs = [
     { id: 'all', name: 'Tất cả', count: post.post_reactions?.length || 0 },
     ...Object.values(reactionCount).map(reaction => ({
@@ -264,7 +254,6 @@ useEffect(() => {
     })),
   ];
 
-  // Lọc danh sách người dùng dựa trên tab đang chọn
   const filteredReactions = selectedReactionTab === 'all'
     ? post.post_reactions
     : post.post_reactions?.filter(
@@ -503,17 +492,33 @@ useEffect(() => {
         </div>
       )}
 
-
       {!post._destroy && (
         <div className="interactions">
           <div className="reaction-container">
             <button
               ref={reactionRef}
               className={`action ${userReaction ? "reacted" : ""}`}
-              onMouseEnter={() => setReactionsVisible(true)}
+              onMouseEnter={() => {
+                // Hủy timeout trước đó nếu có
+                if (hoverTimeoutRef.current) {
+                  clearTimeout(hoverTimeoutRef.current);
+                }
+                // Đặt timeout mới để hiển thị reaction-bar sau 0.5s
+                hoverTimeoutRef.current = setTimeout(() => {
+                  setReactionsVisible(true);
+                }, 500);
+              }}
               onMouseLeave={() => {
+                // Hủy timeout khi rời chuột
+                if (hoverTimeoutRef.current) {
+                  clearTimeout(hoverTimeoutRef.current);
+                }
+                // Ẩn reaction-bar sau 200ms nếu không hover trên reaction-bar
                 setTimeout(() => {
-                  if (!document.querySelector('.reaction-bar:hover') && !document.querySelector('.reaction-container:hover')) {
+                  if (
+                    !document.querySelector('.reaction-bar:hover') &&
+                    !document.querySelector('.reaction-container:hover')
+                  ) {
                     setReactionsVisible(false);
                   }
                 }, 200);
@@ -523,10 +528,10 @@ useEffect(() => {
                 userReaction
                   ? callDeletePost_reaction(post._id, userReaction._id)
                   : callAddPost_Reaction(
-                    reactions[0]?._id,
-                    reactions[0]?.name,
-                    reactions[0]?.icon
-                  );
+                      reactions[0]?._id,
+                      reactions[0]?.name,
+                      reactions[0]?.icon
+                    );
               }}
             >
               <div className="reaction-icon-box">
@@ -542,8 +547,24 @@ useEffect(() => {
             {reactionsVisible && (
               <div
                 className="reaction-bar"
-                onMouseEnter={() => setReactionsVisible(true)}
-                onMouseLeave={() => setReactionsVisible(false)}
+                onMouseEnter={() => {
+                  // Hủy timeout để giữ reaction-bar hiển thị
+                  if (hoverTimeoutRef.current) {
+                    clearTimeout(hoverTimeoutRef.current);
+                  }
+                  setReactionsVisible(true);
+                }}
+                onMouseLeave={() => {
+                  // Ẩn reaction-bar sau 200ms nếu không hover
+                  setTimeout(() => {
+                    if (
+                      !document.querySelector('.reaction-bar:hover') &&
+                      !document.querySelector('.reaction-container:hover')
+                    ) {
+                      setReactionsVisible(false);
+                    }
+                  }, 200);
+                }}
               >
                 {reactions.map((reaction, index) => (
                   <button
@@ -584,7 +605,7 @@ useEffect(() => {
       {shareVisible && (
         <div className="overlay" onClick={() => setShareVisible(false)}>
           <div className="modal-container"
-            onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan truyền
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="share-header">
               <img src={me?.avatar} className="avatar" alt="User Avatar" />
@@ -683,57 +704,49 @@ useEffect(() => {
         </div>
       )}
 
-{isImageModalVisible && (
-  <div className="mediaOverlay" onClick={() => setImageModalVisible(false)}>
-    <div className="fullMediaContainer" onClick={(e) => e.stopPropagation()}>
-      {/* Nút đóng modal */}
-      <button
-        className="closeButton"
-        onClick={() => setImageModalVisible(false)}
-      >
-        ✕
-      </button>
-  
-      {/* Container cho các nút điều hướng */}
-      <div className="navButtonsContainer">
-        {/* Nút Previous */}
-        {mediaList.length > 1 && (
-          <button
-            className="navButton"
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
-            }}
-          >
-            ❮
-          </button>
-        )}
-
-        {/* Hiển thị media hiện tại */}
-        <div className="mediaWrapper">
-          {isVideo(mediaList[currentMediaIndex]) ? (
-            <video src={mediaList[currentMediaIndex]} className="fullMedia" controls autoPlay />
-          ) : (
-            <img src={mediaList[currentMediaIndex]} className="fullMedia" alt="Full Media" />
-          )}
+      {isImageModalVisible && (
+        <div className="mediaOverlay" onClick={() => setImageModalVisible(false)}>
+          <div className="fullMediaContainer" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="closeButton"
+              onClick={() => setImageModalVisible(false)}
+            >
+              ✕
+            </button>
+            <div className="navButtonsContainer">
+              {mediaList.length > 1 && (
+                <button
+                  className="navButton"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
+                  }}
+                >
+                  ❮
+                </button>
+              )}
+              <div className="mediaWrapper">
+                {isVideo(mediaList[currentMediaIndex]) ? (
+                  <video src={mediaList[currentMediaIndex]} className="fullMedia" controls autoPlay />
+                ) : (
+                  <img src={mediaList[currentMediaIndex]} className="fullMedia" alt="Full Media" />
+                )}
+              </div>
+              {mediaList.length > 1 && (
+                <button
+                  className="navButton"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
+                  }}
+                >
+                  ❯
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-
-        {/* Nút Next */}
-        {mediaList.length > 1 && (
-          <button
-            className="navButton"
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
-            }}
-          >
-            ❯
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       {successModalVisible && (
         <div className="overlay">
@@ -760,7 +773,6 @@ useEffect(() => {
             onClick={(e) => e.stopPropagation()}
           >
             <h3>Cảm xúc về bài viết</h3>
-            {/* Thêm các tab lọc */}
             <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: '10px' }}>
               {reactionTabs.map((tab) => (
                 <button
@@ -784,7 +796,6 @@ useEffect(() => {
                 </button>
               ))}
             </div>
-            {/* Danh sách người dùng đã thả biểu cảm */}
             {filteredReactions?.length > 0 ? (
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {filteredReactions.map((reaction, index) => (

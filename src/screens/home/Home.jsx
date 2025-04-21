@@ -539,27 +539,18 @@ const Home = ({ content }) => {
                     >
                         <FaUser className="nav-icon" />
                     </div>
-                    <div
-                        className={`icon-wrapper ${activeIcon === 'bell' ? 'active' : ''}`}
-                        onClick={() => {
-                            setActiveIcon('bell');
-                            setIsSearchOpen(false);
-                            setIsNotificationOpen(false);
-                            setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
-                        }}
-                    >
-                        <FaBell className="nav-icon" />
-                    </div>
                 </div>
                 <div className="mid-header1">
                     <div
                         className="icon-wrapper1"
                         onClick={(e) => {
                             e.stopPropagation();
-                            setIsNotificationOpen(false);
-                            setActiveIcon('chat');
-                            setIsChat(!isChat);
+                            // Chỉ kích hoạt modal chat nếu đường dẫn hiện tại không phải '/chat'
+                            if (location.pathname !== '/chat') {
+                                setIsNotificationOpen(false);
+                                setActiveIcon('chat');
+                                setIsChat(!isChat);
+                            }
                         }}
                     >
                         <FaFacebookMessenger className="nav-icon1" />
@@ -567,8 +558,8 @@ const Home = ({ content }) => {
                             <HomeChatModal
                                 onClose={() => setIsChat(false)}
                                 onSelectGroup={(group) => {
-                                    setIsChat(false); // Đóng HomeChatModal
-                                    openChatModal(group); // Mở ChatModal
+                                    setIsChat(false);
+                                    openChatModal(group);
                                 }}
                             />
                         )}
