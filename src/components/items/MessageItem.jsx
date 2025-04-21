@@ -170,10 +170,9 @@ const MessageItem = ({
                   <div style={{ textAlign: "center" }}>
                     <div
                       style={{
-                        width: "200px",
                         height: "120px",
                         borderRadius: "10px",
-                        backgroundColor: "#ccc",
+                        backgroundColor: "white",
                         marginBottom: "5px",
                       }}
                     >
@@ -190,7 +189,7 @@ const MessageItem = ({
                     href={message.ID_message_reply.content} target="_blank" rel="noopener noreferrer"
                     >
                        {message.ID_message_reply.content.length > 20
-                        ? message.ID_message_reply.content.slice(0, 20) + "..."
+                        ? message.ID_message_reply.content.slice(0, 15) + "..."
                         : message.ID_message_reply.content}
                   </a>
                   </div>
@@ -212,14 +211,13 @@ const MessageItem = ({
               <div style={{ textAlign: "center" }}>
                 <div
                   style={{
-                    width: "200px",
                     height: "120px",
                     borderRadius: "10px",
-                    backgroundColor: "#ccc",
+                    backgroundColor: "white",
                     marginBottom: "5px",
                   }}
                 >
-                  <p style={{ paddingTop: "45px" }}>Google Maps Preview</p>
+                  <p style={{ paddingTop: "45px" }}>Chia sẻ vị trí</p>
                 </div>
                 <a
                     style={{
@@ -232,7 +230,7 @@ const MessageItem = ({
                     href={message.content} target="_blank" rel="noopener noreferrer"
                     >
                        {message.content.length > 20
-                        ? message.content.slice(0, 20) + "..."
+                        ? message.content.slice(0, 15) + "..."
                         : message.content}
                   </a>
               </div>
