@@ -5,7 +5,7 @@ import { FaEllipsisH, FaTrash, FaUndo, FaExclamationCircle, FaComment, FaShare, 
 // import { ToastContainer, toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 import { addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
-import styles from '../../styles/components/items/PostItem.module.css';
+import styles from '../../styles/screens/strash/Trash.module.css';
 const PostItem = memo(({
   post,
   ID_user,
