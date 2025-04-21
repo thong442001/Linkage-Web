@@ -27,6 +27,7 @@ import {
     getAllUsers,
     getAllPostsInHome,
     changeDestroyPost,
+    getUser,
 } from '../../rtk/API';
 import './../../styles/screens/home/HomeS.css';
 import Post from '../../components/items/Post';
@@ -71,6 +72,9 @@ const Home = ({ content }) => {
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    // user api
+    const [api_user, setApi_user] = useState(null);
 
     // Thêm state để quản lý danh sách ChatModal
     const [chatModals, setChatModals] = useState([]);
@@ -147,9 +151,27 @@ const Home = ({ content }) => {
         }
     };
 
+    const callgetUser = async (ID_user) => {
+        try {
+            await dispatch(getUser({ ID_user: ID_user, token }))
+                .unwrap()
+                .then((response) => {
+                    setApi_user(response.user);
+                    //console.log('API User:', response.user);
+                })
+                .catch((error) => {
+                    console.log('Error callgetUser:: ', error);
+
+                });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         if (location.pathname === '/') {
             callGetAllPostsInHome(me._id);
+            callgetUser(me._id);
         }
     }, [me._id, location.pathname]);
 
@@ -613,13 +635,17 @@ const Home = ({ content }) => {
                                     <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                                         <div>
                                             <img
-                                                src={me.avatar || 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg'}
+                                                src={api_user?.avatar || me.avatar}
                                                 alt="Hồ Sơ"
                                                 className="avatar"
                                             />
                                         </div>
                                         <div style={{ marginLeft: '10px' }}>
-                                            <p>{me.first_name} {me.last_name}</p>
+                                            {
+                                                api_user
+                                                    ? <p>{api_user.first_name} {api_user.last_name}</p>
+                                                    : <p>{me.first_name} {me.last_name}</p>
+                                            }
                                         </div>
                                     </div>
                                 </div>

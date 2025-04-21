@@ -581,8 +581,8 @@ const Profile = () => {
                   (relationship?.ID_userB == me?._id &&
                     relationship?.relation === "B gửi lời kết bạn A")) && (
                     <button
-                      
-                     className={style.storyButton}
+
+                      className={style.storyButton}
                       onClick={handleCancelFriendRequest}
                     >
                       Hủy lời mời
@@ -593,7 +593,7 @@ const Profile = () => {
                   (relationship?.ID_userB == me?._id &&
                     relationship?.relation === "A gửi lời kết bạn B")) && (
                     <button
-                    className={style.storyButton}
+                      className={style.storyButton}
                       onClick={handleCancelFriendRequest}
                     >
                       Hủy lời mời kết bạn
@@ -604,7 +604,7 @@ const Profile = () => {
                   (relationship?.ID_userB == me?._id &&
                     relationship?.relation === "A gửi lời kết bạn B")) && (
                     <button
-                    className={style.storyButton}
+                      className={style.storyButton}
                       onClick={handleAcceptFriendRequest}
                     >
                       Đồng ý kết bạn

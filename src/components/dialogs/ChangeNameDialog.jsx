@@ -16,7 +16,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useSelector, useDispatch } from 'react-redux';
 import { editNameOfUser } from '../../rtk/API'; // Giả định đường dẫn giống React Native
-import { changeName } from '../../rtk/Reducer';
 const ChangeNameDialog = ({ open, onClose }) => {
     const dispatch = useDispatch();
     const me = useSelector((state) => state.app.user);
@@ -100,11 +99,11 @@ const ChangeNameDialog = ({ open, onClose }) => {
             dispatch(editNameOfUser(data))
                 .unwrap()
                 .then(() => {
-                    dispatch(changeName({ first_name: firstName, last_name: lastName }));
                     setSuccessVisible(true);
                     setTimeout(() => {
                         setSuccessVisible(false);
                         onClose();
+                        window.location.reload(); // Reload trang
                     }, 2000);
                     setFirstName('');
                     setLastName('');

@@ -866,3 +866,22 @@ export const checkOTP_gmail = createAsyncThunk(
     }
   }
 );
+
+// avatar name của user trong setting
+export const getUser = createAsyncThunk(
+  'user/getUser',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper(data.token)
+        .get(`user/getUser?ID_user=${data.ID_user}`);
+      //console.log(response.status)
+      if (response.status == true) {
+        return response;
+      } else {
+        return rejectWithValue(response.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

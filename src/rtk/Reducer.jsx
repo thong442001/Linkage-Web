@@ -17,10 +17,6 @@ const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        changeName: (state, action) => {
-            state.user.first_name = action.payload.first_name;
-            state.user.last_name = action.payload.last_name;
-        },
         changeAvatar: (state, action) => {
             state.user.avatar = action.payload;
         },
@@ -159,7 +155,6 @@ export const {
     setReactions,
     addStory,
     removeStory,
-    changeName,
     changeAvatar,
     changeBackground,
     addSearch,
