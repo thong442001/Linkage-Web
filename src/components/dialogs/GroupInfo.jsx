@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "../../styles/components/dialogs/GroupInfo.module.css";
 import { X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,60 +8,72 @@ import { useNavigate } from "react-router-dom";
 import GroupEditInfoModal from "./GroupEditInfoModal";
 import AddFriendGroupModal from "./AddFriendGroupModal";
 import GroupMembersModal from "./GroupMembersModal";
-import { QRCodeCanvas } from "qrcode.react"; // Đã thay đổi từ QRCode sang QRCodeCanvas
+import { QRCodeCanvas } from "qrcode.react";
+import { FaQrcode } from 'react-icons/fa';
 
-import {
-  FaQrcode
-} from 'react-icons/fa';
-
-const GroupInfo = ({ onClose, ID_group }) => {
+const GroupInfo = ({ onClose, group, onRefresh1 }) => {
   const { socket } = useSocket();
-  // console.log('Setting: ', ID_group);
   const dispatch = useDispatch();
   const me = useSelector((state) => state.app.user);
   const token = useSelector((state) => state.app.token);
   const navigation = useNavigate();
-
-  const [group, setGroup] = useState(null);
-  const [qrVisible, setQrVisible] = useState(false); // 🔥 State để hiển thị modal QR
-  const [onModalEditInfo, setonModalEditInfo] = useState(false); // 🔥 State để hiển thị modal QR
-  const [onModalAddmemders, setonModalAddmemders] = useState(false); // 🔥 State để hiển thị modal QR
+  const [refreshing, setRefreshing] = useState(false);
+  //const [group, setGroup] = useState(null);
+  const [onModalEditInfo, setonModalEditInfo] = useState(false);
+  const [onModalAddmemders, setonModalAddmemders] = useState(false);
   const [onModalMembers, setonModalMembers] = useState(false);
   const [onModalQR, setonModalQR] = useState(false);
 
-  useEffect(() => {
-    // Call API khi lần đầu vào trang
-    callGetGroupID();
-  }, [navigation]);
+  // useEffect(() => {
+  //   callGetGroupID();
+  // }, [navigation]);
 
-  //call api getGroupID
-  const callGetGroupID = async () => {
-    try {
-      await dispatch(getGroupID({ ID_group: ID_group, token: token }))
-        .unwrap()
-        .then((response) => {
-          //console.log(response.groups)
-          setGroup(response.group);
-        })
-        .catch((error) => {
-          console.log("Error1 getGroupID:", error);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // useEffect(() => {
+  //   socket.emit("joinGroup", ID_group);
 
-  //call api deleteMember
+  //   socket.on("lang_nghe_chat_edit_avt_name_group", (data) => {
+  //     console.log("Received lang_nghe_chat_edit_avt_name_group in GroupInfo:", data);
+  //     callGetGroupID(); // Gọi lại API để lấy dữ liệu đầy đủ
+  //   });
+
+  //   return () => {
+  //     socket.off("lang_nghe_chat_edit_avt_name_group");
+  //   };
+  // }, [ID_group]);
+
+  // const onRefresh2 = useCallback(() => {
+  //   //console.log("onRefresh2");
+  //   setRefreshing(true);
+  //   callGetGroupID().finally(() => {
+  //     setRefreshing(false);
+  //   });
+  // }, [ID_group]);
+
+  // const callGetGroupID = async () => {
+  //   try {
+  //     await dispatch(getGroupID({ ID_group: ID_group, token: token }))
+  //       .unwrap()
+  //       .then((response) => {
+  //         console.log("Data from getGroupID:", response.group);
+  //         setGroup(response.group);
+  //       })
+  //       .catch((error) => {
+  //         console.log("Error1 getGroupID:", error);
+  //       });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const callDeleteMember = async () => {
     try {
       const paramsAPI = {
-        ID_group: ID_group,
+        ID_group: group._id,
         ID_user: me._id,
       };
       await dispatch(deleteMember(paramsAPI))
         .unwrap()
         .then((response) => {
-          // bakc HomeChat
           onClose();
         })
         .catch((error) => {
@@ -72,18 +84,15 @@ const GroupInfo = ({ onClose, ID_group }) => {
     }
   };
 
-  //call api deleteGroup
   const callDeleteGroup = async () => {
     try {
       const paramsAPI = {
-        ID_group: ID_group,
+        ID_group: group._id,
       };
       await dispatch(deleteGroup(paramsAPI))
         .unwrap()
         .then((response) => {
-          // Emit sự kiện "delete_group" để cập nhật danh sách nhóm
-          socket.emit("delete_group", { ID_group: ID_group });
-          // bakc HomeChat
+          socket.emit("delete_group", { ID_group: group._id });
           onClose();
         })
         .catch((error) => {
@@ -92,17 +101,6 @@ const GroupInfo = ({ onClose, ID_group }) => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const toMembersGroup = () => {
-    onClose();
-    // để load lại trang chat khi thay đổi
-    navigation.navigate("MembersGroup", { ID_group: ID_group });
-  };
-
-  const toAddFriendGroup = () => {
-    onClose();
-    navigation.navigate("AddFriendGroup", { ID_group: ID_group });
   };
 
   const toAvtNameGroup = () => {
@@ -115,8 +113,8 @@ const GroupInfo = ({ onClose, ID_group }) => {
 
   const handleGiaiTan = () => {
     callDeleteGroup();
-
   };
+
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
@@ -134,56 +132,74 @@ const GroupInfo = ({ onClose, ID_group }) => {
               <h2 className={styles.title}>{group.name}</h2>
             )}
             {group.members[0]._id == me._id && (
-              <button onClick={toAvtNameGroup} className={styles.editButton}>Đổi tên hoặc ảnh</button>
+              <button onClick={toAvtNameGroup} className={styles.editButton}>
+                Đổi tên hoặc ảnh
+              </button>
             )}
             {group.members[0]._id == me._id && (
               <div className={styles.addSection}>
-                <div className={styles.addIcon} onClick={() => setonModalAddmemders(true)}>+</div>
+                <div
+                  className={styles.addIcon}
+                  onClick={() => setonModalAddmemders(true)}
+                >
+                  +
+                </div>
                 <span className={styles.addLabel}>Thêm</span>
-                <div className={styles.qrFake} onClick={() => setonModalQR(true)}><FaQrcode /></div>
+                <div
+                  className={styles.qrFake}
+                  onClick={() => setonModalQR(true)}
+                >
+                  <FaQrcode />
+                </div>
               </div>
             )}
 
             <div className={styles.actionSection}>
-              <button className={styles.viewMembers} onClick={() => {
-                setonModalMembers(true)
-              }}>
+              <button
+                className={styles.viewMembers}
+                onClick={() => {
+                  setonModalMembers(true);
+                }}
+              >
                 Xem thành viên trong nhóm chat
               </button>
-              <button className={styles.leaveGroup} onClick={handleRoiNhom}>Rời khỏi nhóm chat</button>
-              {
-                group.members[0]._id == me._id
-                && (
-                  <button className={styles.disbandGroup} onClick={handleGiaiTan}>
-                    Giải tán nhóm chat
-                  </button>
-                )
-              }
+              <button className={styles.leaveGroup} onClick={handleRoiNhom}>
+                Rời khỏi nhóm chat
+              </button>
+              {group.members[0]._id == me._id && (
+                <button className={styles.disbandGroup} onClick={handleGiaiTan}>
+                  Giải tán nhóm chat
+                </button>
+              )}
             </div>
           </div>
         )}
       </div>
-      {
-        onModalEditInfo && (
-          <GroupEditInfoModal onClose={() => setonModalEditInfo(false)} ID_group={ID_group} />
-        )
-      }
-      {
-        onModalAddmemders && (
-          <AddFriendGroupModal onClose={() => setonModalAddmemders(false)} ID_group={ID_group} />
-        )
-      }
-      {
-        onModalMembers && (
-          <GroupMembersModal onClose={() => setonModalMembers(false)} ID_group={ID_group} />
-        )
-      }
+      {onModalEditInfo && (
+        <GroupEditInfoModal
+          onClose={() => setonModalEditInfo(false)}
+          ID_group={group._id}
+        //onRefresh2={onRefresh2}
+        />
+      )}
+      {onModalAddmemders && (
+        <AddFriendGroupModal
+          onClose={() => setonModalAddmemders(false)}
+          ID_group={group._id}
+        />
+      )}
+      {onModalMembers && (
+        <GroupMembersModal
+          onClose={() => setonModalMembers(false)}
+          ID_group={group._id}
+        />
+      )}
       {onModalQR && (
         <div className={styles.modalContainer}>
           <div className={styles.modalContent}>
             <h1 style={{ color: "#1e90ff", margin: 0 }}>Linkage</h1>
             <h3 className={styles.modalTitle}>Quét mã QR để đăng nhập</h3>
-            <QRCodeCanvas value={`linkage://addgroup/${ID_group}`} size={180} />
+            <QRCodeCanvas value={`linkage://addgroup/${group._id}`} size={180} />
             <button
               onClick={() => setonModalQR(false)}
               className={styles.closeButtonQR}

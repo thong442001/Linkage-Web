@@ -350,6 +350,7 @@
 
 .footerReactions a:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .commentCount,
@@ -430,7 +431,7 @@
   padding: 8px;
   position: absolute;
   top: -60px; /* Đặt thanh reaction phía trên nút Like */
-  left: 50%;
+  left: 70%;
   transform: translateX(-50%); /* Căn giữa theo chiều ngang */
   z-index: 1001; /* Đảm bảo hiển thị trên các phần tử khác */
 }

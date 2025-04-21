@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from 'react-icons/fa';
 import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-icons/ai';
@@ -50,6 +50,15 @@ const Post = ({
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [mediaList, setMediaList] = useState([]); // Danh sách media
+const [currentMediaIndex, setCurrentMediaIndex] = useState(0); // Chỉ số của media đang xem
+
+
+// Cập nhật danh sách media khi post thay đổi
+useEffect(() => {
+  const medias = post.ID_post_shared ? post.ID_post_shared.medias : post.medias;
+  setMediaList(medias || []);
+}, [post]);
 
   const status = [
     { status: 1, name: "Công khai" },
@@ -105,7 +114,7 @@ const Post = ({
   const renderMediaGrid = (medias) => {
     const mediaCount = medias.length;
     if (mediaCount === 0) return null;
-
+  
     return (
       <div className={styles.mediaContainer}>
         {medias.slice(0, 5).map((uri, index) => (
@@ -113,7 +122,7 @@ const Post = ({
             key={index}
             className={`${styles.mediaItem} ${getMediaStyle(mediaCount, index)}`}
             onClick={() => {
-              setSelectedImage(uri);
+              setCurrentMediaIndex(index); // Lưu chỉ số của media được nhấn
               setImageModalVisible(true);
             }}
           >
@@ -661,20 +670,57 @@ const Post = ({
         </div>
       )}
 
-      {isImageModalVisible && (
-        <div className={styles.overlay} onClick={() => setImageModalVisible(false)}>
-          {isVideo(selectedImage) ? (
-            <video
-              src={selectedImage}
-              className={styles.fullMedia}
-              controls
-              autoPlay
-            />
+{isImageModalVisible && (
+  <div className="mediaOverlay" onClick={() => setImageModalVisible(false)}>
+    <div className="fullMediaContainer" onClick={(e) => e.stopPropagation()}>
+      {/* Nút đóng modal */}
+      <button
+        className="closeButton"
+        onClick={() => setImageModalVisible(false)}
+      >
+        ✕
+      </button>
+  
+      {/* Container cho các nút điều hướng */}
+      <div className="navButtonsContainer">
+        {/* Nút Previous */}
+        {mediaList.length > 1 && (
+          <button
+            className="navButton"
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
+            }}
+          >
+            ❮
+          </button>
+        )}
+
+        {/* Hiển thị media hiện tại */}
+        <div className="mediaWrapper">
+          {isVideo(mediaList[currentMediaIndex]) ? (
+            <video src={mediaList[currentMediaIndex]} className="fullMedia" controls autoPlay />
           ) : (
-            <img src={selectedImage} className={styles.fullMedia} alt="Full Media" />
+            <img src={mediaList[currentMediaIndex]} className="fullMedia" alt="Full Media" />
           )}
         </div>
-      )}
+
+        {/* Nút Next */}
+        {mediaList.length > 1 && (
+          <button
+            className="navButton"
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
+            }}
+          >
+            ❯
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+)}
 
       {successModalVisible && (
         <div className={styles.overlay}>

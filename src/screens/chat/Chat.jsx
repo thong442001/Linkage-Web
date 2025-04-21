@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGroupOfUser, getMessagesGroup } from "../../rtk/API";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ import {
 import MessageItem from "../../components/items/MessageItem";
 import CreateGroupModal from "../../components/dialogs/CreateGroupModal";
 import GroupInfo from "../../components/dialogs/GroupInfo";
+
 const Chat = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ const Chat = () => {
   const { user, token } = useSelector((state) => state.app);
   const { socket, onlineUsers } = useSocket();
   const [groups, setGroups] = useState([]);
-  const [filteredGroups, setFilteredGroups] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageModalVisible, setImageModalVisible] = useState(false);
@@ -31,36 +31,35 @@ const Chat = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  // const message.sender._id === user._id = messages.sender._id === user._id; // Kiểm tra tin nhắn có phải của user hiện tại không
   const [message, setMessage] = useState('');
   const [reply, setReply] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
   const [typingUsers, setTypingUsers] = useState([]);
   const typingUsersInfo = selectedGroup?.members?.filter(member => typingUsers.includes(member._id));
-  const hasSentLocation = useRef(false); // Biến ref để theo dõi trạng thái gửi
+  const hasSentLocation = useRef(false);
   const [sendingFiles, setSendingFiles] = useState({});
-  const fileInputRef = useRef(null); // Ref để điều khiển input file
+  const fileInputRef = useRef(null);
   const [isModalCreate, setIsModalCreate] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const handleCreateGroup = (newGroup) => {
     console.log('Nhóm mới:', newGroup);
-    // Gọi API hoặc cập nhật state để tạo nhóm
   };
-  // Hàm upload file (tương tự code bạn cung cấp, nhưng điều chỉnh cho web)
+
   const uploadFile = async (file) => {
     const tempId = Date.now().toString();
     setSendingFiles((prev) => ({ ...prev, [tempId]: true }));
 
-    // Tin nhắn tạm
     setMessages((prev) => [
       {
         _id: tempId,
@@ -71,7 +70,7 @@ const Chat = () => {
           last_name: user.last_name,
           avatar: user.avatar,
         },
-        content: URL.createObjectURL(file), // Preview file tạm
+        content: URL.createObjectURL(file),
         type: file.type.startsWith('image/') ? 'image' : 'video',
         isLoading: true,
         createdAt: new Date().toISOString(),
@@ -97,10 +96,8 @@ const Chat = () => {
       const fileUrl = response.data.secure_url;
       console.log('🌍 Link Cloudinary:', fileUrl);
 
-      // Gửi tin nhắn với URL file
       sendMessage(file.type.startsWith('image/') ? 'image' : 'video', fileUrl);
 
-      // Xóa trạng thái sending
       setSendingFiles((prev) => {
         const newState = { ...prev };
         delete newState[tempId];
@@ -115,18 +112,16 @@ const Chat = () => {
     }
   };
 
-  // Hàm mở file explorer
   const onOpenGallery = () => {
-    fileInputRef.current.click(); // Mở input file ẩn
+    fileInputRef.current.click();
   };
 
-  // Hàm xử lý khi chọn file
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
       console.log('📂 File đã chọn:', file.name);
       uploadFile(file);
-      event.target.value = null; // Reset input để có thể chọn lại cùng file
+      event.target.value = null;
     }
   };
 
@@ -138,38 +133,43 @@ const Chat = () => {
       .replace(/đ/g, "d")
       .replace(/Đ/g, "D");
 
-  useEffect(() => {
+  const filteredGroups = React.useMemo(() => {
     if (!searchText.trim()) {
-      setFilteredGroups(groups || []);
-    } else {
-      const lowerSearch = normalizeText(searchText);
-      const filtered = (groups || []).filter((group) => {
-        if (group.isPrivate) {
-          const otherUser = group.members.find(
-            (member) => member._id !== user._id
-          );
-          if (otherUser) {
-            const fullName = `${otherUser.first_name} ${otherUser.last_name}`;
-            return normalizeText(fullName).includes(lowerSearch);
-          }
-          return false;
-        }
-        const groupName = group.name || "";
-        if (normalizeText(groupName).includes(lowerSearch)) return true;
-        const memberNames = group.members
-          .filter((member) => member._id !== user._id)
-          .map((member) => `${member.first_name} ${member.last_name}`);
-        return memberNames.some((name) =>
-          normalizeText(name).includes(lowerSearch)
-        );
-      });
-      setFilteredGroups(filtered);
+      return groups || [];
     }
+    const lowerSearch = normalizeText(searchText);
+    return (groups || []).filter((group) => {
+      if (group.isPrivate) {
+        const otherUser = group.members.find(
+          (member) => member._id !== user._id
+        );
+        if (otherUser) {
+          const fullName = `${otherUser.first_name} ${otherUser.last_name}`;
+          return normalizeText(fullName).includes(lowerSearch);
+        }
+        return false;
+      }
+      const groupName = group.name || "";
+      if (normalizeText(groupName).includes(lowerSearch)) return true;
+      const memberNames = group.members
+        .filter((member) => member._id !== user._id)
+        .map((member) => `${member.first_name} ${member.last_name}`);
+      return memberNames.some((name) =>
+        normalizeText(name).includes(lowerSearch)
+      );
+    });
   }, [searchText, groups]);
 
   useEffect(() => {
     callGetAllGroupOfUser(user._id);
   }, [user]);
+
+  const onRefresh1 = useCallback(() => {
+    setRefreshing(true);
+    callGetAllGroupOfUser(user._id).finally(() => {
+      setRefreshing(false);
+    });
+  }, [refreshing]);
 
   const callGetAllGroupOfUser = async (ID_user) => {
     try {
@@ -178,8 +178,6 @@ const Chat = () => {
         .then((response) => {
           setGroups(response.groups || []);
           handleSelectGroup(response.groups[0] || null);
-          //setSelectedGroup(response.groups[0] || null);
-          //console.log('🚀 ~ file: Chat.jsx:20 ~ callGetAllGroupOfUser ~ response:', response.groups);
         });
     } catch (error) {
       console.log("Error:", error);
@@ -187,7 +185,13 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      console.log("Socket is not available");
+      return;
+    }
+    // console.log("Setting up socket listeners for groups...");
+    // console.log("Socket connected:", socket.connected);
+
     socket.on("new_group", ({ group }) => {
       setGroups((prevGroups) => {
         if (!prevGroups) return [group];
@@ -200,8 +204,6 @@ const Chat = () => {
 
     socket.on("new_message", ({ ID_group, message }) => {
       setGroups((prevGroups) => {
-        // console.log('🚀 ~ file: Chat.jsx:40 ~ socket.on ~ prevGroups:', prevGroups);
-        //console.log("type:" + message.type)
         return prevGroups
           .map((group) => {
             if (group._id === ID_group) {
@@ -243,23 +245,53 @@ const Chat = () => {
       );
     });
 
+    socket.on('lang_nghe_home_chat_edit_avt_name_group', (data) => {
+      if (!data || !data._id || (!data.name && !data.avatar)) {
+        console.log("Dữ liệu không hợp lệ:", data);
+        return;
+      }
+      //console.log("Received lang_nghe_home_chat_edit_avt_name_group:", data);
+      setGroups((prevGroups) => {
+        const updatedGroups = prevGroups.map((group) => {
+          if (group._id === data._id) {
+            return {
+              ...group,
+              avatar: data.avatar,
+              name: data.name,
+            };
+          }
+          return group;
+        });
+        //console.log("Updated groups:", updatedGroups);
+        return [...updatedGroups];
+      });
+      setSelectedGroup((prevSelectedGroup) => {
+        if (prevSelectedGroup && prevSelectedGroup._id === data._id) {
+          return {
+            ...prevSelectedGroup,
+            avatar: data.avatar,
+            name: data.name,
+          };
+        }
+        return prevSelectedGroup;
+      });
+    });
+
     return () => {
+      console.log("Cleaning up socket listeners for groups...");
       socket.off("new_group");
       socket.off("new_message");
       socket.off("group_deleted");
       socket.off("kicked_from_group");
+      socket.off('lang_nghe_home_chat_edit_avt_name_group');
     };
   }, [socket]);
 
   useEffect(() => {
     if (!socket || !selectedGroup) return;
 
-    //chat
-    // Lắng nghe tin nhắn từ server
     socket.on("receive_message", (data) => {
-      //setIsMessNew(true);
       setMessages((prevMessages) => {
-        // Thay thế tin nhắn tạm thời nếu đã tồn tại
         const tempIndex = prevMessages.findIndex(
           (msg) => msg.isLoading && msg.type === data.type
         );
@@ -319,39 +351,29 @@ const Chat = () => {
       });
     });
 
-    // Lắng nghe tin nhắn từ server bị thu hồi
     socket.on("message_revoked", (data) => {
-      //console.log("🔥 Đã nhận được message_revoked:");
       setMessages((prevMessages) => {
         const updatedMessages = prevMessages?.map((msg) =>
           msg._id === data.ID_message ? { ...msg, _destroy: true } : msg
         );
-        //console.log("📌 Danh sách tin nhắn sau khi thu hồi:", updatedMessages);
         return updatedMessages;
       });
     });
 
-    // Lắng nghe tin nhắn từ server biểu cảm
     socket.on("receive_message_reation", (data) => {
-      //console.log("🔥 Đã nhận được receive_message_reation:" + data);
       setMessages((prevMessages) => {
         return prevMessages?.map((msg) => {
           if (msg._id === data.ID_message) {
-            // Copy danh sách cũ
             let updatedReactions = [...msg.message_reactionList];
-            //msg.message_reactionList.map()
-            // Kiểm tra xem đã có message_reaction có tồn tại chưa
             const reactionIndex = updatedReactions.findIndex(
               (reaction) => reaction._id === data._id
             );
             if (reactionIndex !== -1) {
-              // Nếu reaction đã tồn tại, tăng quantity
               updatedReactions[reactionIndex] = {
                 ...updatedReactions[reactionIndex],
                 quantity: updatedReactions[reactionIndex].quantity + 1,
               };
             } else {
-              // Nếu reaction chưa có, thêm mới vào danh sách
               updatedReactions.push({
                 _id: data._id,
                 ID_message: data.ID_message,
@@ -359,7 +381,6 @@ const Chat = () => {
                   _id: data.ID_user._id,
                   first_name: data.ID_user.first_name,
                   last_name: data.ID_user.last_name,
-                  //displayName: data.ID_user.displayName,
                   avatar: data.ID_user.avatar,
                 },
                 ID_reaction: {
@@ -372,7 +393,6 @@ const Chat = () => {
                 createdAt: data.createdAt,
                 _destroy: data._destroy,
               });
-              console.log(data.ID_reaction.icon);
             }
 
             return {
@@ -380,32 +400,18 @@ const Chat = () => {
               message_reactionList: updatedReactions,
             };
           }
-          return msg; // Nếu không phải message cần cập nhật, giữ nguyên
+          return msg;
         });
       });
     });
 
     socket.on("group_deleted", ({ ID_group }) => {
-      //console.log(`🗑️ Nhóm ${ID_group} đã bị xóa`);
-      //goBack();
+      // Handle group deletion
     });
 
     socket.on("kicked_from_group", ({ ID_group }) => {
-      //console.log(`🚪 Bạn đã bị kick khỏi nhóm ${ID_group}`);
-      //goBack();
+      // Handle being kicked from group
     });
-
-    // socket.on("user_typing", ({ ID_group, ID_user }) => {
-    //   //console.log("User: " + ID_user + " đang soạn tin nhắn...");
-    //   if (ID_user == me._id) return;
-    //   setTypingUsers((prev) => [...new Set([...prev, ID_user])]); // Thêm user vào danh sách
-
-    // });
-
-    // socket.on("user_stop_typing", ({ ID_group, ID_user }) => {
-    //   //console.log("User: " + ID_user + " đang soạn tin nhắn...");
-    //   setTypingUsers((prev) => prev.filter((id) => id !== ID_user)); // Xóa user khỏi danh sách
-    // });
 
     return () => {
       socket.off("receive_message_reation");
@@ -413,19 +419,14 @@ const Chat = () => {
       socket.off("receive_message");
       socket.off("group_deleted");
       socket.off("kicked_from_group");
-      // đang soạn
-      socket.off("user_typing");
-      socket.off("user_stop_typing");
     };
   }, [selectedGroup]);
 
-  //call api getMessagesGroupID
   const getMessagesOld = async (ID_group) => {
     try {
       await dispatch(getMessagesGroup({ ID_group: ID_group, token: token }))
         .unwrap()
         .then((response) => {
-          //console.log(response.messages)
           setMessages(response.messages);
         })
         .catch((error) => {
@@ -445,14 +446,13 @@ const Chat = () => {
     setReply(null);
     setSelectedGroup(group);
   };
-  // Hiển thị ảnh lớn
+
   const openImageModal = (imageUrl) => {
     console.log("🚀 ~ file: Chat.jsx:1 ~ openImageModal ~ imageUrl:", imageUrl);
     setSelectedImage(imageUrl);
     setImageModalVisible(true);
   };
 
-  // Đóng modal ảnh
   const closeImageModal = () => {
     setImageModalVisible(false);
     setSelectedImage(null);
@@ -460,7 +460,7 @@ const Chat = () => {
 
   const getFileExtension = (url) => {
     try {
-      const pathname = new URL(url).pathname; // Lấy phần đường dẫn từ URL
+      const pathname = new URL(url).pathname;
       const parts = pathname.split('.');
       return parts.length > 1 ? parts.pop().toLowerCase() : null;
     } catch (error) {
@@ -469,26 +469,6 @@ const Chat = () => {
     }
   };
 
-  // đang soan tin
-  // const handleTyping = (text) => {
-  //   setMessage(text);
-
-  //   if (!isTyping) {
-  //     //console.log("typing: " + text)
-  //     socket.emit("typing", { ID_group: params?.ID_group, ID_user: me._id }); // Gửi sự kiện lên server
-  //     setIsTyping(true);
-  //   }
-
-  //   // Dừng typing sau 1.5s nếu không nhập tiếp
-  //   clearTimeout(typingTimeoutRef.current);
-  //   typingTimeoutRef.current = setTimeout(() => {
-  //     //console.log("stop_typing: " + text)
-  //     socket.emit("stop_typing", { ID_group: params?.ID_group, ID_user: me._id }); // Gửi sự kiện stop typing
-  //     setIsTyping(false);
-  //   }, 1500);
-  // };
-
-  // gửi tin nhắn
   const sendMessage = (type, content) => {
     if (socket == null || (message == null && type === 'text') || selectedGroup == null) {
       console.log("socket null or message null or type null or selectedGroup null");
@@ -502,16 +482,15 @@ const Chat = () => {
       ID_message_reply: reply
         ? {
           _id: reply._id,
-          content: reply.content || "Tin nhắn không tồn tại", // Đảm bảo không bị undefined
+          content: reply.content || "Tin nhắn không tồn tại",
         }
         : null,
     };
     socket.emit('send_message', payload);
     setMessage('');
-    setReply(null); // Xóa tin nhắn trả lời sau khi gửi
+    setReply(null);
   };
 
-  // Xử lý thu hồi tin nhắn
   const revokeMessage = (ID_message) => {
     if (socket == null || ID_message == null) {
       console.log("socket null or ID_message null");
@@ -524,7 +503,6 @@ const Chat = () => {
     socket.emit('revoke_message', payload);
   };
 
-  // Xử lý thả biểu cảm tin nhắn
   const iconMessage = (ID_message, ID_reaction) => {
     if (socket == null || ID_message == null || ID_reaction == null) {
       console.log("socket null or ID_message null or ID_reaction null");
@@ -541,7 +519,6 @@ const Chat = () => {
 
   return (
     <div className={styles.app}>
-      {/* Phần danh sách đoạn chat bên trái */}
       <div className={styles.chatList}>
         <div className={styles.chatListHeader}>
           <h2>Đoạn chat</h2>
@@ -567,7 +544,6 @@ const Chat = () => {
         ))}
       </div>
 
-      {/* Phần nội dung đoạn chat bên phải */}
       <div className={styles.chatContent}>
         {selectedGroup ? (
           <>
@@ -605,16 +581,14 @@ const Chat = () => {
                 <div className={styles.chatHeaderActions} onClick={() => setIsModalOpen(true)}>
                   <button><FaAlignJustify /></button>
                 </div>
-              )
-              }
-
+              )}
             </div>
 
             <div className={styles.chatMessages}>
               {messages.length > 0 ? (
                 messages
-                  .slice() // Tạo bản sao của mảng
-                  .reverse() // Đảo ngược mảng sao chép
+                  .slice()
+                  .reverse()
                   .map((message) => (
                     <MessageItem
                       key={message._id}
@@ -629,7 +603,7 @@ const Chat = () => {
               ) : (
                 <p>Chưa có tin nhắn nào</p>
               )}
-               <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} />
             </div>
             {
               reply && (
@@ -658,7 +632,6 @@ const Chat = () => {
             }
 
             <div className={styles.chatInput}>
-              {/* Input file ẩn */}
               <input
                 type="file"
                 accept="image/*,video/*"
@@ -666,21 +639,18 @@ const Chat = () => {
                 ref={fileInputRef}
                 onChange={handleFileSelect}
               />
-              {/* Nút chọn hình ảnh */}
               <FaImage className={styles.button_img} onClick={onOpenGallery} />
               <input
-                //type="text"
                 placeholder="Type a message"
                 placeholderTextColor={'grey'}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault(); // nếu dùng textarea và không muốn xuống dòng
+                    e.preventDefault();
                     sendMessage('text', message);
                   }
                 }}
-              //onChangeText={handleTyping}
               />
               <button
                 onClick={() => sendMessage('text', message)}
@@ -714,7 +684,7 @@ const Chat = () => {
           </>
         )}
       </div>
-      {/* Modal xem ảnh lớn */}
+
       {isImageModalVisible && (
         <div className={styles.post_modal_container}>
           <div className={styles.modal_background} onClick={closeImageModal}></div>
@@ -728,9 +698,6 @@ const Chat = () => {
           ) : (
             <img src={selectedImage} alt="Full Image" className={styles.full_image} />
           )}
-          {/* <img src={selectedImage} alt="Full Image" className={styles.full_image} /> */}
-          {/* <video src={selectedImage} alt="Full Image" className={styles.full_image} controls /> */}
-          {/* <img src={selectedImage} alt="Full Image" className={styles.full_image} /> */}
           <button className={styles.close_button_full_image} onClick={closeImageModal}>
             ✕
           </button>
@@ -742,11 +709,12 @@ const Chat = () => {
           onCreateGroup={handleCreateGroup}
         />
       )}
-      {isModalOpen && 
-        <GroupInfo 
+      {isModalOpen &&
+        <GroupInfo
           onClose={() => setIsModalOpen(false)}
-          ID_group={selectedGroup._id}
-      />}
+          group={selectedGroup}
+          onRefresh1={onRefresh1}
+        />}
     </div>
   );
 };

@@ -304,7 +304,7 @@ const Home = ({ content }) => {
                 .unwrap()
                 .then((response) => {
                     setNotifications(response.notifications || []);
-                    console.log('Notifications:', response.notifications);
+                    //console.log('Notifications:', response.notifications);
                 })
                 .catch((error) => {
                     console.log('Error getAllNotificationOfUser: ', error);
@@ -554,14 +554,17 @@ const Home = ({ content }) => {
                         className="icon-wrapper1"
                         onClick={(e) => {
                             e.stopPropagation();
-                            setIsNotificationOpen(false);
-                            setActiveIcon('chat');
-                            setIsChat(!isChat);
+                            // Chỉ kích hoạt modal chat nếu đường dẫn hiện tại không phải '/chat'
+                            if (location.pathname !== '/chat') {
+                                setIsNotificationOpen(false);
+                                setActiveIcon('chat');
+                                setIsChat(!isChat);
+                            }
                         }}
                     >
                         <FaFacebookMessenger className="nav-icon1" />
                         {isChat && (
-                            <HomeChatModal 
+                            <HomeChatModal
                                 onClose={() => setIsChat(false)}
                                 onSelectGroup={(group) => {
                                     setIsChat(false);
