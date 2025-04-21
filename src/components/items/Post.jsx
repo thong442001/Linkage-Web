@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FaThumbsUp, FaComment, FaShare, FaEllipsisH } from 'react-icons/fa';
 import { AiOutlineGlobal, AiOutlineUsergroupAdd, AiOutlineLock } from 'react-icons/ai';
 import { addPost_Reaction, deletePost_reaction, addPost } from '../../rtk/API';
-import './../../styles/components/items/PostS.css';
+import styles from './../../styles/components/items/PostS.module.css';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import ReportDialog from '../../components/dialogs/ReportDialog';
 import ListTag from './../../screens/home/ListTag';
@@ -45,10 +45,8 @@ const Post = ({
   const [listTagData, setListTagData] = useState([]);
   const reactionRef = useRef(null);
   const [reactionListModalVisible, setReactionListModalVisible] = useState(false);
-  // Thêm state để quản lý tab đang chọn
-  const [selectedReactionTab, setSelectedReactionTab] = useState('all'); // 'all' hoặc ID_reaction
+  const [selectedReactionTab, setSelectedReactionTab] = useState('all');
 
-  // Dialog report
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -87,16 +85,16 @@ const Post = ({
   };
 
   const getMediaStyle = (count, index) => {
-    if (count === 1) return "single-media";
-    else if (count === 2) return "double-media";
+    if (count === 1) return styles.singleMedia;
+    else if (count === 2) return styles.doubleMedia;
     else if (count === 3)
-      return index === 0 ? "triple-media-first" : "triple-media-second";
-    else if (count === 4) return "quad-media";
+      return index === 0 ? styles.tripleMediaFirst : styles.tripleMediaSecond;
+    else if (count === 4) return styles.quadMedia;
     else {
-      if (index < 2) return "five-plus-media-first-row";
-      else if (index === 2) return "five-plus-media-second-row-left";
-      else if (index === 3) return "five-plus-media-second-row-middle";
-      else return "five-plus-media-second-row-right";
+      if (index < 2) return styles.fivePlusMediaFirstRow;
+      else if (index === 2) return styles.fivePlusMediaSecondRowLeft;
+      else if (index === 3) return styles.fivePlusMediaSecondRowMiddle;
+      else return styles.fivePlusMediaSecondRowRight;
     }
   };
 
@@ -109,27 +107,27 @@ const Post = ({
     if (mediaCount === 0) return null;
 
     return (
-      <div className="media-container">
+      <div className={styles.mediaContainer}>
         {medias.slice(0, 5).map((uri, index) => (
           <div
             key={index}
-            className={`media-item ${getMediaStyle(mediaCount, index)}`}
+            className={`${styles.mediaItem} ${getMediaStyle(mediaCount, index)}`}
             onClick={() => {
               setSelectedImage(uri);
               setImageModalVisible(true);
             }}
           >
             {isVideo(uri) ? (
-              <div className="video-wrapper">
-                <video src={uri} className="video" />
-                <div className="play-button"></div>
+              <div className={styles.videoWrapper}>
+                <video src={uri} className={styles.video} />
+                <div className={styles.playButton}></div>
               </div>
             ) : (
-              <img src={uri} alt="Post Media" className="image" />
+              <img src={uri} alt="Post Media" className={styles.image} />
             )}
             {index === 4 && mediaCount > 5 && (
-              <div className="overlay-container">
-                <span className="overlay-text">+{mediaCount - 5}</span>
+              <div className={styles.overlayContainer}>
+                <span className={styles.overlayText}>+{mediaCount - 5}</span>
               </div>
             )}
           </div>
@@ -138,13 +136,7 @@ const Post = ({
     );
   };
 
-  const postContainerClass = location.pathname.includes('/profile') ? 'post-container-profile' : 'post-container';
-
-  // const handleLongPress = (e) => {
-  //   const rect = reactionRef.current.getBoundingClientRect();
-  //   setMenuPosition({ top: rect.top - 50, left: rect.left });
-  //   setReactionsVisible(true);
-  // };
+  const postContainerClass = location.pathname.includes('/profile') ? styles.postContainerProfile : styles.postContainer;
 
   const handleShare = () => {
     setSelectedOption({ status: 1, name: "Công khai" });
@@ -245,7 +237,6 @@ const Post = ({
     .sort((a, b) => b.count - a.count)
     .slice(0, 2);
 
-  // Tạo danh sách các tab dựa trên các loại biểu cảm
   const reactionTabs = [
     { id: 'all', name: 'Tất cả', count: post.post_reactions?.length || 0 },
     ...Object.values(reactionCount).map(reaction => ({
@@ -255,7 +246,6 @@ const Post = ({
     })),
   ];
 
-  // Lọc danh sách người dùng dựa trên tab đang chọn
   const filteredReactions = selectedReactionTab === 'all'
     ? post.post_reactions
     : post.post_reactions?.filter(
@@ -264,37 +254,36 @@ const Post = ({
 
   return (
     <div className={postContainerClass}>
-      {/* Header share */}
       {post.ID_post_shared && (
         <div>
-          <div className="header-share">
-            <div className="user-info">
+          <div className={styles.headerShare}>
+            <div className={styles.userInfo}>
               <a
                 onClick={() => {
                   navigate(`/profile/${post.ID_user._id}`);
                 }}
               >
-                <img src={post.ID_user?.avatar} className="avatar" alt="User Avatar" />
+                <img src={post.ID_user?.avatar} className={styles.avatar} alt="User Avatar" />
               </a>
-              <div className="user-details">
+              <div className={styles.userDetails}>
                 <a
                   onClick={() => {
                     navigate(`/profile/${post.ID_user._id}`);
                   }}
-                  className="name"
+                  className={styles.name}
                 >
                   {post.ID_user?.first_name} {post.ID_user?.last_name}
                 </a>
-                <div className="box-name">
-                  <span className="time">{timeAgo}</span>
-                  <div className="box-status-detail">
+                <div className={styles.boxName}>
+                  <span className={styles.time}>{timeAgo}</span>
+                  <div className={styles.boxStatusDetail}>
                     {getIcon(post.status)}
                   </div>
                 </div>
               </div>
             </div>
             <button
-              className="options-button"
+              className={styles.optionsButton}
               onClick={() => {
                 const rect = reactionRef.current?.getBoundingClientRect();
                 setMenuPosition({ top: rect?.top || 0, left: rect?.left || 0 });
@@ -307,7 +296,7 @@ const Post = ({
           <div>
             {hasCaption && (
               <p
-                className="caption"
+                className={styles.caption}
                 onClick={() => {
                   setIsSharedSection(true);
                   setPostDetailModalVisible(true);
@@ -320,22 +309,21 @@ const Post = ({
         </div>
       )}
 
-      {/* Header gốc */}
       <div
-        className={post.ID_post_shared ? "header-shared" : "header-original"}
+        className={post.ID_post_shared ? styles.headerShared : styles.headerOriginal}
       >
-        <div className="box-header">
-          <div className="header-content">
+        <div className={styles.boxHeader}>
+          <div className={styles.headerContent}>
             {post.ID_post_shared ? (
-              <div className="user-info">
+              <div className={styles.userInfo}>
                 <a onClick={() => navigate(`/profile/${post.ID_post_shared.ID_user._id}`)}>
-                  <img src={post.ID_post_shared.ID_user?.avatar} className="avatar" alt="User Avatar" />
+                  <img src={post.ID_post_shared.ID_user?.avatar} className={styles.avatar} alt="User Avatar" />
                 </a>
-                <div className="user-details">
+                <div className={styles.userDetails}>
                   <div>
                     <a
                       onClick={() => navigate(`/profile/${post.ID_post_shared.ID_user._id}`)}
-                      className="name"
+                      className={styles.name}
                     >
                       {post.ID_post_shared.ID_user.first_name} {post.ID_post_shared.ID_user.last_name}
                     </a>
@@ -344,7 +332,7 @@ const Post = ({
                         <span style={{ color: "gray" }}> cùng với </span>
                         <a
                           onClick={() => navigate(`/profile/${post.ID_post_shared.tags[0]?._id}`)}
-                          className="name"
+                          className={styles.name}
                         >
                           {post.ID_post_shared.tags[0]?.first_name}{" "}
                           {post.ID_post_shared.tags[0]?.last_name}
@@ -357,7 +345,7 @@ const Post = ({
                                 setListTagData(post.ID_post_shared.tags);
                                 setListTagModalVisible(true);
                               }}
-                              className="name"
+                              className={styles.name}
                             >
                               {post.ID_post_shared.tags.length - 1} người khác
                             </a>
@@ -366,30 +354,30 @@ const Post = ({
                       </span>
                     )}
                   </div>
-                  <div className="box-name">
-                    <span className="time">{timeAgoShare}</span>
-                    <div className='box-status-detail'>
+                  <div className={styles.boxName}>
+                    <span className={styles.time}>{timeAgoShare}</span>
+                    <div className={styles.boxStatusDetail}>
                       {getIcon(post.ID_post_shared?.status)}
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="user-info">
+              <div className={styles.userInfo}>
                 <a
                   onClick={() => navigate(`/profile/${post.ID_user._id}`)}
                 >
                   <img
                     src={post.ID_user?.avatar}
-                    className="avatar"
+                    className={styles.avatar}
                     alt="User Avatar"
                   />
                 </a>
-                <div className="user-details">
+                <div className={styles.userDetails}>
                   <div>
                     <a
                       onClick={() => navigate(`/profile/${post.ID_user._id}`)}
-                      className="name"
+                      className={styles.name}
                     >
                       {post.ID_user?.first_name} {post.ID_user?.last_name}
                     </a>
@@ -398,7 +386,7 @@ const Post = ({
                         <span style={{ color: "gray" }}> cùng với </span>
                         <a
                           onClick={() => navigate(`/profile/${post.tags[0]?._id}`)}
-                          className="name"
+                          className={styles.name}
                         >
                           {post.tags[0]?.first_name} {post.tags[0]?.last_name}
                         </a>
@@ -410,7 +398,7 @@ const Post = ({
                                 setListTagData(post.tags);
                                 setListTagModalVisible(true);
                               }}
-                              className="name"
+                              className={styles.name}
                             >
                               {post.tags.length - 1} người khác
                             </a>
@@ -419,8 +407,8 @@ const Post = ({
                       </span>
                     )}
                   </div>
-                  <div className="box-name">
-                    <span className="time">{timeAgo}</span>
+                  <div className={styles.boxName}>
+                    <span className={styles.time}>{timeAgo}</span>
                     {getIcon(post.status)}
                   </div>
                 </div>
@@ -428,7 +416,7 @@ const Post = ({
             )}
             {!post.ID_post_shared && (
               <button
-                className="options-button"
+                className={styles.optionsButton}
                 onClick={() => {
                   const rect = reactionRef.current?.getBoundingClientRect();
                   setMenuPosition({
@@ -443,7 +431,7 @@ const Post = ({
             )}
           </div>
           <p
-            className="caption"
+            className={styles.caption}
             onClick={() => {
               setIsSharedSection(false);
               setPostDetailModalVisible(true);
@@ -459,9 +447,9 @@ const Post = ({
       {post.ID_post_shared ? hasMedia && renderMediaGrid(post.ID_post_shared.medias) : hasMedia && renderMediaGrid(post.medias)}
 
       {!post._destroy && (
-        <div className="footer">
+        <div className={styles.footer}>
           {post.post_reactions?.length > 0 ? (
-            <div className="footer-reactions">
+            <div className={styles.footerReactions}>
               <a
                 onClick={() => setReactionListModalVisible(true)}
               >
@@ -478,11 +466,11 @@ const Post = ({
               </a>
             </div>
           ) : (
-            <div className="footer-spacer" />
+            <div className={styles.footerSpacer} />
           )}
           {post.comments?.length > 0 && (
             <span
-              className="comment-count"
+              className={styles.commentCount}
               onClick={() => {
                 setIsSharedSection(post.ID_post_shared ? true : false);
                 setPostDetailModalVisible(true);
@@ -494,17 +482,16 @@ const Post = ({
         </div>
       )}
 
-
       {!post._destroy && (
-        <div className="interactions">
-          <div className="reaction-container">
+        <div className={styles.interactions}>
+          <div className={styles.reactionContainer}>
             <button
               ref={reactionRef}
-              className={`action ${userReaction ? "reacted" : ""}`}
+              className={`${styles.action} ${userReaction ? styles.reacted : ""}`}
               onMouseEnter={() => setReactionsVisible(true)}
               onMouseLeave={() => {
                 setTimeout(() => {
-                  if (!document.querySelector('.reaction-bar:hover') && !document.querySelector('.reaction-container:hover')) {
+                  if (!document.querySelector(`.${styles.reactionBar}:hover`) && !document.querySelector(`.${styles.reactionContainer}:hover`)) {
                     setReactionsVisible(false);
                   }
                 }, 200);
@@ -520,11 +507,11 @@ const Post = ({
                   );
               }}
             >
-              <div className="reaction-icon-box">
+              <div className={styles.reactionIconBox}>
                 <span>
                   {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={15} />}
                 </span>
-                <span className={userReaction ? "reacted-text" : ""}>
+                <span className={userReaction ? styles.reactedText : ""}>
                   {userReaction ? userReaction.ID_reaction.name : reactions[0]?.name || "Thích"}
                 </span>
               </div>
@@ -532,14 +519,14 @@ const Post = ({
 
             {reactionsVisible && (
               <div
-                className="reaction-bar"
+                className={styles.reactionBar}
                 onMouseEnter={() => setReactionsVisible(true)}
                 onMouseLeave={() => setReactionsVisible(false)}
               >
                 {reactions.map((reaction, index) => (
                   <button
                     key={index}
-                    className="reaction-button"
+                    className={styles.reactionButton}
                     onClick={() => {
                       callAddPost_Reaction(
                         reaction._id,
@@ -556,7 +543,7 @@ const Post = ({
             )}
           </div>
           <button
-            className="action"
+            className={styles.action}
             onClick={() => {
               setIsSharedSection(post.ID_post_shared ? true : false);
               setPostDetailModalVisible(true);
@@ -565,7 +552,7 @@ const Post = ({
             <FaComment size={17} />
             <span>Bình luận</span>
           </button>
-          <button className="action" onClick={() => handleShare()}>
+          <button className={styles.action} onClick={() => handleShare()}>
             <FaShare size={17} />
             <span>Chia sẻ</span>
           </button>
@@ -573,19 +560,19 @@ const Post = ({
       )}
 
       {shareVisible && (
-        <div className="overlay" onClick={() => setShareVisible(false)}>
-          <div className="modal-container"
-            onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan truyền
+        <div className={styles.overlay} onClick={() => setShareVisible(false)}>
+          <div className={styles.modalContainer}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="share-header">
-              <img src={me?.avatar} className="avatar" alt="User Avatar" />
+            <div className={styles.shareHeader}>
+              <img src={me?.avatar} className={styles.avatar} alt="User Avatar" />
               <div>
-                <span className="name">
+                <span className={styles.name}>
                   {me?.first_name} {me?.last_name}
                 </span>
-                <div className="box-status">
+                <div className={styles.boxStatus}>
                   <button
-                    className="btn-status"
+                    className={styles.btnStatus}
                     onClick={() => setStatusModalVisible(true)}
                   >
                     {selectedOption.name}
@@ -595,11 +582,11 @@ const Post = ({
             </div>
             <textarea
               placeholder="Hãy nói gì đó về nội dung này"
-              className="content-share"
+              className={styles.contentShare}
               value={captionShare}
               onChange={(e) => setCaptionShare(e.target.value)}
             />
-            <button className="share-button" onClick={() => callAddPostShare()}>
+            <button className={styles.shareButton} onClick={() => callAddPostShare()}>
               Chia sẻ ngay
             </button>
           </div>
@@ -607,11 +594,11 @@ const Post = ({
       )}
 
       {modalVisible && (
-        <div className="overlay" onClick={() => setModalVisible(false)}>
-          <div className="modal-content">
+        <div className={styles.overlay} onClick={() => setModalVisible(false)}>
+          <div className={styles.modalContent}>
             {me._id !== post.ID_user?._id ? (
               <button
-                className="option-button"
+                className={styles.optionButton}
                 onClick={() => {
                   setModalVisible(false);
                   handleOpen();
@@ -622,7 +609,7 @@ const Post = ({
             ) : (
               <>
                 <button
-                  className="option-button"
+                  className={styles.optionButton}
                   onClick={() => {
                     onDelete();
                     setModalVisible(false);
@@ -635,7 +622,7 @@ const Post = ({
                 </button>
                 {post._destroy && (
                   <button
-                    className="option-button"
+                    className={styles.optionButton}
                     onClick={() => {
                       onDeleteVinhVien();
                       setModalVisible(false);
@@ -651,12 +638,12 @@ const Post = ({
       )}
 
       {statusModalVisible && (
-        <div className="overlay" onClick={() => setStatusModalVisible(false)}>
-          <div className="modal-content">
+        <div className={styles.overlay} onClick={() => setStatusModalVisible(false)}>
+          <div className={styles.modalContent}>
             {status.map((option, index) => (
               <button
                 key={index}
-                className="option-button"
+                className={styles.optionButton}
                 onClick={() => handleSelectOption(option)}
               >
                 {getIcon(option.name)} {option.name}
@@ -667,37 +654,37 @@ const Post = ({
       )}
 
       {listTagModalVisible && (
-        <div className="overlay" onClick={() => setListTagModalVisible(false)}>
-          <div className="modal-content" style={{ width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
+        <div className={styles.overlay} onClick={() => setListTagModalVisible(false)}>
+          <div className={styles.modalContent} style={{ width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
             <ListTag ListTag={listTagData} />
           </div>
         </div>
       )}
 
       {isImageModalVisible && (
-        <div className="overlay" onClick={() => setImageModalVisible(false)}>
+        <div className={styles.overlay} onClick={() => setImageModalVisible(false)}>
           {isVideo(selectedImage) ? (
             <video
               src={selectedImage}
-              className="full-media"
+              className={styles.fullMedia}
               controls
               autoPlay
             />
           ) : (
-            <img src={selectedImage} className="full-media" alt="Full Media" />
+            <img src={selectedImage} className={styles.fullMedia} alt="Full Media" />
           )}
         </div>
       )}
 
       {successModalVisible && (
-        <div className="overlay">
-          <div className="success-modal">Chia sẻ bài viết thành công!</div>
+        <div className={styles.overlay}>
+          <div className={styles.successModal}>Chia sẻ bài viết thành công!</div>
         </div>
       )}
 
       {failedModalVisible && (
-        <div className="overlay">
-          <div className="failed-modal">
+        <div className={styles.overlay}>
+          <div className={styles.failedModal}>
             Chia sẻ bài viết thất bại. Vui lòng thử lại!
           </div>
         </div>
@@ -705,16 +692,15 @@ const Post = ({
 
       {reactionListModalVisible && (
         <div
-          className="overlay"
+          className={styles.overlay}
           onClick={() => setReactionListModalVisible(false)}
         >
           <div
-            className="modal-content-1"
+            className={styles.modalContent1}
             style={{ width: "400px", maxHeight: "80vh", overflowY: "auto" }}
             onClick={(e) => e.stopPropagation()}
           >
             <h3>Cảm xúc về bài viết</h3>
-            {/* Thêm các tab lọc */}
             <div style={{ display: 'flex', borderBottom: '1px solid #e0e0e0', marginBottom: '10px' }}>
               {reactionTabs.map((tab) => (
                 <button
@@ -738,7 +724,6 @@ const Post = ({
                 </button>
               ))}
             </div>
-            {/* Danh sách người dùng đã thả biểu cảm */}
             {filteredReactions?.length > 0 ? (
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {filteredReactions.map((reaction, index) => (
