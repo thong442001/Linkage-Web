@@ -6,6 +6,7 @@ import { IoPlayCircle } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Menu, MenuItem } from '@mui/material';
 import styles from '../../styles/components/items/PostDetailS.module.css';
 import {
   getChiTietPost,
@@ -13,6 +14,8 @@ import {
   deletePost_reaction,
   addPost,
   addComment,
+  editComment,
+  deleteComment,
   changeDestroyPost,
   getAllGroupOfUser,
 } from '../../rtk/API';
@@ -37,7 +40,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const [successMessage, setSuccessMessage] = useState('');
   const [failedMessage, setFailedMessage] = useState('');
   const [menuVisible, setMenuVisible] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [showReplies, setShowReplies] = useState({});
   const [reactionListModalVisible, setReactionListModalVisible] = useState(false);
@@ -49,6 +51,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const [uploadingMedia, setUploadingMedia] = useState(null);
   const [mediaList, setMediaList] = useState([]); // Danh sách media
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0); // Chỉ số của media đang xem
+  const [editingComment, setEditingComment] = useState(null);
+  const [commentMenu, setCommentMenu] = useState({ anchorEl: null, commentId: null });  
 
   const MAX_REPLY_LEVEL = 2; // Giới hạn tối đa cấp reply
 
@@ -654,11 +658,59 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     );
   };
 
-  const handleAddComment = (e) => {
-    if (e.key === 'Enter' && newComment.trim()) {
+// Modified handleAddComment to handle both adding and editing comments
+const handleAddComment = (e) => {
+  if (e.key === 'Enter' && newComment.trim()) {
+    if (editingComment) {
+      callEditComment(editingComment._id, newComment);
+    } else {
       callAddComment('text', newComment);
     }
-  };
+  }
+};
+
+const callEditComment = async (ID_comment, newContent) => {
+  try {
+    const updateComment = (commentsList, commentId, newContent) => {
+      return commentsList.map((comment) => {
+        if (comment._id === commentId) {
+          return { ...comment, content: newContent, isPending: true };
+        }
+        if (Array.isArray(comment.replys) && comment.replys.length > 0) {
+          return {
+            ...comment,
+            replys: updateComment(comment.replys, commentId, newContent),
+          };
+        }
+        return comment;
+      });
+    };
+
+    setComments((prevComments) => updateComment(prevComments, ID_comment, newContent));
+
+    const response = await dispatch(editComment({ ID_comment, newContent })).unwrap();
+
+    if (response.status) {
+      setComments((prevComments) =>
+        updateComment(prevComments, ID_comment, newContent).map((comment) =>
+          comment._id === ID_comment ? { ...comment, isPending: false } : comment
+        )
+      );
+      setSuccessMessage('Đã chỉnh sửa bình luận thành công!');
+      setTimeout(() => setSuccessMessage(''), 1500);
+    } else {
+      throw new Error('Chỉnh sửa bình luận thất bại');
+    }
+  } catch (error) {
+    console.log('Lỗi khi chỉnh sửa bình luận:', error);
+    setFailedMessage('Chỉnh sửa bình luận thất bại. Vui lòng thử lại!');
+    setTimeout(() => setFailedMessage(''), 1500);
+    callGetChiTietPost(post._id);
+  } finally {
+    setEditingComment(null);
+    setNewComment('');
+  }
+};
 
 
   const handleReply = (comment) => {
@@ -690,103 +742,225 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const timeAgo = getTimeAgo(post?.createdAt);
   const timeAgoShare = post?.ID_post_shared ? getTimeAgo(post.ID_post_shared.createdAt) : null;
 
-  const renderComment = (comment, level = 0) => (
-    <>
-      <div
-        key={comment._id}
-        className={`${styles.comment} ${comment.isPending ? styles.pendingComment : ''}`}
-        style={{ marginLeft: level * 1.25 + 'rem' }}
-      >
-        <img
-          src={comment.ID_user?.avatar}
-          className={styles.commentAvatar}
-          alt="User Avatar"
-        />
-        <div className={styles.commentWrapper}>
-          <div className={styles.commentContent}>
-            <div className={styles.commentBubble}>
-              <span className={styles.commentUser}>
-                {comment.ID_user?.first_name} {comment.ID_user?.last_name}
-              </span>
-              {comment.type === 'text' ? (
-                <p>{comment.content}</p>
-              ) : comment.type === 'image' ? (
-                <img
-                  src={comment.content}
-                  alt="Comment Media"
-                  className={styles.commentMedia}
+  const handleEditComment = (comment) => {
+    setEditingComment(comment);
+    setNewComment(comment.content);
+    setReplyingTo(null); // Clear replying state
+    commentInputRef.current?.focus();
+  };
+
+  const handleDeleteComment = async (ID_comment) => {
+    try {
+      const removeComment = (commentsList, commentId) => {
+        return commentsList
+          .map((comment) => {
+            if (comment._id === commentId) {
+              return null;
+            }
+            if (Array.isArray(comment.replys) && comment.replys.length > 0) {
+              return {
+                ...comment,
+                replys: removeComment(comment.replys, commentId).filter(Boolean),
+              };
+            }
+            return comment;
+          })
+          .filter(Boolean);
+      };
+  
+      setComments((prevComments) => removeComment(prevComments, ID_comment));
+      setCountComments((prev) => prev - 1);
+  
+      const response = await dispatch(deleteComment({ ID_comment })).unwrap();
+  
+      if (response.status) {
+        setSuccessMessage('Đã xóa bình luận thành công');
+        setTimeout(() => setSuccessMessage(''), 1500);
+      } else {
+        setComments((prevComments) => [...prevComments]);
+        setCountComments((prev) => prev + 1);
+        throw new Error('Xóa bình luận thất bại');
+      }
+    } catch (error) {
+      console.log('Lỗi khi xóa bình luận:', error);
+      setFailedMessage('Xóa bình luận thất bại. Vui lòng thử lại!');
+      setTimeout(() => setFailedMessage(''), 1500);
+      callGetChiTietPost(post._id);
+    }
+  };
+
+const renderComment = (comment, level = 0) => (
+  <>
+    <div
+      key={comment._id}
+      className={`${styles.comment} ${comment.isPending ? styles.pendingComment : ''}`}
+      style={{ marginLeft: level * 1.25 + 'rem' }}
+    >
+      <img
+      onClick={() =>  navigate(`/profile/${comment.ID_user._id}`)}
+        src={comment.ID_user?.avatar}
+        className={styles.commentAvatar}
+        alt="Ảnh đại diện"
+      />
+      <div className={styles.commentWrapper}>
+        <div className={styles.commentContent}>
+          <div className={styles.commentBubble}>
+            <span className={styles.commentUser}>
+              {comment.ID_user?.first_name} {comment.ID_user?.last_name}
+            </span>
+            {comment.type === 'text' ? (
+              <p>{comment.content}</p>
+            ) : comment.type === 'image' ? (
+              <img
+                src={comment.content}
+                alt="Ảnh bình luận"
+                className={styles.commentMedia}
+                onClick={() => {
+                  setMediaList([comment.content]);
+                  setCurrentMediaIndex(0);
+                  setImageModalVisible(true);
+                }}
+              />
+            ) : comment.type === 'video' ? (
+              <div className={styles.videoWrapper}>
+                <video src={comment.content} className={styles.commentMedia} />
+                <div
+                  className={styles.playButton}
                   onClick={() => {
-                    setMediaList([comment.content]); // Chỉ có 1 media trong trường hợp này
+                    setMediaList([comment.content]);
                     setCurrentMediaIndex(0);
                     setImageModalVisible(true);
                   }}
-                />
-              ) : comment.type === 'video' ? (
-                <div className={styles.videoWrapper}>
-                  <video src={comment.content} className={styles.commentMedia} />
-                  <div
-                    className={styles.playButton}
-                    onClick={() => {
-                      setMediaList([comment.content]); // Chỉ có 1 media trong trường hợp này
-                      setCurrentMediaIndex(0);
-                      setImageModalVisible(true);
-                    }}
-                  >
-                    <IoPlayCircle size={40} color="white" />
-                  </div>
-                </div>
-              ) : null}
-              {comment.isPending && <span className={styles.pendingIndicator}>Đang gửi...</span>}
-            </div>
-          </div>
-          {!comment.isPending && (
-            <div className={styles.commentActions}>
-              <span>Thích</span>
-              <span onClick={() => handleReply(comment)}>Trả lời</span>
-              <span className={styles.commentTime}>{getTimeAgo(comment.createdAt)}</span>
-              {comment.replys?.length > 0 && (
-                <span
-                  className={styles.toggleReplies}
-                  onClick={() => toggleReplies(comment._id)}
                 >
-                  {showReplies[comment._id] ? 'Ẩn trả lời' : `Hiện ${comment.replys.length} trả lời`}
-                </span>
-              )}
-              {
-                comment.ID_user._id === me._id && (
-                  <button
-                    onClick={() => {
-                      setMenuVisible(false);
-                      setReportDialogOpen(true);
-                    }}
-                  >
-                    Chỉnh Sửa
-                  </button>
-                )
-              }
-              {
-                comment.ID_user._id === me._id && (
-                  <button
-                    onClick={() => {
-                      setMenuVisible(false);
-                      setReportDialogOpen(true);
-                    }}
-                  >
-                    Xóa
-                  </button>
-                )
-              }
-            </div>
-          )}
+                  <IoPlayCircle size={40} color="white" />
+                </div>
+              </div>
+            ) : null}
+            {comment.isPending && <span className={styles.pendingIndicator}>Đang gửi...</span>}
+          </div>
         </div>
+        {!comment.isPending && (
+          <div className={styles.commentActions}>
+            <span>Thích</span>
+            <span onClick={() => handleReply(comment)}>Trả lời</span>
+            <span className={styles.commentTime}>{getTimeAgo(comment.createdAt)}</span>
+            {comment.replys?.length > 0 && (
+              <span
+                className={styles.toggleReplies}
+                onClick={() => toggleReplies(comment._id)}
+              >
+                {showReplies[comment._id] ? 'Ẩn trả lời' : `Hiện ${comment.replys.length} trả lời`}
+              </span>
+            )}
+            {comment.ID_user._id === me._id && (
+              <button
+                className={styles.optionsButton}
+                onClick={(e) => {
+                  setCommentMenu({ anchorEl: e.currentTarget, commentId: comment._id });
+                }}
+              >
+                <FaEllipsisH size={16} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
-      {comment.replys?.length > 0 && showReplies[comment._id] && (
-        <div className={styles.replies}>
-          {comment.replys.map((reply) => renderComment(reply, level + 1))}
-        </div>
-      )}
-    </>
-  );
+    </div>
+    {comment.replys?.length > 0 && showReplies[comment._id] && (
+      <div className={styles.replies}>
+        {comment.replys.map((reply) => renderComment(reply, level + 1))}
+      </div>
+    )}
+    {commentMenu.commentId === comment._id && (
+      <Menu
+        anchorEl={commentMenu.anchorEl}
+        open={Boolean(commentMenu.anchorEl)}
+        onClose={() => setCommentMenu({ anchorEl: null, commentId: null })}
+        PaperProps={{
+          style: {
+            width: '150px',
+          },
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            const selectedComment = comments.find((c) => c._id === commentMenu.commentId) ||
+              comments.flatMap((c) => c.replys || []).find((r) => r._id === commentMenu.commentId);
+            handleEditComment(selectedComment);
+            setCommentMenu({ anchorEl: null, commentId: null });
+          }}
+        >
+          Chỉnh sửa
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleDeleteComment(commentMenu.commentId);
+            setCommentMenu({ anchorEl: null, commentId: null });
+          }}
+        >
+          Xóa
+        </MenuItem>
+      </Menu>
+    )}
+  </>
+);
+
+// Phần input trong return của PostDetailModal
+<div className={styles.inputContainer}>
+  {(replyingTo || editingComment) && (
+    <div className={styles.inputStatus}>
+      <span className={styles.inputStatusText}>
+        {editingComment
+          ? 'Đang chỉnh sửa bình luận'
+          : `Đang trả lời ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`}
+      </span>
+      <button
+        className={styles.cancelStatusButton}
+        onClick={() => {
+          setReplyingTo(null);
+          setEditingComment(null);
+          setNewComment('');
+        }}
+      >
+        Hủy
+      </button>
+    </div>
+  )}
+  <div className={styles.inputContainer2}>
+    <img src={me?.avatar} className={styles.avatar} alt="Ảnh đại diện" />
+    <div className={styles.inputWrapper}>
+      <input
+        ref={commentInputRef}
+        type="text"
+        placeholder={
+          editingComment
+            ? 'Chỉnh sửa bình luận của bạn...'
+            : replyingTo
+            ? `Trả lời ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`
+            : 'Viết bình luận...'
+        }
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        onKeyPress={handleAddComment}
+        disabled={uploadingMedia}
+      />
+    </div>
+    <div className={styles.inputIcons}>
+      <MdOutlinePhoto
+        size={20}
+        onClick={() => fileInputRef.current?.click()}
+        style={{ cursor: 'pointer' }}
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        style={{ display: 'none' }}
+        onChange={handleMediaSelect}
+      />
+    </div>
+  </div>
+</div>
 
   if (isLoading) {
     return <div className={styles.loading}>Đang tải...</div>;
@@ -1014,39 +1188,60 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
           </div>
         </div>
         <div className={styles.inputContainer}>
-          <div className={styles.inputContainer2}>
-            <img src={me?.avatar} className={styles.avatar} alt="User Avatar" />
-            <div className={styles.inputWrapper}>
-              <input
-                ref={commentInputRef}
-                type="text"
-                placeholder={
-                  replyingTo
-                    ? `Trả lời ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`
-                    : "Viết bình luận..."
-                }
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                onKeyPress={handleAddComment}
-                disabled={uploadingMedia}
-              />
-            </div>
-            <div className={styles.inputIcons}>
-              <MdOutlinePhoto
-                size={20}
-                onClick={() => fileInputRef.current?.click()}
-                style={{ cursor: 'pointer' }}
-              />
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*,video/*"
-                style={{ display: 'none' }}
-                onChange={handleMediaSelect}
-              />
-            </div>
-          </div>
-        </div>
+  <div className={styles.inputContainer2}>
+    <img src={me?.avatar} className={styles.avatar} alt="User Avatar" />
+    <div className={styles.inputWrapper}>
+      <input
+        ref={commentInputRef}
+        type="text"
+        placeholder={
+          editingComment
+            ? 'Chỉnh sửa bình luận...'
+            : replyingTo
+            ? `Trả lời ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`
+            : 'Viết bình luận...'
+        }
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        onKeyPress={handleAddComment}
+        disabled={uploadingMedia}
+      />
+    </div>
+    <div className={styles.inputIcons}>
+      <MdOutlinePhoto
+        size={20}
+        onClick={() => fileInputRef.current?.click()}
+        style={{ cursor: 'pointer' }}
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        style={{ display: 'none' }}
+        onChange={handleMediaSelect}
+      />
+    </div>
+  </div>
+  {(replyingTo || editingComment) && (
+    <div className={styles.replyPreview}>
+      <span className={styles.replyTitle}>
+        {editingComment
+          ? 'Đang chỉnh sửa bình luận'
+          : `Đang phản hồi ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`}
+      </span>
+      <button
+        className={styles.cancelReply}
+        onClick={() => {
+          setReplyingTo(null);
+          setEditingComment(null);
+          setNewComment('');
+        }}
+      >
+        Hủy
+      </button>
+    </div>
+  )}
+</div>
       </div>
 
       {menuVisible && (
@@ -1060,7 +1255,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             <button
               onClick={() => {
                 setMenuVisible(false);
-                setReportDialogOpen(true);
               }}
             >
               Báo cáo
@@ -1158,20 +1352,7 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
         </div>
       )}
 
-      {reportDialogOpen && (
-        <ReportDialog
-          open={reportDialogOpen}
-          onClose={() => {
-            setReportDialogOpen(false);
-            setSuccessMessage('Báo cáo đã được gửi!');
-            setTimeout(() => setSuccessMessage(''), 1500);
-          }}
-          reasons={reasons}
-          ID_me={me._id}
-          ID_post={post._id}
-          ID_user={null}
-        />
-      )}
+      
 
       {reactionListModalVisible && (
         <div
