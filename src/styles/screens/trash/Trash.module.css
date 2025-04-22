@@ -1,111 +1,108 @@
-/* Căn giữa và giới hạn chiều rộng 50% cho container chính */
+/* Thiết lập mặc định để tính padding và border vào width/height */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 .trashContainer {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center; /* Căn giữa theo chiều dọc */
-  width: 50%; /* Chiếm 50% chiều rộng màn hình */
-  max-width: 600px; /* Đặt giới hạn tối đa để không quá rộng trên màn hình lớn */
-  margin: 0 auto; /* Căn giữa theo chiều ngang */
-  padding: 15px;
-  border: 2px ;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  min-height: 100vh; /* Đảm bảo container chiếm toàn bộ chiều cao màn hình */
+  height: 100vh; /* Đảm bảo container chiếm toàn bộ chiều cao màn hình */
+  overflow: hidden; /* Ngăn cuộn toàn bộ container */
 }
 
-/* Header của trang thùng rác */
 .header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
+  position: sticky; /* Cố định header ở đầu */
+  top: 0; /* Gắn vào đỉnh container */
+  background-color: #fff; /* Màu nền để header không trong suốt */
+  z-index: 1000; /* Đảm bảo header ở trên cùng */
+  padding: 10px 20px;
+  display: flex; /* Sử dụng flexbox để căn giữa */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
 }
 
+.header_title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #050505;
+text-align: center;
+}
+
+.post_container {
+  flex: 1; /* Chiếm toàn bộ không gian còn lại */
+  overflow-y: auto; /* Cho phép cuộn dọc trong post_container */
+  padding-top: 60px;
+  padding-bottom: 20px;
+}
+
+/* Nút quay lại */
 .back_button {
   background: none;
   border: none;
   cursor: pointer;
   color: #4a3c31;
   transition: color 0.2s;
+  font-size: 1.2rem;
 }
 
 .back_button:hover {
   color: #e07b39;
 }
-
-.header_title {
-  font-family: 'Georgia', serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #4a3c31;
-  margin: 0 auto; /* Căn giữa tiêu đề */
-}
-
-/* Container chứa danh sách bài đăng */
-.post_container {
-  width: 100%; /* Chiếm toàn bộ chiều rộng của trashContainer */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Căn giữa các bài đăng bên trong */
-}
-
-/* Container chính của danh sách bài viết */
+/* Danh sách bài viết */
 .post_list {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Khoảng cách giữa các bài viết (có thể thay thế margin-bottom) */
+  gap: 1rem;
   width: 100%;
-  max-width: 600px; /* Giới hạn chiều rộng để dễ đọc */
-  margin: 0 auto; /* Căn giữa danh sách */
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 /* Mỗi bài viết */
 .post_item {
-  margin-bottom: 16px; /* Khoảng cách dưới mỗi bài viết */
-  padding: 12px; /* Khoảng cách bên trong */
-  background: #ffffff; /* Nền trắng để nổi bật */
-  border: 1px solid #e0e0e0; /* Viền nhẹ để phân biệt */
-  border-radius: 8px; /* Bo góc cho đẹp */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ */
-  transition: box-shadow 0.2s ease; /* Hiệu ứng mượt khi hover */
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
 }
 
-/* Hover effect để tăng tính tương tác */
 .post_item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng đậm hơn khi hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* Khi không có bài đăng */
+/* Khi không có bài viết */
 .empty_container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-grow: 1;
-  padding: 20px;
+  padding: 2rem;
+  text-align: center;
 }
 
 .empty_text {
   font-family: 'Georgia', serif;
-  font-size: 16px;
+  font-size: 1rem;
   color: #7a6b5d;
-  text-align: center;
 }
 
-/* Responsive: điều chỉnh cho màn hình nhỏ */
+/* Responsive */
 @media (max-width: 600px) {
   .trashContainer {
-    width: 90%; /* Tăng chiều rộng trên màn hình nhỏ để dễ đọc */
-    padding: 10px;
+    padding: 0.75rem;
   }
 
   .header_title {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
 
   .empty_text {
-    font-size: 14px;
+    font-size: 0.9rem;
   }
 }

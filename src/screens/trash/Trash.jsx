@@ -97,14 +97,14 @@ const Trash = () => {
               <div key={item._id} className={Style.post_item}>
                 <Post
                   post={item}
-                  me={me} // Truyền me thay vì ID_user
-                  reactions={reactions} // Truyền reactions
-                  reasons={reasons} // Truyền reasons
+                  me={me}
+                  reactions={reactions}
+                  reasons={reasons}
                   currentTime={currentTime}
                   onDelete={() => callChangeDestroyPost(item._id)}
                   onDeleteVinhVien={() => callDeletePost(item._id)}
-                  updatePostReaction={() => {}} // Hàm placeholder nếu không cần
-                  deletePostReaction={() => {}} // Hàm placeholder nếu không cần
+                  updatePostReaction={() => {}}
+                  deletePostReaction={() => {}}
                 />
               </div>
             ))}

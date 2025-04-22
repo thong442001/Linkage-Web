@@ -439,13 +439,20 @@
   left: 0;
   right: 0;
   bottom: 0;
-  /* background-color: rgba(0, 0, 0, 0.2); */
-  z-index: 1000;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
+  background: transparent; /* Trong suốt để không che nội dung */
+  z-index: 999;
 }
-
+/* Modal chứa các tùy chọn */
+.modal-content-options {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 150px; /* Chiều rộng cố định, khớp với modalWidth */
+  padding: 8px 0;
+  overflow: hidden;
+}
 .reaction-icon-box {
   padding-left: 50px;
   padding-right: 50px;
@@ -553,16 +560,6 @@
   overflow: hidden;
 }
 
-.modal-content-options {
-  position: absolute;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-  max-width: 150px;
-  overflow-y: auto;
-}
-
 .modal-content-1 {
   background: white;
   border-radius: 8px;
@@ -582,14 +579,15 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 16px;
+  padding: 10px 15px;
   background: none;
   border: none;
-  font-size: 15px;
-  color: #050505;
+  font-size: 14px;
+  color: #333;
   cursor: pointer;
   text-align: left;
 }
+/* 
 .option-button-1 {
   display: flex;
   align-items: center;
@@ -601,7 +599,7 @@
   color: #050505;
   cursor: pointer;
   text-align: left;
-}
+} */
 
 .option-button i {
   margin-right: 12px;
