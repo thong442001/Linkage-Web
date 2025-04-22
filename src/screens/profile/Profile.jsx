@@ -8,18 +8,6 @@ import {
   FaPhotoVideo,
   FaFlag,
   FaCamera,
-  FaSmile,
-  FaHome,
-  FaSearch,
-  FaUsers,
-  FaPlusCircle,
-  FaTh,
-  FaBell,
-  FaFacebookMessenger,
-  FaUser,
-  FaLink,
-  FaCheckCircle,
-  FaTimesCircle,
 } from "react-icons/fa";
 import {
   allProfile,
@@ -34,13 +22,14 @@ import {
   addPost_Reaction,
   deletePost_reaction,
   getAllFriendOfID_user,
+  joinGroupPrivate
 } from "../../rtk/API";
 import style from "../../styles/screens/profile/Profile.module.css";
 import axios from "axios";
 import Post from "../../components/items/Post";
 import ReportDialog from "../../components/dialogs/ReportDialog"; // Import ReportDialog
 import { Menu, MenuItem } from "@mui/material"; // Import Menu từ MUI
-
+import ChatModal from '../../components/dialogs/ChatModal'; // Import ChatModal
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -74,6 +63,20 @@ const Profile = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false); // State cho ReportDialog
   const [anchorEl, setAnchorEl] = useState(null); // State cho menu ngữ cảnh
 
+  // Thêm state để quản lý danh sách ChatModal
+  const [chatModals, setChatModals] = useState([]);
+
+  // Hàm mở ChatModal
+  const openChatModal = (group) => {
+    if (!chatModals.some((modal) => modal._id === group._id)) {
+      setChatModals([...chatModals, group]);
+    }
+  };
+
+  // Hàm đóng ChatModal
+  const closeChatModal = (groupId) => {
+    setChatModals(chatModals.filter((modal) => modal._id !== groupId));
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -81,6 +84,25 @@ const Profile = () => {
     }, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  // Hàm lấy hoặc tạo nhóm chat riêng tư
+  const getID_groupPrivate = async (user1, user2) => {
+    try {
+      const paramsAPI = {
+        user1: user1,
+        user2: user2,
+      };
+      const response = await dispatch(joinGroupPrivate(paramsAPI)).unwrap();
+      return response; // Trả về response chứa ID_group và thông tin nhóm
+      console.log("Response:", response);
+    } catch (error) {
+      console.error("Error in getID_groupPrivate:", error);
+      throw error;
+    }
+  };
+
+  // Hàm xử lý khi nhấn nút Nhắn tin
+
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -309,6 +331,46 @@ const Profile = () => {
         });
     } catch (error) {
       setErrorMessage("Lỗi khi xử lý!");
+    }
+  };
+
+  const handleMessageClick = async () => {
+    if (!user?._id || !me?._id) {
+      setErrorMessage("Không thể mở cuộc trò chuyện: Thiếu thông tin người dùng!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await getID_groupPrivate(me._id, user._id);
+      if (response.ID_group) {
+        const group = {
+          _id: response.ID_group,
+          isPrivate: true,
+          members: [
+            {
+              _id: me._id,
+              first_name: me.first_name,
+              last_name: me.last_name,
+              avatar: me.avatar,
+            },
+            {
+              _id: user._id,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              avatar: user.avatar,
+            },
+          ],
+          // Thêm các trường khác nếu cần
+        };
+        openChatModal(group);
+      } else {
+        setErrorMessage("Không thể mở cuộc trò chuyện!");
+      }
+    } catch (error) {
+      setErrorMessage("Lỗi khi mở cuộc trò chuyện!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -612,13 +674,12 @@ const Profile = () => {
                   )}
                 <button
                   className={style.editProfileButton}
-                  onClick={() => navigate("/chat")}
+                  onClick={handleMessageClick}
                 >
                   Nhắn tin
                 </button>
               </>
             )}
-
           </div>
         </div>
       </div>
@@ -819,7 +880,15 @@ const Profile = () => {
         </div>
       </div>
 
-
+      {/* Hiển thị các ChatModal */}
+      {chatModals.map((group, index) => (
+        <ChatModal
+          key={group._id}
+          group={group}
+          onClose={() => closeChatModal(group._id)}
+          style={{ "--index": index }}
+        />
+      ))}
 
     </div>
   );

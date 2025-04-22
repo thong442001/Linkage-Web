@@ -21,16 +21,7 @@ const HomeStories = ({ stories, liveSessions }) => {
     navigate('/UpStory');
   };
 
-  const handleGoLiveClick = () => {
-    navigate('/host-live', {
-      state: {
-        userID: me._id,
-        avatar: me.avatar,
-        userName: `${me.first_name} ${me.last_name}`,
-        liveID,
-      },
-    });
-  };
+
 
   return (
     <div className={style['home-stories-container']}

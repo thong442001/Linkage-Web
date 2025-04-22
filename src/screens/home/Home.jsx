@@ -74,16 +74,6 @@ const Home = ({ content }) => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // du lieu mau
-    const users = [
-        { first_name: 'Văn A', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
-        { first_name: 'Văn B', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
-        { first_name: 'Văn C', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: false },
-        { first_name: 'Văn D', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
-        { first_name: 'Văn E', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
-        { first_name: 'Văn F', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: false },
-    ];
-
     // user api
     const [api_user, setApi_user] = useState(null);
 
@@ -217,7 +207,7 @@ const Home = ({ content }) => {
         if (!isSearchOpen) setIsSearchOpen(true);
 
         if (!value.trim()) {
-            setFilteredProducts(searchHistory);
+            setFilteredProducts([]);
             setIsSearching(false);
         } else {
             setIsSearching(true);
@@ -503,7 +493,7 @@ const Home = ({ content }) => {
                             setIsSearchOpen(false);
                             setIsNotificationOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            //setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                         }}
                     />
                     <div className="search-bar">
@@ -522,6 +512,8 @@ const Home = ({ content }) => {
                                         item={filteredProducts}
                                         onClose={() => setIsSearchOpen(false)}
                                         saveSearch={saveSearch}
+                                        history={searchHistory}
+                                        deleteSearchItem={deleteSearchItem}
                                 />
                             </div>
                         )}
@@ -536,7 +528,7 @@ const Home = ({ content }) => {
                             setIsSearchOpen(false);
                             setIsNotificationOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            //setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                         }}
                     >
                         <FaHome className="nav-icon" />
@@ -549,7 +541,7 @@ const Home = ({ content }) => {
                             setIsSearchOpen(false);
                             setIsNotificationOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            //setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                         }}
                     >
                         <FaUsers className="nav-icon" />
@@ -561,7 +553,7 @@ const Home = ({ content }) => {
                             setIsChat(false);
                             setIsNotificationOpen(false);
                             setIsSearchOpen(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            //setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                             navigate('/profile');
                         }}
                     >
@@ -611,7 +603,7 @@ const Home = ({ content }) => {
                             setIsNotificationOpen(false);
                             setIsSearchOpen(false);
                             setIsChat(false);
-                            setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                            //setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                             navigate('/profile');
                         }}
                     >
@@ -634,7 +626,7 @@ const Home = ({ content }) => {
                                         setIsNotificationOpen(false);
                                         setIsSearchOpen(false);
                                         setIsChat(false);
-                                        setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
+                                        //setChatModals([]); // Đóng tất cả ChatModal khi chuyển trang
                                         navigate('/profile');
                                     }}
                                 >
@@ -723,7 +715,7 @@ const Home = ({ content }) => {
                             </div>
                             <div className="sidebar-section placeholder-section">
                                 <p>Liên hệ</p>
-                                <UserList users={users} />
+                                <UserList openChatModal={openChatModal} />
                             </div>
                         </div>
                     </div>
