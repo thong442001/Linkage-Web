@@ -2,25 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
-// import Lottie from 'react-lottie-player';
 import {
   getPostsUserIdDestroyTrue,
   changeDestroyPost,
   deletePost,
 } from '../../rtk/API';
-// import animationData from '../../utils/animation/bin/bin.json';
-import PostItem from '../../components/items/TrashComponent.jsx';
+import Post from '../../components/items/Post.jsx'; // Thay thế PostItem bằng Post
 import Style from '../../styles/screens/trash/Trash.module.css';
 
 const Trash = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const me = useSelector((state) => state.app.user);
-  const token = useSelector((state) => state.app.token);
+  const token = useSelector((state) => state.app.token);  
+  const reactions = useSelector((state) => state.app.reactions) || []; // Lấy reactions từ Redux, hoặc mặc định là mảng rỗng
+  const reasons = useSelector((state) => state.app.reasons) || []; // Lấy reasons từ Redux, hoặc mặc định là mảng rỗng
   const [posts, setPosts] = useState([]);
   const [currentTime, setCurrentTime] = useState(Date.now());
 
-  // Update currentTime for PostItem
+  // Cập nhật currentTime cho Post
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(Date.now());
@@ -28,7 +28,7 @@ const Trash = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch posts when component mounts
+  // Lấy danh sách bài viết trong thùng rác khi component mount
   useEffect(() => {
     if (me?._id && token) {
       callGetPostsUserIdDestroyTrue(me._id);
@@ -88,9 +88,6 @@ const Trash = () => {
   return (
     <div className={Style.trashContainer}>
       <div className={Style.header}>
-        <button className={Style.back_button} onClick={() => navigate(-1)}>
-          <FaArrowLeft size="1.5rem" />
-        </button>
         <h1 className={Style.header_title}>Thùng rác</h1>
       </div>
       <div className={Style.post_container}>
@@ -98,12 +95,16 @@ const Trash = () => {
           <div className={Style.post_list}>
             {posts.map((item) => (
               <div key={item._id} className={Style.post_item}>
-                <PostItem
+                <Post
                   post={item}
-                  ID_user={me._id}
+                  me={me} // Truyền me thay vì ID_user
+                  reactions={reactions} // Truyền reactions
+                  reasons={reasons} // Truyền reasons
+                  currentTime={currentTime}
                   onDelete={() => callChangeDestroyPost(item._id)}
                   onDeleteVinhVien={() => callDeletePost(item._id)}
-                  currentTime={currentTime}
+                  updatePostReaction={() => {}} // Hàm placeholder nếu không cần
+                  deletePostReaction={() => {}} // Hàm placeholder nếu không cần
                 />
               </div>
             ))}
