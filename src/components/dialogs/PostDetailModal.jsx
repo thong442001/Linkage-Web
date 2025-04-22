@@ -60,9 +60,9 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     if (!parentComment) return level;
     return getReplyLevel(parentComment, commentsList, level + 1);
   };
-  
 
-  
+
+
 
 
   const removeTempComment = (commentsList, tempId) => {
@@ -85,10 +85,10 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   };
 
   // Cập nhật danh sách media khi post thay đổi
-useEffect(() => {
-  const medias = post.ID_post_shared ? post.ID_post_shared.medias : post.medias;
-  setMediaList(medias || []);
-}, [post]);
+  useEffect(() => {
+    const medias = post.ID_post_shared ? post.ID_post_shared.medias : post.medias;
+    setMediaList(medias || []);
+  }, [post]);
 
 
   const handleMouseEnter = () => {
@@ -131,8 +131,8 @@ useEffect(() => {
   const filteredReactions = selectedReactionTab === 'all'
     ? post.post_reactions
     : post.post_reactions?.filter(
-        reaction => reaction.ID_reaction._id === selectedReactionTab
-      );
+      reaction => reaction.ID_reaction._id === selectedReactionTab
+    );
 
   const uploadFile = async (file) => {
     if (!file || !file.type || !file.name) {
@@ -152,8 +152,7 @@ useEffect(() => {
     } catch (error) {
       console.error("Lỗi tải file lên Cloudinary:", error.message);
       setFailedMessage(
-        `Lỗi tải file: ${
-          error.response?.data?.error?.message || "Lỗi không xác định"
+        `Lỗi tải file: ${error.response?.data?.error?.message || "Lỗi không xác định"
         }`
       );
       setTimeout(() => setFailedMessage(''), 1500);
@@ -251,7 +250,7 @@ useEffect(() => {
 
   const callAddComment = async (type, content) => {
     if (!content && type === 'text') return;
-  
+
     const tempId = `temp_${Date.now()}_${Math.random()}`;
     const tempComment = {
       _id: tempId,
@@ -268,7 +267,7 @@ useEffect(() => {
       ID_comment_reply: replyingTo ? { _id: replyingTo._id } : null,
       isPending: true,
     };
-  
+
     // Thêm temp comment vào danh sách
     setComments((prevComments) => {
       if (replyingTo) {
@@ -279,7 +278,7 @@ useEffect(() => {
     setCountComments((prev) => prev + 1);
     setNewComment('');
     setReplyingTo(null);
-  
+
     try {
       const paramsAPI = {
         ID_user: me._id,
@@ -289,19 +288,19 @@ useEffect(() => {
         ID_comment_reply: replyingTo?._id || null,
       };
       const response = await dispatch(addComment(paramsAPI)).unwrap();
-  
+
       // Xóa temp comment trước khi thêm comment thật
       setComments((prevComments) => {
         // Xóa temp comment ở tất cả các cấp độ
         const updatedComments = removeTempComment(prevComments, tempId);
-  
+
         // Thêm comment thật vào danh sách
         if (response.comment.ID_comment_reply) {
           return addReplyToComment(updatedComments, response.comment);
         }
         return [...updatedComments, response.comment];
       });
-  
+
       // Nếu là reply, mở rộng hiển thị replies
       if (response.comment.ID_comment_reply) {
         setShowReplies((prev) => ({
@@ -346,15 +345,15 @@ useEffect(() => {
       const updatedReactions = post.post_reactions.map((reaction) =>
         reaction.ID_user._id === me._id
           ? {
-              _id: ID_post_reaction,
-              ID_user: {
-                _id: me._id,
-                first_name: me.first_name,
-                last_name: me.last_name,
-                avatar: me.avatar,
-              },
-              ID_reaction: newReaction,
-            }
+            _id: ID_post_reaction,
+            ID_user: {
+              _id: me._id,
+              first_name: me.first_name,
+              last_name: me.last_name,
+              avatar: me.avatar,
+            },
+            ID_reaction: newReaction,
+          }
           : reaction
       );
       setPost({ ...post, post_reactions: updatedReactions });
@@ -617,11 +616,11 @@ useEffect(() => {
       else return "five-plus-media-second-row-right";
     }
   };
-  
+
   const renderMediaGrid = (medias) => {
     const mediaCount = medias.length;
     if (mediaCount === 0) return null;
-  
+
     return (
       <div className="media-container">
         {medias.slice(0, 5).map((uri, index) => (
@@ -753,6 +752,30 @@ useEffect(() => {
                   {showReplies[comment._id] ? 'Ẩn trả lời' : `Hiện ${comment.replys.length} trả lời`}
                 </span>
               )}
+              {
+                comment.ID_user._id === me._id && (
+                  <button
+                    onClick={() => {
+                      setMenuVisible(false);
+                      setReportDialogOpen(true);
+                    }}
+                  >
+                    Chỉnh Sửa
+                  </button>
+                )
+              }
+              {
+                comment.ID_user._id === me._id && (
+                  <button
+                    onClick={() => {
+                      setMenuVisible(false);
+                      setReportDialogOpen(true);
+                    }}
+                  >
+                    Xóa
+                  </button>
+                )
+              }
             </div>
           )}
         </div>
@@ -820,7 +843,7 @@ useEffect(() => {
               <p className={styles.caption}>{post.caption}</p>
             </div>
           )}
-            
+
           <div className={`${styles.postContent} ${styles.originalPost}`}>
             <div className={styles.postHeader}>
               <div className={styles.userInfo}>
@@ -1055,57 +1078,57 @@ useEffect(() => {
         </div>
       )}
 
-{isImageModalVisible && (
-  <div className={styles.mediaOverlay} onClick={() => setImageModalVisible(false)}>
-    <div className={styles.fullMediaContainer} onClick={(e) => e.stopPropagation()}>
-      {/* Nút đóng modal */}
-      <button
-        className={styles.closeButton}
-        onClick={() => setImageModalVisible(false)}
-      >
-        ✕
-      </button>
+      {isImageModalVisible && (
+        <div className={styles.mediaOverlay} onClick={() => setImageModalVisible(false)}>
+          <div className={styles.fullMediaContainer} onClick={(e) => e.stopPropagation()}>
+            {/* Nút đóng modal */}
+            <button
+              className={styles.closeButton}
+              onClick={() => setImageModalVisible(false)}
+            >
+              ✕
+            </button>
 
-      {/* Container cho các nút điều hướng */}
-      <div className={styles.navButtonsContainer}>
-        {/* Nút Previous */}
-        {mediaList.length > 1 && (
-          <button
-            className={styles.navButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
-            }}
-          >
-            ❮
-          </button>
-        )}
+            {/* Container cho các nút điều hướng */}
+            <div className={styles.navButtonsContainer}>
+              {/* Nút Previous */}
+              {mediaList.length > 1 && (
+                <button
+                  className={styles.navButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
+                  }}
+                >
+                  ❮
+                </button>
+              )}
 
-        {/* Hiển thị media hiện tại */}
-        <div className={styles.mediaWrapper}>
-          {isVideo(mediaList[currentMediaIndex]) ? (
-            <video src={mediaList[currentMediaIndex]} className={styles.fullMedia} controls autoPlay />
-          ) : (
-            <img src={mediaList[currentMediaIndex]} className={styles.fullMedia} alt="Full Media" />
-          )}
+              {/* Hiển thị media hiện tại */}
+              <div className={styles.mediaWrapper}>
+                {isVideo(mediaList[currentMediaIndex]) ? (
+                  <video src={mediaList[currentMediaIndex]} className={styles.fullMedia} controls autoPlay />
+                ) : (
+                  <img src={mediaList[currentMediaIndex]} className={styles.fullMedia} alt="Full Media" />
+                )}
+              </div>
+
+              {/* Nút Next */}
+              {mediaList.length > 1 && (
+                <button
+                  className={styles.navButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
+                  }}
+                >
+                  ❯
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-
-        {/* Nút Next */}
-        {mediaList.length > 1 && (
-          <button
-            className={styles.navButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
-            }}
-          >
-            ❯
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       {shareVisible && (
         <div
@@ -1126,7 +1149,7 @@ useEffect(() => {
           </div>
         </div>
       )}
-      
+
       {failedMessage && (
         <div className={styles.failedModalOverlay} onClick={() => setFailedMessage('')}>
           <div className={styles.failedModal} onClick={(e) => e.stopPropagation()}>

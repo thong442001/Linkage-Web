@@ -885,3 +885,39 @@ export const getUser = createAsyncThunk(
     }
   }
 );
+
+/// comment
+
+// chỉnh sửa comment
+// params : ID_comment, newContent
+// response.status = true-false
+export const editComment = createAsyncThunk(
+  'comment/editComment',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('comment/editComment', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// xóa comment
+// params : ID_comment
+// response.status = true-false
+export const deleteComment = createAsyncThunk(
+  'comment/deleteComment',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('comment/deleteComment', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
