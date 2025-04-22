@@ -39,7 +39,7 @@ const Post = ({
   const [selectedOption, setSelectedOption] = useState({
     status: 1,
     name: "Công khai",
-  });
+  }); 
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [listTagModalVisible, setListTagModalVisible] = useState(false);
   const [listTagData, setListTagData] = useState([]);

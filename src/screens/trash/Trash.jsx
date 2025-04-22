@@ -9,7 +9,7 @@ import {
   deletePost,
 } from '../../rtk/API';
 // import animationData from '../../utils/animation/bin/bin.json';
-import PostItem from '../../components/items/TrashComponent.jsx';
+import PostItem from '../../components/items/Post';
 import Style from '../../styles/screens/trash/Trash.module.css';
 
 const Trash = () => {
