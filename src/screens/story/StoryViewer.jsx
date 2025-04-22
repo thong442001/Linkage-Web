@@ -6,7 +6,14 @@ import {
   storyViewerOfStory,
   addStoryViewer_reaction,
 } from "../../rtk/API";
-import { FaTrash, FaTimes, FaArrowLeft, FaArrowRight, FaPause, FaPlay } from "react-icons/fa";
+import {
+  FaTrash,
+  FaTimes,
+  FaArrowLeft,
+  FaArrowRight,
+  FaPause,
+  FaPlay,
+} from "react-icons/fa";
 import style from "../../styles/screens/story/StoryViewer.module.css";
 
 const StoryViewer = () => {
@@ -48,10 +55,7 @@ const StoryViewer = () => {
       if (response && response.storyViewers) {
         const uniqueViewers = Array.from(
           new Map(
-            response.storyViewers.map((viewer) => [
-              viewer.ID_user?._id,
-              viewer,
-            ])
+            response.storyViewers.map((viewer) => [viewer.ID_user?._id, viewer])
           ).values()
         );
         console.log("Set viewers with:", uniqueViewers);
@@ -261,7 +265,9 @@ const StoryViewer = () => {
     );
   }
 
-  const otherViewers = viewers.filter((viewer) => viewer.ID_user?._id !== me._id);
+  const otherViewers = viewers.filter(
+    (viewer) => viewer.ID_user?._id !== me._id
+  );
 
   return (
     <div className={style["container"]}>
@@ -341,9 +347,7 @@ const StoryViewer = () => {
                   )
                 }
               >
-                <span className={style["reaction-text"]}>
-                  {reaction.icon}
-                </span>
+                <span className={style["reaction-text"]}>{reaction.icon}</span>
               </button>
             ))}
           </div>
@@ -417,20 +421,24 @@ const StoryViewer = () => {
         )}
       </div>
 
-      <button
-        className={`${style["nav-button"]} ${style["prev-button"]}`}
-        onClick={handlePrevStory}
-        disabled={currentIndex === 0}
-      >
-        <FaArrowLeft />
-      </button>
-      <button
-        className={`${style["nav-button"]} ${style["next-button"]}`}
-        onClick={handleNextStory}
-        disabled={currentIndex === stories.length - 1}
-      >
-        <FaArrowRight />
-      </button>
+      {stories.length >= 2 && (
+        <>
+          <button
+            className={`${style["nav-button"]} ${style["prev-button"]}`}
+            onClick={handlePrevStory}
+            disabled={currentIndex === 0}
+          >
+            <FaArrowLeft />
+          </button>
+          <button
+            className={`${style["nav-button"]} ${style["next-button"]}`}
+            onClick={handleNextStory}
+            disabled={currentIndex === stories.length - 1}
+          >
+            <FaArrowRight />
+          </button>
+        </>
+      )}
     </div>
   );
 };
