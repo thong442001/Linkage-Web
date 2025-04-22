@@ -791,10 +791,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
 
   const renderComment = (comment, level = 0) => (
     <>
-      {/* {
-        !comment._destroy && (
-        )
-      } */}
       <div
         key={comment._id}
         className={`${styles.comment} ${comment.isPending ? styles.pendingComment : ''}`}
@@ -872,13 +868,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       </div>
       {comment.replys?.length > 0 && showReplies[comment._id] && (
         <div className={styles.replies}>
-          {comment.replys.map((reply) => {
-            if (!comment._destroy) {
-              return renderComment(comment)
-            }
-            return null; // Trả về null cho những comment có _destroy = true
-          }
-          )}
+          {comment.replys.filter((reply) => !reply._destroy).map((reply) => renderComment(reply, level + 1))}
+          {/* {comment.replys.map((reply) => renderComment(reply, level + 1))} */}
         </div>
       )}
       {commentMenu.commentId === comment._id && (
@@ -1170,12 +1161,9 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             <h4>Bình luận</h4>
             <div className={styles.commentsList}>
               {comments.length > 0 ? (
-                comments.map((comment) => {
-                  if (!comment._destroy) {
-                    return renderComment(comment)
-                  }
-                  return null; // Trả về null cho những comment có _destroy = true
-                })
+                comments
+                  .filter((comment) => !comment._destroy) // Lọc các comment chưa bị xóa
+                  .map((comment) => renderComment(comment)) // Render từng comment
               ) : (
                 <p>Chưa có bình luận nào.</p>
               )}
