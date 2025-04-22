@@ -211,8 +211,8 @@ const Friend = () => {
                     ? (
                       <div
                         className={styles.noRequests}
-                        // height: 100vh;
-                        // width: 100%;
+                      // height: 100vh;
+                      // width: 100%;
                       >Không có lời mời nào</div>
                     ) : (
                       relationships.map((request) => (
