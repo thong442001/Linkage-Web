@@ -433,6 +433,19 @@
   align-items: center;
 }
 
+.overlay-options {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-color: rgba(0, 0, 0, 0.2); */
+  z-index: 1000;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+
 .reaction-icon-box {
   padding-left: 50px;
   padding-right: 50px;
@@ -540,6 +553,16 @@
   overflow: hidden;
 }
 
+.modal-content-options {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  max-width: 150px;
+  overflow-y: auto;
+}
+
 .modal-content-1 {
   background: white;
   border-radius: 8px;
@@ -556,6 +579,18 @@
 }
 
 .option-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+  background: none;
+  border: none;
+  font-size: 15px;
+  color: #050505;
+  cursor: pointer;
+  text-align: left;
+}
+.option-button-1 {
   display: flex;
   align-items: center;
   width: 100%;
@@ -636,8 +671,9 @@
     font-size: 14px;
   }
 
-  
+
 }
+
 .mediaOverlay {
   position: fixed;
   top: 0;
@@ -663,10 +699,12 @@
 .navButtonsContainer {
   position: relative;
   width: 100%;
-  max-width: 1200px; /* Giới hạn chiều rộng tối đa của container */
+  max-width: 1200px;
+  /* Giới hạn chiều rộng tối đa của container */
   height: 100%;
   display: flex;
-  justify-content: center; /* Đổi thành center để không ảnh hưởng đến mediaWrapper */
+  justify-content: center;
+  /* Đổi thành center để không ảnh hưởng đến mediaWrapper */
   align-items: center;
 }
 
@@ -676,16 +714,21 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  max-width: 90vw; /* Đảm bảo không vượt quá 90% chiều rộng viewport */
-  max-height: 90vh; /* Đảm bảo không vượt quá 90% chiều cao viewport */
+  max-width: 90vw;
+  /* Đảm bảo không vượt quá 90% chiều rộng viewport */
+  max-height: 90vh;
+  /* Đảm bảo không vượt quá 90% chiều cao viewport */
 }
 
 .fullMedia {
   max-width: 100%;
   max-height: 100%;
-  width: auto; /* Đảm bảo hình ảnh không bị méo */
-  height: auto; /* Đảm bảo hình ảnh không bị méo */
-  object-fit: contain; /* Giữ tỷ lệ hình ảnh */
+  width: auto;
+  /* Đảm bảo hình ảnh không bị méo */
+  height: auto;
+  /* Đảm bảo hình ảnh không bị méo */
+  object-fit: contain;
+  /* Giữ tỷ lệ hình ảnh */
   border-radius: 8px;
 }
 
@@ -710,11 +753,13 @@
 }
 
 .navButton:first-child {
-  left: 20px; /* Cố định nút Previous ở bên trái */
+  left: 20px;
+  /* Cố định nút Previous ở bên trái */
 }
 
 .navButton:last-child {
-  right: 20px; /* Cố định nút Next ở bên phải */
+  right: 20px;
+  /* Cố định nút Next ở bên phải */
 }
 
 .navButton:hover {
@@ -725,8 +770,10 @@
 /* Responsive */
 @media (max-width: 600px) {
   .mediaWrapper {
-    max-width: 95vw; /* Tăng nhẹ trên mobile để tận dụng không gian */
-    max-height: 85vh; /* Giảm chiều cao để chừa chỗ cho các nút */
+    max-width: 95vw;
+    /* Tăng nhẹ trên mobile để tận dụng không gian */
+    max-height: 85vh;
+    /* Giảm chiều cao để chừa chỗ cho các nút */
   }
 
   .fullMedia {
@@ -749,6 +796,7 @@
     right: 10px;
   }
 }
+
 .closeButton {
   position: absolute;
   top: 20px;
@@ -785,6 +833,7 @@
     padding: 6px;
   }
 }
+
 /* Reactions Modal */
 .reaction-container {
   position: relative;
@@ -793,30 +842,35 @@
 
 .reaction-bar {
   position: absolute;
-  top: -50px; /* Đặt phía trên nút Thích, giống PostDetailModal */
+  top: -50px;
+  /* Đặt phía trên nút Thích, giống PostDetailModal */
   left: 0;
   display: flex;
-  gap: 8px; /* Khoảng cách giữa các reaction */
+  gap: 8px;
+  /* Khoảng cách giữa các reaction */
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 4px 8px;
   z-index: 1000;
   transform: scale(0.8);
-  animation: popIn 0.2s ease forwards; /* Hiệu ứng phóng to */
+  animation: popIn 0.2s ease forwards;
+  /* Hiệu ứng phóng to */
 }
 
 .reaction-button {
   background: none;
   border: none;
-  font-size: 24px; /* Kích thước biểu tượng */
+  font-size: 24px;
+  /* Kích thước biểu tượng */
   padding: 4px;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
 .reaction-button:hover {
-  transform: scale(1.2); /* Phóng to khi hover */
+  transform: scale(1.2);
+  /* Phóng to khi hover */
 }
 
 /* Hiệu ứng popIn */

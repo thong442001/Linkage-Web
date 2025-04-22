@@ -1,8 +1,10 @@
 import React from "react";
 import styles from "../../styles/components/items/ChatS.module.css";
-
+import { useLocation } from "react-router-dom"; // Thêm import useLocation
 const Groupcomponent = React.memo(({ item, ID_me, onSelect, isSelected }) => {
-    //console.log("Rendering Groupcomponent with item:", item);
+    const location = useLocation(); // Lấy thông tin URL hiện tại
+    // Kiểm tra nếu URL kết thúc bằng /chat
+    const isChatPage = location.pathname.endsWith("/chat");
 
     // Tính toán name và avatar trực tiếp
     let name = null;
@@ -56,7 +58,10 @@ const Groupcomponent = React.memo(({ item, ID_me, onSelect, isSelected }) => {
 
     return (
         <div
-            className={`${styles.groupItem} ${isSelected ? styles.groupItemActive : ""}`}
+            className={`${styles.groupItem} ${isSelected
+                    ? isChatPage
+                        ? styles.groupItemActive : styles.groupItemActiveHome
+                    : ""}`}
             onClick={onSelect}
         >
             {name && (

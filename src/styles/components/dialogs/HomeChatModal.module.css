@@ -76,11 +76,11 @@
   }
   
   .searchBar:focus {
-    border-color: #0084ff; /* Màu xanh giống ảnh 2 */
+    border-color: #0084ff;
   }
   
   .createGroupButton {
-    background: #0084ff; /* Màu xanh giống ảnh 2 */
+    background: #0084ff;
     color: #fff;
     border: none;
     border-radius: 50%;

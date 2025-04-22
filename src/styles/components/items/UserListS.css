@@ -1,0 +1,91 @@
+/* UserList.css */
+
+/* Container cho danh sách người dùng */
+.user-list-container {
+    border-radius: 8px;
+    padding: 8px 0;
+    /* width: 300px; Chiều rộng tương tự như trong hình */
+  }
+  
+  /* Mỗi mục trong danh sách */
+  .user-list-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .user-list-item:hover {
+    background-color: #f0f2f5; /* Hiệu ứng hover giống Facebook */
+    border-radius: 10px;
+  }
+  
+  /* Wrapper cho ảnh đại diện và chấm trạng thái */
+  .user-avatar-wrapper {
+    position: relative;
+    margin-right: 12px;
+  }
+  
+  /* Ảnh đại diện */
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  /* Chấm trạng thái */
+  .status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff; /* Viền trắng xung quanh chấm */
+  }
+  
+  /* Trạng thái online (màu xanh) */
+  .status-dot.online {
+    background-color: #31a24c;
+  }
+  
+  /* Trạng thái offline (màu xám) */
+  .status-dot.offline {
+    background-color: #ccc;
+  }
+  
+  /* Tên người dùng */
+  .user-name {
+    font-size: 15px;
+    color: #050505;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .user-list-container {
+      width: 100%; /* Mở rộng trên mobile */
+    }
+  
+    .user-list-item {
+      padding: 6px 10px;
+    }
+  
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+    }
+  
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-width: 1.5px;
+    }
+  
+    .user-name {
+      font-size: 14px;
+    }
+  }

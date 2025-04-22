@@ -91,7 +91,7 @@
     flex: 1;
     padding: 12px; /* Tăng padding để thoáng hơn */
     overflow-y: auto;
-    background-color: #f0f2f5;
+    /* background-color: #f0f2f5; */
     display: flex;
     flex-direction: column; /* Đảm bảo tin nhắn hiển thị từ trên xuống dưới */
 }

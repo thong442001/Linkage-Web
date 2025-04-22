@@ -37,6 +37,7 @@ import ChangePasswordDialog from '../../components/dialogs/ChangePasswordDialog'
 import HomeStories from '../../components/items/HomeStories';
 import { addSearch, removeSearch, clearHistory } from "../../rtk/Reducer";
 import ChangeNameDialog from '../../components/dialogs/ChangeNameDialog';
+import UserList from '../../components/items/UserList';
 import {
     Typography,
 } from '@mui/material';
@@ -72,6 +73,16 @@ const Home = ({ content }) => {
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    // du lieu mau
+    const users = [
+        { first_name: 'Văn A', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
+        { first_name: 'Văn B', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
+        { first_name: 'Văn C', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: false },
+        { first_name: 'Văn D', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
+        { first_name: 'Văn E', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: true },
+        { first_name: 'Văn F', last_name: 'Nguyễn', avatar: 'https://i.pinimg.com/236x/5e/e0/82/5ee082781b8c41406a2a50a0f32d6aa6.jpg', isOnline: false },
+    ];
 
     // user api
     const [api_user, setApi_user] = useState(null);
@@ -118,8 +129,10 @@ const Home = ({ content }) => {
     useEffect(() => {
         if (location.pathname === '/') setActiveIcon('home');
         else if (location.pathname === '/friend') setActiveIcon('users');
-        else if (location.pathname === '/chat') setActiveIcon('chat');
-        else if (location.pathname.startsWith('/profile')) setActiveIcon('profile');
+        else if (location.pathname === '/chat') {
+            setActiveIcon('chat');
+            setChatModals([]); // Đóng tất cả ChatModal khi vào /chat
+        } else if (location.pathname.startsWith('/profile')) setActiveIcon('profile');
     }, [location.pathname]);
 
     const handleLogout = () => {
@@ -690,7 +703,7 @@ const Home = ({ content }) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="sidebar-section">
+                            <div className="sidebar-section main-content-section">
                                 <div style={{ marginLeft: 30, marginRight: 30 }}>
                                     <HomeStories stories={stories} liveSessions={liveSessions} />
                                     {loading ? (
@@ -716,7 +729,8 @@ const Home = ({ content }) => {
                                 </div>
                             </div>
                             <div className="sidebar-section placeholder-section">
-                                <p>Quảng cáo hoặc nội dung khác</p>
+                                <p>Liên hệ</p>
+                                <UserList users={users} />
                             </div>
                         </div>
                     </div>

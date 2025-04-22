@@ -51,6 +51,8 @@ const Post = ({
   const [mediaList, setMediaList] = useState([]);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
+  //ref vị trí của nút options
+  const optionsButtonRef = useRef(null);
   // Ref để lưu timer của setTimeout
   const hoverTimeoutRef = useRef(null);
 
@@ -113,7 +115,7 @@ const Post = ({
   const renderMediaGrid = (medias) => {
     const mediaCount = medias.length;
     if (mediaCount === 0) return null;
-  
+
     return (
       <div className="media-container">
         {medias.slice(0, 5).map((uri, index) => (
@@ -292,10 +294,27 @@ const Post = ({
               </div>
             </div>
             <button
+              ref={optionsButtonRef}
               className="options-button"
-              onClick={() => {
-                const rect = reactionRef.current?.getBoundingClientRect();
-                setMenuPosition({ top: rect?.top || 0, left: rect?.left || 0 });
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const modalWidth = 100; // Chiều rộng modal
+                const modalHeight = 50; // Chiều cao modal (ước lượng)
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+
+                let top = rect.bottom + window.scrollY - 10; // Thêm khoảng cách 5px dưới nút
+                let left = rect.right + window.scrollX - modalWidth + 10; // Căn chỉnh để modal lệch trái một chút
+
+                // Kiểm tra ranh giới
+                if (left + modalWidth > windowWidth) {
+                  left = rect.left + window.scrollX - modalWidth - 10; // Đặt modal sang bên trái nút
+                }
+                if (top + modalHeight > windowHeight + window.scrollY) {
+                  top = rect.top + window.scrollY - modalHeight - 5; // Đặt modal phía trên nút
+                }
+
+                setMenuPosition({ top, left });
                 setModalVisible(true);
               }}
             >
@@ -426,13 +445,27 @@ const Post = ({
             )}
             {!post.ID_post_shared && (
               <button
+                ref={optionsButtonRef}
                 className="options-button"
-                onClick={() => {
-                  const rect = reactionRef.current?.getBoundingClientRect();
-                  setMenuPosition({
-                    top: rect?.top || 0,
-                    left: rect?.left || 0,
-                  });
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const modalWidth = 100; // Chiều rộng modal
+                  const modalHeight = 100; // Chiều cao modal (ước lượng)
+                  const windowWidth = window.innerWidth;
+                  const windowHeight = window.innerHeight;
+
+                  let top = rect.bottom + window.scrollY - 10; // Thêm khoảng cách 5px dưới nút
+                  let left = rect.right + window.scrollX - modalWidth + 10; // Căn chỉnh để modal lệch trái một chút
+
+                  // Kiểm tra ranh giới
+                  if (left + modalWidth > windowWidth) {
+                    left = rect.left + window.scrollX - modalWidth - 10; // Đặt modal sang bên trái nút
+                  }
+                  if (top + modalHeight > windowHeight + window.scrollY) {
+                    top = rect.top + window.scrollY - modalHeight - 5; // Đặt modal phía trên nút
+                  }
+
+                  setMenuPosition({ top, left });
                   setModalVisible(true);
                 }}
               >
@@ -528,10 +561,10 @@ const Post = ({
                 userReaction
                   ? callDeletePost_reaction(post._id, userReaction._id)
                   : callAddPost_Reaction(
-                      reactions[0]?._id,
-                      reactions[0]?.name,
-                      reactions[0]?.icon
-                    );
+                    reactions[0]?._id,
+                    reactions[0]?.name,
+                    reactions[0]?.icon
+                  );
               }}
             >
               <div className="reaction-icon-box">
@@ -637,11 +670,17 @@ const Post = ({
       )}
 
       {modalVisible && (
-        <div className="overlay" onClick={() => setModalVisible(false)}>
-          <div className="modal-content">
+        <div className="overlay-options" onClick={() => setModalVisible(false)}>
+          <div
+            className="modal-content-options"
+            style={{
+              top: `${menuPosition.top}px`,
+              left: `${menuPosition.left}px`,
+            }}
+          >
             {me._id !== post.ID_user?._id ? (
               <button
-                className="option-button"
+                className="option-button-1"
                 onClick={() => {
                   setModalVisible(false);
                   handleOpen();
@@ -652,7 +691,7 @@ const Post = ({
             ) : (
               <>
                 <button
-                  className="option-button"
+                  className="option-button-1"
                   onClick={() => {
                     onDelete();
                     setModalVisible(false);

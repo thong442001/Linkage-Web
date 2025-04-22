@@ -66,11 +66,12 @@
   color: #666;
 }
 
-.chatContent {
+.chatContent {  
   width: 75%;
   display: flex;
   flex-direction: column;
 }
+
 
 .chatHeader {
   display: flex;
@@ -174,8 +175,18 @@
   border-bottom: 1px solid #f0f2f5;
 }
 
+.groupItem:hover {
+  background-color: #f0f2f5;
+  border-radius: 10px;
+}
+
 .groupItemActive {
   background-color: #e6f0fa;
+  border-radius: 10px;
+}
+
+.groupItemActiveHome {
+  background-color: white;
 }
 
 .groupAvatar {
