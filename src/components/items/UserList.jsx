@@ -6,15 +6,17 @@ import React, {
 } from 'react';
 import './../../styles/components/items/UserListS.css'; // Tạo file CSS mới cho component này
 import { useSocket } from "../../context/socketContext";
-import { getAllFriendOfID_user } from '../../rtk/API';
+import { getAllFriendOfID_user, joinGroupPrivate } from '../../rtk/API';
 import { useDispatch, useSelector } from 'react-redux';
-const UserList = ({ users }) => {
+const UserList = ({ openChatModal }) => {
 
   const dispatch = useDispatch();
   const me = useSelector(state => state.app.user);
   const token = useSelector(state => state.app.token);
   const { socket, onlineUsers } = useSocket();
   const [friends, setFriends] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
 
@@ -120,17 +122,80 @@ const UserList = ({ users }) => {
     });
   }, [onlineUsers, friends, me._id]);
 
+  const handleMessageClick = async (user) => {
+    if (!user?._id || !me?._id) {
+      setErrorMessage("Không thể mở cuộc trò chuyện: Thiếu thông tin người dùng!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await getID_groupPrivate(me._id, user._id);
+      if (response.ID_group) {
+        const group = {
+          _id: response.ID_group,
+          isPrivate: true,
+          members: [
+            {
+              _id: me._id,
+              first_name: me.first_name,
+              last_name: me.last_name,
+              avatar: me.avatar,
+            },
+            {
+              _id: user._id,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              avatar: user.avatar,
+            },
+          ],
+          // Thêm các trường khác nếu cần
+        };
+        openChatModal(group);
+      } else {
+        setErrorMessage("Không thể mở cuộc trò chuyện!");
+      }
+    } catch (error) {
+      setErrorMessage("Lỗi khi mở cuộc trò chuyện!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Hàm lấy hoặc tạo nhóm chat riêng tư
+  const getID_groupPrivate = async (user1, user2) => {
+    try {
+      const paramsAPI = {
+        user1: user1,
+        user2: user2,
+      };
+      const response = await dispatch(joinGroupPrivate(paramsAPI)).unwrap();
+      return response; // Trả về response chứa ID_group và thông tin nhóm
+    } catch (error) {
+      console.error("Error in getID_groupPrivate:", error);
+      throw error;
+    }
+  };
+
   return (
     <div className="user-list-container">
-      {users.map((user, index) => (
-        <div key={index} className="user-list-item">
-          <div className="user-avatar-wrapper">
-            <img src={user.avatar} alt="User Avatar" className="user-avatar" />
-            <span className={`status-dot ${user.isOnline ? 'online' : 'offline'}`}></span>
+      {sortedFriends.map((item, index) => {
+        const friend = item.ID_userA._id === me._id ? item.ID_userB : item.ID_userA;
+        const isOnline = onlineUsers.includes(friend._id);
+        return (
+          <div
+            key={index}
+            className="user-list-item"
+            onClick={() => handleMessageClick(friend)}
+          >
+            <div className="user-avatar-wrapper">
+              <img src={friend.avatar} alt="User Avatar" className="user-avatar" />
+              <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
+            </div>
+            <span className="user-name">{friend.first_name} {friend.last_name}</span>
           </div>
-          <span className="user-name">{user.first_name} {user.last_name}</span>
-        </div>
-      ))}
+        )
+      })}
     </div>
   );
 };
