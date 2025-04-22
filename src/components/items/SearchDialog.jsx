@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import "./../../styles/components/items/SearchDialog.css"; // File CSS riêng cho SearchDialog
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import {FaTrashAlt} from 'react-icons/fa';
 
-const SearchDialog = ({ item, onClose ,saveSearch }) => {
+const SearchDialog = ({ item, onClose ,saveSearch,history,deleteSearchItem }) => {
   const navigate = useNavigate();
   const modalRef = useRef(null);
   const dispatch = useDispatch();
@@ -27,7 +28,41 @@ const SearchDialog = ({ item, onClose ,saveSearch }) => {
   return (
     <div className="search-dialog" ref={modalRef}>
       <div className="notification-list">
-        {item.length > 0 ? (
+      {item.length === 0 && (
+        <div className="search-history">
+          <h3>Lịch sử tìm kiếm</h3>
+          {history.map((item) => (
+            <div key={item._id} className="notification-item1">
+              <div
+                key={item._id}
+                className="notification-item"
+                onClick={() => {
+                  saveSearch(item);
+                  navigate(`/profile/${item._id}`);
+                  onClose(); // Gọi hàm đóng từ props
+                }}
+              >
+                <img
+                  src={item.avatar}
+                  alt="Avatar"
+                  className="notification-avatar"
+                />
+                <p>
+                  {item.first_name} {item.last_name}
+                </p>
+              </div>
+              <button  
+              className="delete-button"
+                onClick={() => {
+                  deleteSearchItem(item._id);
+                }}>
+                            ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+        {item.length > 0 && (
           item.map((item) => (
             <div
               key={item._id}
@@ -35,6 +70,7 @@ const SearchDialog = ({ item, onClose ,saveSearch }) => {
               onClick={() => {
                 saveSearch(item);
                 navigate(`/profile/${item._id}`);
+                onClose(); // Gọi hàm đóng từ props
               }}
             >
               <img
@@ -47,10 +83,6 @@ const SearchDialog = ({ item, onClose ,saveSearch }) => {
               </p>
             </div>
           ))
-        ) : (
-          <div className="notification-item">
-            <p>Không có thông báo nào.</p>
-          </div>
         )}
       </div>
     </div>

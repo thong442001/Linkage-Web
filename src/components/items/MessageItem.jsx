@@ -172,7 +172,6 @@ const MessageItem = ({
                       style={{
                         height: "120px",
                         borderRadius: "10px",
-                        backgroundColor: "white",
                         marginBottom: "5px",
                       }}
                     >
@@ -213,7 +212,6 @@ const MessageItem = ({
                   style={{
                     height: "120px",
                     borderRadius: "10px",
-                    backgroundColor: "white",
                     marginBottom: "5px",
                   }}
                 >
