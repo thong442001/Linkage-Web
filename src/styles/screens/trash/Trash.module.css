@@ -34,7 +34,7 @@ text-align: center;
 .post_container {
   flex: 1; /* Chiếm toàn bộ không gian còn lại */
   overflow-y: auto; /* Cho phép cuộn dọc trong post_container */
-  padding-top: 60px; /* Khoảng cách để tránh header che nội dung */
+  padding-top: 60px;
   padding-bottom: 20px;
 }
 
