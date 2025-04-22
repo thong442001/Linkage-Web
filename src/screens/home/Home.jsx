@@ -216,8 +216,8 @@ const Home = ({ content }) => {
 
         if (!isSearchOpen) setIsSearchOpen(true);
 
-        if (value.trim() === '') {
-            setFilteredProducts([]);
+        if (!value.trim()) {
+            setFilteredProducts(searchHistory);
             setIsSearching(false);
         } else {
             setIsSearching(true);
@@ -514,22 +514,15 @@ const Home = ({ content }) => {
                             value={searchQuery}
                             onChange={handleInputChange}
                             placeholder="Search..."
+                            onFocus={handleInputChange}
                         />
                         {isSearchOpen && (
                             <div>
-                                {!isSearching && searchHistory.length > 0 ? (
-                                    <SearchDialog
-                                        item={searchHistory}
-                                        onClose={() => setIsSearchOpen(false)}
-                                        saveSearch={saveSearch}
-                                    />
-                                ) : (
-                                    <SearchDialog
+                                <SearchDialog
                                         item={filteredProducts}
                                         onClose={() => setIsSearchOpen(false)}
                                         saveSearch={saveSearch}
-                                    />
-                                )}
+                                />
                             </div>
                         )}
                     </div>

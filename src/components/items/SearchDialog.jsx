@@ -35,6 +35,7 @@ const SearchDialog = ({ item, onClose ,saveSearch }) => {
               onClick={() => {
                 saveSearch(item);
                 navigate(`/profile/${item._id}`);
+                onClose(); // Gọi hàm đóng từ props
               }}
             >
               <img
