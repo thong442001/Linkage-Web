@@ -67,8 +67,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
 
 
 
-
-
   const removeTempComment = (commentsList, tempId) => {
     return commentsList
       .map((comment) => {
@@ -840,35 +838,36 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             </div>
           </div>
           {!comment.isPending && (
-      <div className={styles.commentActions}>
-      <span>Thích</span>
-      <span onClick={() => handleReply(comment)}>Trả lời</span>
-      <span className={styles.commentTime}>{getTimeAgo(comment.createdAt)}</span>
-      {comment.replys?.length > 0 && (
-        <span
-          className={styles.toggleReplies}
-          onClick={() => toggleReplies(comment._id)}
-        >
-          {showReplies[comment._id] ? 'Ẩn trả lời' : `Hiện ${comment.replys.length} trả lời`}
-        </span>
-      )}
-    
-    </div>
-    
+            <div className={styles.commentActions}>
+              <span>Thích</span>
+              <span onClick={() => handleReply(comment)}>Trả lời</span>
+              <span className={styles.commentTime}>{getTimeAgo(comment.createdAt)}</span>
+              {comment.replys?.length > 0 && (
+                <span
+                  className={styles.toggleReplies}
+                  onClick={() => toggleReplies(comment._id)}
+                >
+                  {showReplies[comment._id] ? 'Ẩn trả lời' : `Hiện ${comment.replys.length} trả lời`}
+                </span>
+              )}
+
+            </div>
+
           )}
-          
+
         </div>
         {/* dấu 3 chấm */}
         {comment.ID_user._id === me._id && (
-        <button
-          className={styles.optionsButton}
-          onClick={(e) => {
-            setCommentMenu({ anchorEl: e.currentTarget, commentId: comment._id });
-          }}
-        >
-          <FaEllipsisH size={16} />
-        </button>
-      )}
+          <button
+            className={styles.optionsButton}
+            onClick={(e) => {
+              setCommentMenu({ anchorEl: e.currentTarget, commentId: comment._id });
+            }}
+            style={{ opacity: Boolean(commentMenu.anchorEl) && 1 }}
+          >
+            <FaEllipsisH size={16} />
+          </button>
+        )}
       </div>
       {comment.replys?.length > 0 && showReplies[comment._id] && (
         <div className={styles.replies}>
