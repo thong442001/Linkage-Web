@@ -7,7 +7,7 @@ body {
     /* Ensure the body takes up the full viewport height */
     background-color: #f8f9fb;
     /* Set the background color (match your app's background) */
-    overflow-y: hidden;
+    overflow-y: scroll;
 }
 
 .home-container {
@@ -16,6 +16,7 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-y: hidden; /* Ẩn thanh cuộn dọc */
 }
 
 /* Header (div chứa logo, search bar, và các phần tử khác) */
@@ -183,13 +184,17 @@ body {
   display: none; /* Ẩn thanh cuộn */
 }
 
+.placeholder-section::-webkit-scrollbar {
+  display: none; /* Ẩn thanh cuộn */
+}
+
 .placeholder-section {
   max-width: 250px;
   flex: 0 0 250px; /* Giữ chiều rộng cố định */
   position: sticky;
   top: 60px; /* Căn chỉnh với header cố định */
   height: calc(100vh - 60px); /* Chiếm toàn bộ chiều cao trừ header */
-  overflow-y: hidden; /* Không cho phép cuộn */
+  overflow-y: auto; /* Không cho phép cuộn */
   padding: 10px;
   border-radius: 8px;
 }
