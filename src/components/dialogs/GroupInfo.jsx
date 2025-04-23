@@ -198,7 +198,7 @@ const GroupInfo = ({ onClose, group, onRefresh1 }) => {
         <div className={styles.modalContainer}>
           <div className={styles.modalContent}>
             <h1 style={{ color: "#1e90ff", margin: 0 }}>Linkage</h1>
-            <h3 className={styles.modalTitle}>Quét mã QR để đăng nhập</h3>
+            <h3 className={styles.modalTitle}>Quét mã QR để vào nhóm</h3>
             <QRCodeCanvas value={`linkage://addgroup/${group._id}`} size={180} />
             <button
               onClick={() => setonModalQR(false)}

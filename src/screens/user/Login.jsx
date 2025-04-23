@@ -280,7 +280,6 @@ const DangNhap = () => {
                         <h3 className={styles.modalTitle}>Quét mã QR để đăng nhập</h3>
                         <QRCodeCanvas value={`chatapp://login/${qrToken}`} size={180} />
                         <p style={{ fontSize: "14px", color: "#555" }}>
-                            Token: {qrToken} <br />
                             1. Mở ứng dụng Linkage trên điện thoại của bạn.
                             <br />
                             2. Chọn "Quét mã QR". <br />
