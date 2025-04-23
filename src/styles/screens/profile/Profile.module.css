@@ -8,6 +8,7 @@
   /* Màu chữ chính */
   padding-bottom: 20px;
   /* Đệm dưới để tránh nội dung bị cắt */
+  overflow-y: auto;
 }
 
 /* Container cho ảnh bìa */
