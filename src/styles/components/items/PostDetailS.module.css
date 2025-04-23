@@ -341,7 +341,12 @@ body {
 .comment {
   display: flex;
   margin-bottom: 0.9375rem;
-  align-items: flex-start;
+  /* align-items: flex-start; */
+  align-items: center;
+}
+
+.comment:hover .optionsButton {
+  opacity: 1; /* Hiển thị khi hover */
 }
 
 .commentAvatar {
@@ -449,7 +454,10 @@ body {
   padding: 0.25rem 0.5rem;
   color: var(--secondary-color);
   display: flex;
-  align-items: center;
+ margin-bottom: 10px;
+ opacity: 0; /* Ẩn mặc định */
+ transition: opacity 0.3s ease; /* Hiệu ứng mờ dần */
+  
 }
 
 .optionsButton:hover {
