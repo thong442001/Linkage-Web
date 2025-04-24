@@ -463,7 +463,13 @@ const Home = ({ content }) => {
                     content = `${name} đã thả biểu cảm vào story của bạn.`;
                     icon = 'happy';
                     background = 'green';
-                }
+                }else if (notification.type == 'Tài khoản bị khóa') {
+                    name = 'Người Dùng'
+                    avatar = 'https://i.pinimg.com/736x/99/01/a7/9901a78c402edd1f13fc2dd098550214.jpg';
+                    content = 'Tài khoản của bạn đã bị khóa.';
+                    icon = 'shield'
+                    background= '#007bff'
+                  }
 
                 return {
                     _id: notification._id,
