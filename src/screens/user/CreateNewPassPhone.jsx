@@ -1,0 +1,382 @@
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FaAngleLeft, FaEye, FaEyeSlash, FaExclamationCircle } from 'react-icons/fa';
+import { quenMatKhau_gmail } from '../../rtk/API';
+
+const CreateNewPassWordPhone = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { phone } = location.state || {}; // Lấy phone từ state thay vì gmail
+  const [passwordNew, setPasswordNew] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({ passwordNew: '', confirmPassword: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [failedVisible, setFailedVisible] = useState(false);
+  const [failedMessage, setFailedMessage] = useState('');
+  const [showPasswordNew, setShowPasswordNew] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Hàm validate mật khẩu mới
+  const validatePasswordNew = (password) => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    if (!password.trim()) {
+      return 'Vui lòng nhập mật khẩu mới.';
+    }
+    if (password.length < 6) {
+      return 'Mật khẩu phải có ít nhất 6 ký tự.';
+    }
+    if (!/[A-Za-z]/.test(password)) {
+      return 'Mật khẩu phải chứa ít nhất một chữ cái.';
+    }
+    if (!/\d/.test(password)) {
+      return 'Mật khẩu phải chứa ít nhất một số.';
+    }
+    if (/[^A-Za-z\d]/.test(password)) {
+      return 'Mật khẩu không được chứa ký tự đặc biệt.';
+    }
+    return '';
+  };
+
+  // Hàm validate xác nhận mật khẩu
+  const validateConfirmPassword = (confirm, password) => {
+    if (!confirm.trim()) {
+      return 'Vui lòng nhập xác nhận mật khẩu.';
+    }
+    if (confirm !== password) {
+      return 'Mật khẩu xác nhận không khớp.';
+    }
+    return '';
+  };
+
+  // Xử lý thay đổi input
+  const handlePasswordNewChange = (e) => {
+    const text = e.target.value;
+    setPasswordNew(text);
+    const error = validatePasswordNew(text);
+    setErrors((prev) => ({ ...prev, passwordNew: error }));
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const text = e.target.value;
+    setConfirmPassword(text);
+    const error = validateConfirmPassword(text, passwordNew);
+    setErrors((prev) => ({ ...prev, confirmPassword: error }));
+  };
+
+  // Xử lý tạo mật khẩu mới
+  const handleCreatePassword = async () => {
+    const passwordNewError = validatePasswordNew(passwordNew);
+    const confirmPasswordError = validateConfirmPassword(confirmPassword, passwordNew);
+
+    if (passwordNewError || confirmPasswordError) {
+      setErrors({
+        passwordNew: passwordNewError,
+        confirmPassword: confirmPasswordError,
+      });
+      return;
+    }
+
+    setErrors({ passwordNew: '', confirmPassword: '' });
+    setIsLoading(true);
+    try {
+      console.log('Sending payload:', { phone, passwordNew });
+      const response = await dispatch(quenMatKhau_gmail({ phone, passwordNew })).unwrap();
+      console.log('Response từ quenMatKhau_gmail:', response);
+
+      if (response.status) {
+        setIsLoading(false);
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+          navigate('/login');
+        }, 2000);
+      } else {
+        throw new Error(response.message || 'Đổi mật khẩu thất bại. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log('Lỗi khi đổi mật khẩu:', error);
+      setFailedMessage(error.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.');
+      setFailedVisible(true);
+      setTimeout(() => setFailedVisible(false), 2000);
+    }
+  };
+
+  return (
+    <>
+      <style>
+        {`
+          .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          }
+          .header {
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          .logo {
+            font-size: 40px;
+            font-weight: 700;
+            color: #1877f2;
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+          }
+          .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1c1e21;
+          }
+          .subtitle {
+            font-size: 15px;
+            color: #606770;
+          }
+          .form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+          }
+          .inputContainer {
+            position: relative;
+            margin-bottom: 10px;
+          }
+          .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd0d5;
+            border-radius: 5px;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 2px;
+          }
+          .inputError {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid red;
+            border-radius: 5px;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 2px;
+          }
+          .input:focus {
+            border-color: #1877f2;
+          }
+          .input:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+          }
+          .iconEye {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #8c96a2;
+            font-size: 20px;
+          }
+          .submitButton {
+            width: 100%;
+            padding: 12px;
+            background-color: #00a400;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+          }
+          .submitButton:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+          }
+          .submitButton:hover:not(:disabled) {
+            background-color: #009100;
+          }
+          .backButton {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #606770;
+            cursor: pointer;
+            padding: 10px;
+            margin-right: auto;
+          }
+          .backButton:disabled {
+            color: #cccccc;
+            cursor: not-allowed;
+          }
+          .errorContainer {
+            margin-bottom: 5px;
+          }
+          .errorText {
+            color: red;
+            font-size: 12px;
+            margin: 0;
+            line-height: 1.2;
+          }
+          .errorIcon {
+            margin-right: 8px;
+            font-size: 12px;
+            color: red;
+          }
+          .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+          }
+          .modalContent {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+          }
+          .modalSuccess {
+            background-color: #e7f3e7;
+          }
+          .modalFailed {
+            background-color: #f3e7e7;
+          }
+          .modalText {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+          }
+          .link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #1877f2;
+            text-decoration: none;
+            cursor: pointer;
+          }
+          .link:hover {
+            text-decoration: underline;
+          }
+        `}
+      </style>
+      <div className="container">
+        <form className="form">
+          <div className="header">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <button
+                type="button"
+                className="backButton"
+                onClick={() => navigate('/login')}
+                disabled={isLoading}
+              >
+                <FaAngleLeft />
+              </button>
+              <h1 className="logo">Linkage</h1>
+            </div>
+            <h2 className="title">Tạo mật khẩu mới</h2>
+            <p className="subtitle">
+              Mật khẩu phải có ít nhất 6 ký tự, gồm chữ cái và số, không chứa ký tự đặc biệt.
+            </p>
+          </div>
+          <div className="inputContainer">
+            <input
+              type={showPasswordNew ? 'text' : 'password'}
+              placeholder="Mật khẩu mới"
+              className={errors.passwordNew ? 'inputError' : 'input'}
+              value={passwordNew}
+              onChange={handlePasswordNewChange}
+              disabled={isLoading}
+              autoCapitalize="none"
+              autoComplete="new-password"
+            />
+            <span
+              className="iconEye"
+              onClick={() => setShowPasswordNew(!showPasswordNew)}
+            >
+              {showPasswordNew ? <FaEye /> : <FaEyeSlash />}
+            </span>
+          </div>
+          {errors.passwordNew && (
+            <div className="errorContainer">
+              <FaExclamationCircle className="errorIcon" />
+              <span className="errorText">{errors.passwordNew}</span>
+            </div>
+          )}
+          <div className="inputContainer">
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Xác nhận mật khẩu"
+              className={errors.confirmPassword ? 'inputError' : 'input'}
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              disabled={isLoading}
+              autoCapitalize="none"
+              autoComplete="new-password"
+              maxLength={20}
+              minLength={6}
+            />
+            <span
+              className="iconEye"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
+            </span>
+          </div>
+          {errors.confirmPassword && (
+            <div className="errorContainer">
+              <FaExclamationCircle className="errorIcon" />
+              <span className="errorText">{errors.confirmPassword}</span>
+            </div>
+          )}
+          <button
+            type="button"
+            className="submitButton"
+            onClick={handleCreatePassword}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Đang xử lý...' : 'Tiếp tục'}
+          </button>
+          <p
+            className="link"
+            onClick={() => navigate('/login')}
+          >
+            Quay lại đăng nhập
+          </p>
+        </form>
+        {isSuccess && (
+          <div className="modal">
+            <div className="modalContent modalSuccess">
+              <p className="modalText">Đổi mật khẩu thành công!</p>
+            </div>
+          </div>
+        )}
+        {failedVisible && (
+          <div className="modal">
+            <div className="modalContent modalFailed">
+              <p className="modalText">{failedMessage}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default CreateNewPassWordPhone;

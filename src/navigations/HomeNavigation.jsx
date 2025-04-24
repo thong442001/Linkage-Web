@@ -8,6 +8,7 @@ import Trash from "../screens/trash/Trash";
 import UpStory from "../screens/story/UpStory";
 import EditStory from "../screens/story/EditStory";
 import StoryViewer from "../screens/story/StoryViewer";
+import FindWithEmail from "../screens/user/FindPassByEmail";
 
 // Component bố cục chính
 const MainLayout = ({ children }) => {
@@ -74,7 +75,7 @@ const HomeNavigation = () => {
       <Route path="/UpStory" element={<UpStory />} />
       <Route path="/EditStory" element={<EditStory />} />
       <Route path="/story-viewer" element={<StoryViewer />} />
-    </Routes>
+      </Routes>
   );
 };
 

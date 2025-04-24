@@ -921,3 +921,36 @@ export const deleteComment = createAsyncThunk(
     }
   }
 );
+// gửi mã OTP quên mật khẩu gmail
+// params : gmail
+export const sendOTP_quenMatKhau_gmail = createAsyncThunk(
+  'gmail_otp/sendOTP_quenMatKhau_gmail',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('gmail_otp/sendOTP_quenMatKhau_gmail', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+// "status": true, message: "Đổi password thành công"
+// "status": false, message: "User không tồn tại"
+// nhớ khi call check "status"
+// params :  gmail, passwordNew
+export const quenMatKhau_gmail = createAsyncThunk(
+  'user/quenMatKhau_gmail',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await AxiosHelper()
+        .post('user/quenMatKhau_gmail', data);
+      //console.log(response)
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+

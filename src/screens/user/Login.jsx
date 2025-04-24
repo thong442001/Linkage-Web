@@ -147,7 +147,9 @@ const DangNhap = () => {
     const handleNavigateToRegister = () => {
         navigate('/register');
     };
-
+    const handleRemember = () => {
+        navigate('/find-with-email');
+    };
     return (
         <div
             style={{
@@ -272,7 +274,21 @@ const DangNhap = () => {
                 >
                     Đăng Ký
                 </button>
+                <p
+                style={{
+                    background: "none",
+                    border: "none",
+                    margin: "10px 0",
+                    fontSize: "16px",
+                    color: "#555",
+                    cursor: "pointer",
+                }}
+                    onClick={handleRemember}
+>
+                    Bạn quên mật khẩu
+                </p>
             </div>
+      
             {hienThiQR && (
                 <div className={styles.modalContainer}>
                     <div className={styles.modalContent}>
