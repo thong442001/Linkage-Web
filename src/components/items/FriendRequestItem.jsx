@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../styles/screens/friend/FriendS.module.css";
-
+import { useNavigate } from 'react-router-dom';
 const FriendRequestItem = ({ data, me, currentTime, onXacNhan, onXoa }) => {
   const [timeAgo, setTimeAgo] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const updateDiff = () => {
       const now = Date.now();
@@ -46,7 +46,12 @@ const FriendRequestItem = ({ data, me, currentTime, onXacNhan, onXoa }) => {
 
   return (
     <div className={styles.friendRequestItem}>
-      <img src={avatar} alt={name} className={styles.friendAvatar} />
+      <button
+        style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
+        onClick={() => navigate(`/profile/${isMeA ? data.ID_userB._id : data.ID_userA._id}`)}
+      >
+        <img src={avatar} alt={name} className={styles.friendAvatar} />
+      </button>
       <div className={styles.friendInfo}>
         <h4 className={styles.friendInfoTitle}>{name}</h4>
         <p className={styles.friendInfoText}>{timeAgo}</p>

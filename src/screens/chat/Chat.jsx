@@ -548,18 +548,24 @@ const Chat = () => {
         {selectedGroup ? (
           <>
             <div className={styles.chatHeader}>
-              <img
-                src={
-                  selectedGroup.isPrivate
-                    ? selectedGroup.members.find((m) => m._id !== user._id)
-                      ?.avatar ||
-                    "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
-                    : selectedGroup.avatar ||
-                    "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
-                }
-                alt="Profile"
-                className={styles.avatar}
-              />
+              <button
+                style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
+                onClick={() => navigate(`/profile/${selectedGroup.members.find((m) => m._id !== user._id)?._id}`)}
+                disabled={!selectedGroup.isPrivate}  
+              >
+                <img
+                  src={
+                    selectedGroup.isPrivate
+                      ? selectedGroup.members.find((m) => m._id !== user._id)
+                        ?.avatar ||
+                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                      : selectedGroup.avatar ||
+                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                  }
+                  alt="Profile"
+                  className={styles.avatar}
+                />
+              </button>
               <div className={styles.chatHeaderInfo}>
                 <h3>
                   {selectedGroup.isPrivate
