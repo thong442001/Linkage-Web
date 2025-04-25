@@ -7,7 +7,7 @@ body {
     /* Ensure the body takes up the full viewport height */
     background-color: #f8f9fb;
     /* Set the background color (match your app's background) */
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 
 .home-container {
