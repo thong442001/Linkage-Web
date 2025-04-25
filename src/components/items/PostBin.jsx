@@ -10,7 +10,7 @@ import ListTag from './../../screens/home/ListTag';
 import PostDetailModal from '../dialogs/PostDetailModal';
 import { Menu, MenuItem } from '@mui/material';
 
-const Post = ({
+const PostBin = ({
   post,
   me,
   reactions,
@@ -313,7 +313,7 @@ const Post = ({
         <div className='box-header'>
           <div className='header-content'>
             {post.type == 'Share' ? (
-              (post?.ID_post_shared?._destroy || !post?.ID_post_shared)
+              ((post?.ID_post_shared?._destroy && post.ID_post_shared.ID_user._id != me._id) || !post?.ID_post_shared)
                 ? (
                   <div className='user-info'>
                     < p >Nội dung bài viết đã bị xóa</p>
@@ -425,7 +425,7 @@ const Post = ({
             }}
           >
             {post.type == 'Share' ? (
-              !((post?.ID_post_shared?._destroy) || !post?.ID_post_shared)
+              !((post?.ID_post_shared?._destroy && post.ID_post_shared.ID_user._id != me._id) || !post?.ID_post_shared)
               && post.ID_post_shared.caption
             )
               : (
@@ -503,7 +503,7 @@ const Post = ({
         }
       </Menu >
       {post.type == 'Share' ? (
-        !((post?.ID_post_shared?._destroy) || !post?.ID_post_shared)
+        !((post?.ID_post_shared?._destroy && post.ID_post_shared.ID_user._id != me._id) || !post?.ID_post_shared)
         && hasMedia && renderMediaGrid(post.ID_post_shared.medias)
       )
         : (
@@ -851,4 +851,4 @@ const Post = ({
   );
 };
 
-export default Post;
+export default PostBin;
