@@ -91,7 +91,7 @@ const CreateNewPassword = () => {
         setIsSuccess(true);
         setTimeout(() => {
           setIsSuccess(false);
-          navigate("/login");
+          navigate("/");
         }, 2000);
       } else {
         setIsLoading(false);
@@ -253,14 +253,14 @@ const CreateNewPassword = () => {
         <form className="form">
           <div className="header">
             <div style={{ display: "flex", alignItems: "center" }}>
-              <button
+              {/* <button
                 type="button"
                 className="backButton"
                 onClick={() => navigate("/check-email")}
                 disabled={isLoading}
               >
                 ←
-              </button>
+              </button> */}
               <h1 className="logo">Linkage</h1>
             </div>
             <h2 className="title">Tạo mật khẩu mới</h2>

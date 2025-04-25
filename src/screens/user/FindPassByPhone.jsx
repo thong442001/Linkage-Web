@@ -212,14 +212,6 @@ const FindWithPhone = () => {
         <form className="form">
           <div className="header">
             <div style={{ display: "flex", alignItems: "center" }}>
-              {/* <button
-                type="button"
-                className="backButton"
-                onClick={() => navigate("/login")}
-                disabled={isLoading}
-              >
-                ←
-              </button> */}
               <h1 className="logo">Linkage</h1>
             </div>
             <h2 className="title">Tìm tài khoản</h2>
@@ -227,7 +219,7 @@ const FindWithPhone = () => {
           </div>
           <input
             type="text"
-            placeholder="Nhập số đien thoại"
+            placeholder="Nhập số điện thoại"
             className={error ? "inputError" : "input"}
             value={phone}
             onChange={(e) => {
@@ -249,6 +241,11 @@ const FindWithPhone = () => {
             onClick={() => navigate("/find-with-email")}
           >
             Tìm bằng email
+          </p>
+          <p className="link"
+            onClick={() => navigate("/")}
+          >
+            Bạn đã có tài khoản? Đăng nhập
           </p>
         </form>
         {isLoading && (

@@ -189,14 +189,6 @@ const FindWithEmail = () => {
         <form className="form">
           <div className="header">
             <div style={{ display: "flex", alignItems: "center" }}>
-              {/* <button
-                type="button"
-                className="backButton"
-                onClick={() => navigate("/login")}
-                disabled={isLoading}
-              >
-                &larr;
-              </button> */}
               <h1 className="logo">Linkage</h1>
             </div>
             <h2 className="title">Tìm tài khoản</h2>
@@ -222,12 +214,17 @@ const FindWithEmail = () => {
             onClick={handleCheckEmail}
             disabled={isLoading}
           >
-            {isLoading ? "Đang xử lý..." : "Tiếp"}
+            {isLoading ? "Đang xử lý..." : "Tiếp tục"}
           </button>
           <p className="link"
             onClick={() => navigate("/find-with-phone")}
           >
             Tìm bằng số điện thoại
+          </p>
+          <p className="link"
+           onClick={() => navigate("/")}
+           >
+            Bạn đã có tài khoản? Đăng nhập
           </p>
         </form>
         {failedVisible && (
