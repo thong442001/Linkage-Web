@@ -62,13 +62,22 @@ body {
 }
 
 .closeButton {
-  background: none;
+  position: absolute;
+  top: clamp(10px, 2vw, 20px); /* Đặt nút ở góc trên */
+  right: clamp(10px, 2vw, 20px); /* Đặt nút ở góc phải */
+  background: rgba(255, 255, 255, 0.9); /* Nền trắng mờ */
   border: none;
   color: var(--primary-color);
   font-size: clamp(1rem, 2vw, 1.25rem);
   cursor: pointer;
   padding: clamp(0.25rem, 0.5vw, 0.3125rem);
-  transition: color 0.3s;
+  border-radius: 50%; /* Làm tròn nút */
+  width: clamp(32px, 4vw, 40px); /* Kích thước nút */
+  height: clamp(32px, 4vw, 40px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow); /* Thêm bóng */
 }
 
 .closeButton:hover {
@@ -597,20 +606,21 @@ body {
 
 /* ------------------- Shared Post Modal ------------------- */
 .sharedPost {
-  background: var(--bg-white);
-  width: 95%;
-  max-width: clamp(400px, 40vw, 500px);
-  border-radius: var(--large-radius);
+  background-color: #ffffff;
+  width: 95%; /* Tăng width để tận dụng không gian */
+  max-width: clamp(400px, 40vw, 500px); /* Giới hạn tối đa 500px */
+  border-radius: 0.625rem;
   padding: 1rem;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: var(--shadow);
+  color: #050505;
+  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
 }
 
 .sharedPostHeader {
-  border-bottom: 0.0625rem solid var(--border-color);
+  border-bottom: 0.0625rem solid #e0e0e0;
   padding-bottom: 0.625rem;
   margin-bottom: 1rem;
 }
@@ -897,6 +907,58 @@ body {
   color: #dc3545;
   border: 0.0625rem solid #dc3545;
   background: var(--bg-white);
+}
+
+/* Shared Post Overlay */
+.shareOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Status Modal */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  width: 95%;
+  max-width: clamp(300px, 30vw, 400px);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.optionButton {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  background: none;
+  border: none;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  color: #050505;
+  cursor: pointer;
+  text-align: left;
+}
+
+.optionButton:hover {
+  background-color: #f0f2f5;
 }
 
 /* ------------------- Loading/Error States ------------------- */
