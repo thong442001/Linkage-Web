@@ -6,12 +6,12 @@ import styles from "../../styles/components/dialogs/ChatModal.module.css";
 import axios from 'axios';
 import { FaImage, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import MessageItem from "../../components/items/MessageItem";
-
+import { useNavigate } from 'react-router-dom';
 const ChatModal = ({ group, onClose }) => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user, token } = useSelector((state) => state.app);
     const { socket } = useSocket();
-
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [reply, setReply] = useState(null);
@@ -55,10 +55,10 @@ const ChatModal = ({ group, onClose }) => {
                         type: data.type,
                         ID_message_reply: data.ID_message_reply
                             ? {
-                                  _id: data.ID_message_reply._id,
-                                  content:
-                                      data.ID_message_reply.content || "Tin nhắn không tồn tại",
-                              }
+                                _id: data.ID_message_reply._id,
+                                content:
+                                    data.ID_message_reply.content || "Tin nhắn không tồn tại",
+                            }
                             : null,
                         message_reactionList: [],
                         updatedAt: data.updatedAt,
@@ -81,10 +81,10 @@ const ChatModal = ({ group, onClose }) => {
                         type: data.type,
                         ID_message_reply: data.ID_message_reply
                             ? {
-                                  _id: data.ID_message_reply._id,
-                                  content:
-                                      data.ID_message_reply.content || "Tin nhắn không tồn tại",
-                              }
+                                _id: data.ID_message_reply._id,
+                                content:
+                                    data.ID_message_reply.content || "Tin nhắn không tồn tại",
+                            }
                             : null,
                         message_reactionList: [],
                         updatedAt: data.updatedAt,
@@ -241,9 +241,9 @@ const ChatModal = ({ group, onClose }) => {
             type,
             ID_message_reply: reply
                 ? {
-                      _id: reply._id,
-                      content: reply.content || "Tin nhắn không tồn tại",
-                  }
+                    _id: reply._id,
+                    content: reply.content || "Tin nhắn không tồn tại",
+                }
                 : null,
         };
         socket.emit('send_message', payload);
@@ -299,33 +299,41 @@ const ChatModal = ({ group, onClose }) => {
 
     // Tên nhóm chat
     const groupName = group.isPrivate
-        ? `${group.members.find((m) => m._id !== user._id)?.first_name} ${
-              group.members.find((m) => m._id !== user._id)?.last_name
-          }`
+        ? `${group.members.find((m) => m._id !== user._id)?.first_name} ${group.members.find((m) => m._id !== user._id)?.last_name
+        }`
         : group.name || group.members
-              .filter((m) => m._id !== user._id)
-              .map((m) => `${m.first_name} ${m.last_name}`)
-              .join(", ");
+            .filter((m) => m._id !== user._id)
+            .map((m) => `${m.first_name} ${m.last_name}`)
+            .join(", ");
 
     return (
         <div className={styles.chatModalOverlay}>
             <div className={`${styles.chatModal} ${isExpanded ? styles.expanded : styles.collapsed}`}>
                 <div className={styles.chatModalHeader}>
                     <div className={styles.headerContent}>
-                        <img
-                            src={
-                                group.isPrivate
-                                    ? group.members.find((m) => m._id !== user._id)?.avatar ||
-                                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
-                                    : group.avatar ||
-                                      "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
-                            }
-                            alt="Profile"
-                            className={styles.avatar}
-                        />
+                        <button
+                            style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
+                            onClick={() => navigate(`/profile/${group.members.find((m) => m._id !== user._id)?._id}`)}
+                        >
+                            <img
+                                src={
+                                    group.isPrivate
+                                        ? group.members.find((m) => m._id !== user._id)?.avatar ||
+                                        "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                                        : group.avatar ||
+                                        "https://images2.thanhnien.vn/528068263637045248/2025/3/28/viruss-17431943994281777502076.jpg"
+                                }
+                                alt="Profile"
+                                className={styles.avatar}
+                            />
+                        </button>
                         <div className={styles.chatHeaderInfo}>
-                            <h3>{groupName}</h3>
-                            <p>Được mã hóa đầu cuối</p>
+                            <button
+                                style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
+                                onClick={() => navigate(`/profile/${group.members.find((m) => m._id !== user._id)?._id}`)}
+                            >
+                                <h3>{groupName}</h3>
+                            </button>
                         </div>
                     </div>
                     <div className={styles.headerActions}>
@@ -374,8 +382,8 @@ const ChatModal = ({ group, onClose }) => {
                                         {reply.type === 'text'
                                             ? reply.content
                                             : reply.type === 'image'
-                                            ? 'Ảnh'
-                                            : 'Video'}
+                                                ? 'Ảnh'
+                                                : 'Video'}
                                     </p>
                                 </div>
                                 <button
