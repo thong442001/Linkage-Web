@@ -39,7 +39,10 @@ const Friend = () => {
         .unwrap()
         .then((response) => {
           //console.log(response.groups)
-          setFriends(response.relationships);
+          const uniqueFriends = Array.from(
+            new Map(response.relationships.map((item) => [item._id, item])).values()
+          );
+          setFriends(uniqueFriends);
         })
         .catch((error) => {
           console.log("Error1 getAllFriendOfID_user:", error);
@@ -60,7 +63,11 @@ const Friend = () => {
       await dispatch(getGoiYBanBe({ me: me._id, token }))
         .unwrap()
         .then((response) => {
-          setListGoiY(response.data);
+       // Loại bỏ trùng lặp dựa trên _id
+       const uniqueGoiY = Array.from(
+        new Map(response.data.map((item) => [item.user._id, item])).values()
+      );
+      setListGoiY(uniqueGoiY);
         })
         .catch((error) => {
           console.log("Error1 getAllFriendOfID_user:", error);
@@ -113,7 +120,10 @@ const Friend = () => {
       const response = await dispatch(
         getAllLoiMoiKetBan({ me: me._id, token })
       ).unwrap();
-      setRelationships(response.relationships);
+    const uniqueRelationships = Array.from(
+      new Map(response.relationships.map((item) => [item._id, item])).values()
+    );
+    setRelationships(uniqueRelationships);
     } catch (error) {
       console.log("Error getAllLoiMoiKetBan:", error);
     }
