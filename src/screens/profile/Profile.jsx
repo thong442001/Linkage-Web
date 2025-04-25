@@ -609,7 +609,7 @@ const Profile = () => {
               <>
                 <button
                   className={style.storyButton}
-                  onClick={() => navigate("/post-story")}
+                  onClick={() => navigate("/UpStory")}
                 >
                   + Thêm vào tin
                 </button>

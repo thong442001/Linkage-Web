@@ -286,14 +286,14 @@ const CheckPhone = () => {
         <form className="form">
           <div className="header">
             <div style={{ display: "flex", alignItems: "center" }}>
-              <button
+              {/* <button
                 type="button"
                 className="backButton"
                 onClick={() => navigate("/find-with-phone")}
                 disabled={isLoading}
               >
                 ←
-              </button>
+              </button> */}
               <h1 className="logo">Linkage</h1>
             </div>
             <h2 className="title">Kiểm tra số điện thoại</h2>
