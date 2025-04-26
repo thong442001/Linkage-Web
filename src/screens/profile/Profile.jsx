@@ -303,11 +303,12 @@ const Profile = () => {
       dispatch(changeDestroyPost({ _id: postId }))
         .unwrap()
         .then(() => {
-          setPosts((prev) =>
-            prev.map((post) =>
-              post._id === postId ? { ...post, _destroy: true } : post
-            )
-          );
+          // setPosts((prev) =>
+          //   prev.map((post) =>
+          //     post._id === postId ? { ...post, _destroy: true } : post
+          //   )
+          // );
+          setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
           setSuccessMessage("Đã xóa bài đăng!");
         })
         .catch((err) => {

@@ -268,9 +268,10 @@ const Home = ({ content }) => {
             dispatch(changeDestroyPost({ _id: postId }))
                 .unwrap()
                 .then(() => {
-                    setPosts((prev) =>
-                        prev.map((post) => (post._id === postId ? { ...post, _destroy: true } : post))
-                    );
+                    // setPosts((prev) =>
+                    //     prev.map((post) => (post._id === postId ? { ...post, _destroy: true } : post))
+                    // );
+                    setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
                     setSuccessMessage('Đã xóa bài đăng!');
                 })
                 .catch((err) => {
@@ -463,13 +464,13 @@ const Home = ({ content }) => {
                     content = `${name} đã thả biểu cảm vào story của bạn.`;
                     icon = 'happy';
                     background = 'green';
-                }else if (notification.type == 'Tài khoản bị khóa') {
+                } else if (notification.type == 'Tài khoản bị khóa') {
                     name = 'Người Dùng'
                     avatar = 'https://i.pinimg.com/736x/99/01/a7/9901a78c402edd1f13fc2dd098550214.jpg';
                     content = 'Tài khoản của bạn đã bị khóa.';
                     icon = 'shield'
-                    background= '#007bff'
-                  }
+                    background = '#007bff'
+                }
 
                 return {
                     _id: notification._id,
@@ -515,11 +516,11 @@ const Home = ({ content }) => {
                         {isSearchOpen && (
                             <div>
                                 <SearchDialog
-                                        item={filteredProducts}
-                                        onClose={() => setIsSearchOpen(false)}
-                                        saveSearch={saveSearch}
-                                        history={searchHistory}
-                                        deleteSearchItem={deleteSearchItem}
+                                    item={filteredProducts}
+                                    onClose={() => setIsSearchOpen(false)}
+                                    saveSearch={saveSearch}
+                                    history={searchHistory}
+                                    deleteSearchItem={deleteSearchItem}
                                 />
                             </div>
                         )}

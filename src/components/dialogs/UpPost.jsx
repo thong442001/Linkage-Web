@@ -190,6 +190,7 @@ const UpPost = ({ isOpen, onClose }) => {
         setTags([]);
         setTypePost("Normal");
         setSelectedOption({ status: 1, name: "Công khai" });
+        window.location.reload(); // Reload trang
       }, 2000);
     } catch (error) {
       console.error("Lỗi đăng bài:", error.message);

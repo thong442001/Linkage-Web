@@ -7,14 +7,14 @@ import {
   changeDestroyPost,
   deletePost,
 } from '../../rtk/API';
-import Post from '../../components/items/Post.jsx'; // Thay thế PostItem bằng Post
+import PostBin from '../../components/items/PostBin.jsx'; // Thay thế PostItem bằng Post
 import Style from '../../styles/screens/trash/Trash.module.css';
 
 const Trash = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const me = useSelector((state) => state.app.user);
-  const token = useSelector((state) => state.app.token);  
+  const token = useSelector((state) => state.app.token);
   const reactions = useSelector((state) => state.app.reactions) || []; // Lấy reactions từ Redux, hoặc mặc định là mảng rỗng
   const reasons = useSelector((state) => state.app.reasons) || []; // Lấy reasons từ Redux, hoặc mặc định là mảng rỗng
   const [posts, setPosts] = useState([]);
@@ -95,7 +95,7 @@ const Trash = () => {
           <div className={Style.post_list}>
             {posts.map((item) => (
               <div key={item._id} className={Style.post_item}>
-                <Post
+                <PostBin
                   post={item}
                   me={me}
                   reactions={reactions}
@@ -103,8 +103,8 @@ const Trash = () => {
                   currentTime={currentTime}
                   onDelete={() => callChangeDestroyPost(item._id)}
                   onDeleteVinhVien={() => callDeletePost(item._id)}
-                  updatePostReaction={() => {}}
-                  deletePostReaction={() => {}}
+                  updatePostReaction={() => { }}
+                  deletePostReaction={() => { }}
                 />
               </div>
             ))}
