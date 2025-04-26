@@ -90,7 +90,8 @@ const Register = () => {
         try {
             let response;
             if (kiemTraEmailHopLe(emailOrPhone)) {
-                response = await dispatch(checkEmail({ email: emailOrPhone })).unwrap();
+                // Sử dụng email chữ thường cho API
+                response = await dispatch(checkEmail({ email: emailOrPhone.toLowerCase() })).unwrap();
             } else if (kiemTraDienThoaiHopLe(emailOrPhone)) {
                 response = await dispatch(checkPhone({ phone: emailOrPhone })).unwrap();
             }
@@ -183,23 +184,23 @@ const Register = () => {
                 last_name: ho,
                 dateOfBirth,
                 sex: gioiTinh,
-                email: kiemTraEmailHopLe(emailOrPhone) ? emailOrPhone : null,
+                // Lưu email chữ thường vào userData
+                email: kiemTraEmailHopLe(emailOrPhone) ? emailOrPhone.toLowerCase() : null,
                 phone: kiemTraDienThoaiHopLe(emailOrPhone) ? emailOrPhone : null,
                 password: matKhau
             };
 
             try {
-                // Gửi OTP
                 let otpResponse;
                 if (kiemTraEmailHopLe(emailOrPhone)) {
-                    otpResponse = await dispatch(sendOTP_dangKi_gmail({ gmail: emailOrPhone })).unwrap();
+                    // Gửi OTP với email chữ thường
+                    otpResponse = await dispatch(sendOTP_dangKi_gmail({ gmail: emailOrPhone.toLowerCase() })).unwrap();
                 } else if (kiemTraDienThoaiHopLe(emailOrPhone)) {
                     otpResponse = await dispatch(sendOTP_dangKi_phone({ phone: emailOrPhone })).unwrap();
                 }
 
                 if (otpResponse.status) {
-                    // Điều hướng đến màn hình OTP, truyền userData qua state
-                    navigate('/verify-otp', { state: { userData, emailOrPhone } });
+                    navigate('/verify-otp', { state: { userData, emailOrPhone: kiemTraEmailHopLe(emailOrPhone) ? emailOrPhone.toLowerCase() : emailOrPhone } });
                 } else {
                     throw new Error(otpResponse.message || 'Gửi OTP thất bại.');
                 }

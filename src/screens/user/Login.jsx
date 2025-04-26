@@ -127,7 +127,7 @@ const DangNhap = () => {
         if (!kiemTraForm()) return;
 
         const duLieu = kiemTraEmailHopLe(emailHoacDienThoai)
-            ? { email: emailHoacDienThoai, phone: "", password: matKhau }
+            ? { email: emailHoacDienThoai.toLowerCase(), phone: "", password: matKhau }
             : { email: "", phone: emailHoacDienThoai, password: matKhau };
 
         thucHienDangNhap(duLieu);
@@ -150,6 +150,7 @@ const DangNhap = () => {
     const handleRemember = () => {
         navigate('/find-with-email');
     };
+
     return (
         <div
             style={{
@@ -194,7 +195,12 @@ const DangNhap = () => {
                     fullWidth
                     margin="normal"
                     value={emailHoacDienThoai}
-                    onChange={(e) => setEmailHoacDienThoai(e.target.value)}
+                    onChange={(e) => {
+                        const value = kiemTraEmailHopLe(e.target.value)
+                            ? e.target.value.toLowerCase()
+                            : e.target.value;
+                        setEmailHoacDienThoai(value);
+                    }}
                     error={!!loiEmailDienThoai}
                     helperText={loiEmailDienThoai}
                     sx={{ mb: 2 }}
@@ -275,20 +281,20 @@ const DangNhap = () => {
                     Đăng Ký
                 </button>
                 <p
-                style={{
-                    background: "none",
-                    border: "none",
-                    margin: "10px 0",
-                    fontSize: "16px",
-                    color: "#555",
-                    cursor: "pointer",
-                }}
+                    style={{
+                        background: "none",
+                        border: "none",
+                        margin: "10px 0",
+                        fontSize: "16px",
+                        color: "#555",
+                        cursor: "pointer",
+                    }}
                     onClick={handleRemember}
->
+                >
                     Bạn quên mật khẩu
                 </p>
             </div>
-      
+
             {hienThiQR && (
                 <div className={styles.modalContainer}>
                     <div className={styles.modalContent}>

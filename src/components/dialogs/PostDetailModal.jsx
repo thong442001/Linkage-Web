@@ -828,6 +828,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }
   };
 
+  
+
   const renderComment = (comment, level = 0) => (
     <>
       <div
@@ -1024,7 +1026,15 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     return <div className={styles.error}>Bài viết đã bị xóa.</div>;
   }
 
-
+// Hàm kiểm tra xem có nên hiển thị nút Chia sẻ hay không
+const canShowShareButton = () => {
+  // Nếu bài viết là bài chia sẻ, kiểm tra trạng thái của bài viết gốc
+  if (post.type === "Share" && post.ID_post_shared) {
+    return post.ID_post_shared.status !== "Chỉ mình tôi";
+  }
+  // Nếu là bài viết thông thường, kiểm tra trạng thái của bài viết
+  return post.status !== "Chỉ mình tôi";
+};
 
   //View tổng 
   return (
@@ -1141,178 +1151,184 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       </>
     )}
 
-         {/* Hiển thị footer và interactions bên trong originalPost nếu không phải bài chia sẻ */}
-    {post.type !== "Share" && (
-      <>
-        <div className={styles.footer}>
-          {post.post_reactions?.length > 0 ? (
-            <div className={styles.footerReactions}>
-              <a
-                onClick={() => setReactionListModalVisible(true)}
-                style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
-              >
-                {topReactions.map((reaction, index) => (
-                  <span key={index}>{reaction.ID_reaction.icon}</span>
-                ))}
-                <span>
-                  {post.post_reactions.some((r) => r.ID_user._id === me?._id)
-                    ? post.post_reactions.length === 1
-                      ? `${me?.first_name} ${me?.last_name}`
-                      : `Bạn và ${post.post_reactions.length - 1} người khác`
-                    : `${post.post_reactions.length}`}
-                </span>
-              </a>
-            </div>
-          ) : (
-            <div className={styles.footerSpacer} />
-          )}
-          {comments.length > 0 && (
-            <span className={styles.commentCount}>
-              {countComments} bình luận
-            </span>
-          )}
-        </div>
+      {/* Footer và interactions cho bài viết không phải chia sẻ */}
+      {post.type !== "Share" && (
+              <>
+                <div className={styles.footer}>
+                  {post.post_reactions?.length > 0 ? (
+                    <div className={styles.footerReactions}>
+                      <a
+                        onClick={() => setReactionListModalVisible(true)}
+                        style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
+                      >
+                        {topReactions.map((reaction, index) => (
+                          <span key={index}>{reaction.ID_reaction.icon}</span>
+                        ))}
+                        <span>
+                          {post.post_reactions.some((r) => r.ID_user._id === me?._id)
+                            ? post.post_reactions.length === 1
+                              ? `${me?.first_name} ${me?.last_name}`
+                              : `Bạn và ${post.post_reactions.length - 1} người khác`
+                            : `${post.post_reactions.length}`}
+                        </span>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className={styles.footerSpacer} />
+                  )}
+                  {comments.length > 0 && (
+                    <span className={styles.commentCount}>
+                      {countComments} bình luận
+                    </span>
+                  )}
+                </div>
 
-        <div className={styles.interactions}>
-          <div className={styles.reactionContainer}>
-            <button
-              ref={reactionRef}
-              className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onClick={() =>
-                userReaction
-                  ? callDeletePost_reaction(userReaction._id)
-                  : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
-              }
-            >
-              <div className={styles.reactionIconBox}>
-                {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
-                <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
-              </div>
-            </button>
-            {reactionsVisible && (
-              <div
-                className={styles.reactionBar}
-                onMouseEnter={() => setReactionsVisible(true)}
-                onMouseLeave={() => setReactionsVisible(false)}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {reactions.map((reaction, index) => (
-                  <button
-                    key={index}
-                    className={styles.reactionButton}
-                    onClick={() => {
-                      callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
-                      setReactionsVisible(false);
-                    }}
-                  >
-                    {reaction.icon}
+                <div className={styles.interactions}>
+                  <div className={styles.reactionContainer}>
+                    <button
+                      ref={reactionRef}
+                      className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() =>
+                        userReaction
+                          ? callDeletePost_reaction(userReaction._id)
+                          : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
+                      }
+                    >
+                      <div className={styles.reactionIconBox}>
+                        {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
+                        <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
+                      </div>
+                    </button>
+                    {reactionsVisible && (
+                      <div
+                        className={styles.reactionBar}
+                        onMouseEnter={() => setReactionsVisible(true)}
+                        onMouseLeave={() => setReactionsVisible(false)}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {reactions.map((reaction, index) => (
+                          <button
+                            key={index}
+                            className={styles.reactionButton}
+                            onClick={() => {
+                              callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
+                              setReactionsVisible(false);
+                            }}
+                          >
+                            {reaction.icon}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <button className={styles.action}>
+                    <FaComment size={16} /> Bình luận
                   </button>
-                ))}
-              </div>
+                  {/* Chỉ hiển thị nút Chia sẻ nếu trạng thái không phải "Chỉ mình tôi" */}
+                  {canShowShareButton() && (
+                    <button
+                      className={styles.action}
+                      onClick={() => setShareVisible(true)}
+                      disabled={post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)}
+                    >
+                      <FaShare size={16} /> Chia sẻ
+                    </button>
+                  )}
+                </div>
+              </>
             )}
           </div>
-          <button className={styles.action}>
-            <FaComment size={16} /> Bình luận
-          </button>
-          <button
-            className={styles.action}
-            onClick={() => setShareVisible(true)}
-            disabled={post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)}
-          >
-            <FaShare size={16} /> Chia sẻ
-          </button>
-        </div>
-      </>
-    )}
-  </div>
 
-  {/* Hiển thị footer và interactions bên ngoài originalPost nếu là bài chia sẻ */}
-  {post.type === "Share" && (
-    <>
-      <div className={styles.footer}>
-        {post.post_reactions?.length > 0 ? (
-          <div className={styles.footerReactions}>
-            <a
-              onClick={() => setReactionListModalVisible(true)}
-              style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
-            >
-              {topReactions.map((reaction, index) => (
-                <span key={index}>{reaction.ID_reaction.icon}</span>
-              ))}
-              <span>
-                {post.post_reactions.some((r) => r.ID_user._id === me?._id)
-                  ? post.post_reactions.length === 1
-                    ? `${me?.first_name} ${me?.last_name}`
-                    : `Bạn và ${post.post_reactions.length - 1} người khác`
-                  : `${post.post_reactions.length}`}
-              </span>
-            </a>
-          </div>
-        ) : (
-          <div className={styles.footerSpacer} />
-        )}
-        {comments.length > 0 && (
-          <span className={styles.commentCount}>
-            {countComments} bình luận
-          </span>
-        )}
-      </div>
+          {/* Footer và interactions cho bài chia sẻ */}
+          {post.type === "Share" && (
+            <>
+              <div className={styles.footer}>
+                {post.post_reactions?.length > 0 ? (
+                  <div className={styles.footerReactions}>
+                    <a
+                      onClick={() => setReactionListModalVisible(true)}
+                      style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
+                    >
+                      {topReactions.map((reaction, index) => (
+                        <span key={index}>{reaction.ID_reaction.icon}</span>
+                      ))}
+                      <span>
+                        {post.post_reactions.some((r) => r.ID_user._id === me?._id)
+                          ? post.post_reactions.length === 1
+                            ? `${me?.first_name} ${me?.last_name}`
+                            : `Bạn và ${post.post_reactions.length - 1} người khác`
+                          : `${post.post_reactions.length}`}
+                      </span>
+                    </a>
+                  </div>
+                ) : (
+                  <div className={styles.footerSpacer} />
+                )}
+                {comments.length > 0 && (
+                  <span className={styles.commentCount}>
+                    {countComments} bình luận
+                  </span>
+                )}
+              </div>
 
-      <div className={styles.interactions}>
-        <div className={styles.reactionContainer}>
-          <button
-            ref={reactionRef}
-            className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onClick={() =>
-              userReaction
-                ? callDeletePost_reaction(userReaction._id)
-                : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
-            }
-          >
-            <div className={styles.reactionIconBox}>
-              {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
-              <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
-            </div>
-          </button>
-          {reactionsVisible && (
-            <div
-              className={styles.reactionBar}
-              onMouseEnter={() => setReactionsVisible(true)}
-              onMouseLeave={() => setReactionsVisible(false)}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {reactions.map((reaction, index) => (
-                <button
-                  key={index}
-                  className={styles.reactionButton}
-                  onClick={() => {
-                    callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
-                    setReactionsVisible(false);
-                  }}
-                >
-                  {reaction.icon}
+              <div className={styles.interactions}>
+                <div className={styles.reactionContainer}>
+                  <button
+                    ref={reactionRef}
+                    className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={() =>
+                      userReaction
+                        ? callDeletePost_reaction(userReaction._id)
+                        : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
+                    }
+                  >
+                    <div className={styles.reactionIconBox}>
+                      {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
+                      <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
+                    </div>
+                  </button>
+                  {reactionsVisible && (
+                    <div
+                      className={styles.reactionBar}
+                      onMouseEnter={() => setReactionsVisible(true)}
+                      onMouseLeave={() => setReactionsVisible(false)}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {reactions.map((reaction, index) => (
+                        <button
+                          key={index}
+                          className={styles.reactionButton}
+                          onClick={() => {
+                            callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
+                            setReactionsVisible(false);
+                          }}
+                        >
+                          {reaction.icon}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button className={styles.action}>
+                  <FaComment size={16} /> Bình luận
                 </button>
-              ))}
-            </div>
+                {/* Chỉ hiển thị nút Chia sẻ nếu trạng thái không phải "Chỉ mình tôi" */}
+                {canShowShareButton() && (
+                  <button
+                    className={styles.action}
+                    onClick={() => setShareVisible(true)}
+                    disabled={post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)}
+                  >
+                    <FaShare size={16} /> Chia sẻ
+                  </button>
+                )}
+              </div>
+            </>
           )}
-        </div>
-        <button className={styles.action}>
-          <FaComment size={16} /> Bình luận
-        </button>
-        <button
-          className={styles.action}
-          onClick={() => setShareVisible(true)}
-          disabled={post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)}
-        >
-          <FaShare size={16} /> Chia sẻ
-        </button>
-      </div>
-    </>
-  )}
           
           {/* Phần bình luận */}
           <div className={styles.commentsSection}>
