@@ -7,7 +7,7 @@ import axios from 'axios';
 import { FaImage, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import MessageItem from "../../components/items/MessageItem";
 import { useNavigate } from 'react-router-dom';
-const ChatModal = ({ group, onClose }) => {
+const ChatModal = ({ group, onClose, index }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user, token } = useSelector((state) => state.app);
@@ -307,7 +307,7 @@ const ChatModal = ({ group, onClose }) => {
             .join(", ");
 
     return (
-        <div className={styles.chatModalOverlay}>
+        <div className={styles.chatModalOverlay} style={{ '--index': index }}>
             <div className={`${styles.chatModal} ${isExpanded ? styles.expanded : styles.collapsed}`}>
                 <div className={styles.chatModalHeader}>
                     <div className={styles.headerContent}>

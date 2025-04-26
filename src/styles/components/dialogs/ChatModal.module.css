@@ -3,7 +3,8 @@
     bottom: 0;
     right: 20px;
     z-index: 1000;
-    margin-right: calc(var(--index) * 340px); /* Tăng khoảng cách giữa các modal */
+    margin-right: calc(var(--index) * 340px); 
+    margin-right: calc(var(--index) * (340px + 20px)); /* Sử dụng margin-left và thêm 10px khoảng cách */
 }
 
 .chatModal {

@@ -121,7 +121,7 @@ const HomeChatModal = ({ onClose, onSelectGroup }) => {
                             onChange={(e) => setSearchText(e.target.value)}
                             onClick={(e) => e.stopPropagation()} // Ngăn sự kiện click lan truyền
                         />
-                        <button
+                        {/* <button
                             className={styles.createGroupButton}
                             onClick={(e) => {
                                 e.stopPropagation(); // Ngăn sự kiện lan truyền
@@ -129,7 +129,7 @@ const HomeChatModal = ({ onClose, onSelectGroup }) => {
                             }}
                         >
                             <FaPenSquare />
-                        </button>
+                        </button> */}
                     </div>
                     <div className={styles.groupList}>
                         {filteredGroups.map((item) => (
