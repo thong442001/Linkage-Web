@@ -83,6 +83,9 @@ const Home = ({ content }) => {
     // Hàm mở ChatModal
     const openChatModal = (group) => {
         if (!chatModals.some((modal) => modal._id === group._id)) {
+            if(chatModals.length >=2 ){
+                return;
+            }
             setChatModals([...chatModals, group]);
         }
     };
@@ -737,7 +740,7 @@ const Home = ({ content }) => {
                         key={group._id}
                         group={group}
                         onClose={() => closeChatModal(group._id)}
-                        style={{ "--index": index }}
+                        index={index}
                     />
                 ))}
             </div>
