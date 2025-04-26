@@ -581,7 +581,6 @@ const Chat = () => {
                         .map((m) => `${m.first_name} ${m.last_name}`)
                         .join(", ")}
                 </h3>
-                <p>Được mã hóa đầu cuối</p>
               </div>
               {selectedGroup.isPrivate == false && (
                 <div className={styles.chatHeaderActions} onClick={() => setIsModalOpen(true)}>

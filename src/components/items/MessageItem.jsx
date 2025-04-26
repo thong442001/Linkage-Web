@@ -21,7 +21,19 @@ const MessageItem = ({
   const handleOpenModal = () => {
     setSelectedReactions(message.message_reactionList);
     setModalOpen(true);
-  };    
+  };
+  console.log(message);
+  //hàm kiểm tra đuôi file
+  const getFileExtension = (url) => {
+    try {
+      const pathname = new URL(url).pathname;
+      const parts = pathname.split('.');
+      return parts.length > 1 ? parts.pop().toLowerCase() : null;
+    } catch (error) {
+      console.error("URL không hợp lệ:", error);
+      return null;
+    }
+  };
   // hàm thu hồi tin nhắn
   const handleonRevoke = () => {
     console.log("tin nhắn đã xóa", message._id);
@@ -192,7 +204,37 @@ const MessageItem = ({
                         : message.ID_message_reply.content}
                   </a>
                   </div>
-                ) : (
+                ) : getFileExtension(message.ID_message_reply.content) == 'jpg' ? (
+                  <img
+                  src={message.ID_message_reply.content}
+                  alt="image"
+                  className="messageImage"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "200px",
+                    borderRadius: "10px",
+                  }}
+                  onClick={() => {
+                    openImageModal(message.ID_message_reply.content);
+                  }}
+                />
+                ): getFileExtension(message.ID_message_reply?.content)  === 'mp4' ? (
+                  <video
+                    src={message.ID_message_reply.content}
+                    controls
+                    className={`messageVideo ${
+                      message.sender._id === user._id ? "currentUserText" : ""
+                    }`}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "200px",
+                      borderRadius: "10px",
+                    }}
+                    onClick={() => {
+                      openImageModal(message.ID_message_reply.content);
+                    }}
+                  />
+                ):(
                   <div>
                     {message.ID_message_reply.content ||
                       "Tin nhắn không tồn tại"}
