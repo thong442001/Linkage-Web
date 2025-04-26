@@ -551,7 +551,7 @@ const Chat = () => {
               <button
                 style={{ border: "none", background: "none", padding: 0, cursor: "pointer" }}
                 onClick={() => navigate(`/profile/${selectedGroup.members.find((m) => m._id !== user._id)?._id}`)}
-                disabled={!selectedGroup.isPrivate}  
+                disabled={!selectedGroup.isPrivate}
               >
                 <img
                   src={
@@ -581,7 +581,6 @@ const Chat = () => {
                         .map((m) => `${m.first_name} ${m.last_name}`)
                         .join(", ")}
                 </h3>
-                {/* <p>Được mã hóa đầu cuối</p> */}
               </div>
               {selectedGroup.isPrivate == false && (
                 <div className={styles.chatHeaderActions} onClick={() => setIsModalOpen(true)}>

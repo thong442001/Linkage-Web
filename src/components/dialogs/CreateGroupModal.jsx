@@ -92,10 +92,14 @@ const CreateGroupModal = ({ onClose, onCreateGroup }) => {
       <div className={styles.modal}>
         {/* Tiêu đề */}
         <div className={styles.modalHeader}>
-          <span>Tạo nhóm</span>
-          <button className={styles.closeButton} onClick={onClose}>
+        <button className={styles.closeButton} onClick={onClose}>
             Hủy
           </button>
+          <button
+          onClick={taogGroup}
+          disabled={selectedUsers.length < 3 || isCreating}
+          className={styles.createButton}
+          >Tạo</button>
         </div>
 
         {/* Ô nhập tên nhóm */}
@@ -126,15 +130,6 @@ const CreateGroupModal = ({ onClose, onCreateGroup }) => {
             <p>Đang tải danh sách bạn bè...</p>
           )}
         </div>
-
-        {/* Nút Tạo */}
-        <button
-          className={styles.createButton}
-          onClick={taogGroup}
-          disabled={selectedUsers.length < 3 || isCreating}
-        >
-          Tạo
-        </button>
       </div>
     </div>
   );
