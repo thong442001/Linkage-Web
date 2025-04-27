@@ -20,7 +20,7 @@ import {
   getAllGroupOfUser,
 } from '../../rtk/API';
 import ReportDialog from '../../components/dialogs/ReportDialog';
-// hahaha
+
 const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClose, isSharedSection, reasons }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,23 +39,22 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const [isSharing, setIsSharing] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [failedMessage, setFailedMessage] = useState('');
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [showReplies, setShowReplies] = useState({});
   const [reactionListModalVisible, setReactionListModalVisible] = useState(false);
   const [selectedReactionTab, setSelectedReactionTab] = useState('all');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuContext, setMenuContext] = useState(null);
+  const [openReport, setOpenReport] = useState(false);
   const reactionRef = useRef(null);
   const commentInputRef = useRef(null);
-  const menuRef = useRef(null);
   const fileInputRef = useRef(null);
   const [uploadingMedia, setUploadingMedia] = useState(null);
-  const [mediaList, setMediaList] = useState([]); // Danh sách media
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0); // Chỉ số của media đang xem
+  const [mediaList, setMediaList] = useState([]);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [editingComment, setEditingComment] = useState(null);
   const [commentMenu, setCommentMenu] = useState({ anchorEl: null, commentId: null });
-  
 
-  const MAX_REPLY_LEVEL = 2; // Giới hạn tối đa cấp reply
+  const MAX_REPLY_LEVEL = 2;
 
   const getReplyLevel = (comment, commentsList, level = 0) => {
     if (!comment.ID_comment_reply) return level;
@@ -66,16 +65,12 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     return getReplyLevel(parentComment, commentsList, level + 1);
   };
 
-
-
   const removeTempComment = (commentsList, tempId) => {
     return commentsList
       .map((comment) => {
-        // Nếu comment hiện tại là temp comment, loại bỏ nó
         if (comment._id === tempId) {
           return null;
         }
-        // Nếu comment có replys, tiếp tục xóa đệ quy trong replys
         if (Array.isArray(comment.replys) && comment.replys.length > 0) {
           return {
             ...comment,
@@ -84,15 +79,13 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
         }
         return comment;
       })
-      .filter(Boolean); // Loại bỏ các comment null (temp comment đã bị xóa)
+      .filter(Boolean);
   };
 
-  // Cập nhật danh sách media khi post thay đổi
   useEffect(() => {
     const medias = post.ID_post_shared ? post.ID_post_shared.medias : post.medias;
     setMediaList(medias || []);
   }, [post]);
-
 
   const handleMouseEnter = () => {
     setReactionsVisible(true);
@@ -109,7 +102,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }, 200);
   };
 
-  // Logic tính toán reaction count và top reactions
   const reactionCount = (post.post_reactions || []).reduce((acc, reaction) => {
     if (!reaction.ID_reaction) return acc;
     const id = reaction.ID_reaction._id;
@@ -124,7 +116,7 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
 
   const reactionTabs = [
     { id: 'all', name: 'Tất cả', count: post.post_reactions?.length || 0 },
-    ...Object.values(reactionCount).map(reaction => ({
+    ...Object.values(reactionCount).map((reaction) => ({
       id: reaction.ID_reaction._id,
       icon: reaction.ID_reaction.icon,
       count: reaction.count,
@@ -134,8 +126,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const filteredReactions = selectedReactionTab === 'all'
     ? post.post_reactions
     : post.post_reactions?.filter(
-      reaction => reaction.ID_reaction._id === selectedReactionTab
-    );
+        (reaction) => reaction.ID_reaction._id === selectedReactionTab
+      );
 
   const uploadFile = async (file) => {
     if (!file || !file.type || !file.name) {
@@ -155,8 +147,7 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     } catch (error) {
       console.error("Lỗi tải file lên Cloudinary:", error.message);
       setFailedMessage(
-        `Lỗi tải file: ${error.response?.data?.error?.message || "Lỗi không xác định"
-        }`
+        `Lỗi tải file: ${error.response?.data?.error?.message || "Lỗi không xác định"}`
       );
       setTimeout(() => setFailedMessage(''), 1500);
       return null;
@@ -170,16 +161,11 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       setTimeout(() => setFailedMessage(''), 3000);
       return;
     }
-  
-    // Tạo URL tạm thời từ file để hiển thị placeholder
+
     const tempImageUrl = URL.createObjectURL(file);
-  
     setUploadingMedia(file);
-  
-    // Gọi callAddComment với cả URL tạm thời và file
     const type = file.type.startsWith('video/') ? 'video' : 'image';
     await callAddComment(type, file, tempImageUrl);
-  
     setUploadingMedia(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -205,7 +191,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             setCountComments(response.post.countComments || 0);
             setIsPermission(true);
           } else {
-            // Bài viết không tồn tại, coi như bị xóa
             setPost(null);
             setIsPermission(false);
           }
@@ -214,9 +199,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
           console.log('API không trả về bài viết: ' + error.message);
           setPost(null);
           if (error.message?.includes("unauthorized") || error.status === 403) {
-            setIsPermission(false); // Không có quyền truy cập
+            setIsPermission(false);
           } else {
-            // Các lỗi khác (bao gồm "not found"), coi như bài viết bị xóa
             setIsPermission(false);
           }
         });
@@ -271,9 +255,8 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   };
 
   const callAddComment = async (type, content, tempImageUrl = null) => {
-    // Nếu là bình luận văn bản và không có nội dung, thoát
     if (!content && type === 'text') return;
-  
+
     const tempId = `temp_${Date.now()}_${Math.random()}`;
     const tempComment = {
       _id: tempId,
@@ -283,16 +266,15 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
         last_name: me.last_name,
         avatar: me.avatar,
       },
-      content: type === 'text' ? content : tempImageUrl, // Sử dụng URL tạm thời cho hình ảnh/video
+      content: type === 'text' ? content : tempImageUrl,
       type,
       createdAt: new Date().toISOString(),
       replys: [],
       ID_comment_reply: replyingTo ? { _id: replyingTo._id } : null,
       isPending: true,
-      tempImageUrl: type !== 'text' ? tempImageUrl : null, // Lưu URL tạm thời để quản lý
+      tempImageUrl: type !== 'text' ? tempImageUrl : null,
     };
-  
-    // Thêm temp comment vào danh sách
+
     setComments((prevComments) => {
       if (replyingTo) {
         return addReplyToComment(prevComments, tempComment, true);
@@ -302,45 +284,38 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     setCountComments((prev) => prev + 1);
     setNewComment('');
     setReplyingTo(null);
-  
+
     try {
       let finalContent = content;
-      // Nếu là hình ảnh hoặc video, tải lên Cloudinary
       if (type !== 'text') {
-        finalContent = await uploadFile(content); // content là file
+        finalContent = await uploadFile(content);
         if (!finalContent) {
           throw new Error('Tải file lên thất bại');
         }
       }
-  
+
       const paramsAPI = {
         ID_user: me._id,
         ID_post: post._id,
-        content: finalContent, // Sử dụng URL thật từ Cloudinary
+        content: finalContent,
         type,
         ID_comment_reply: replyingTo?._id || null,
       };
       const response = await dispatch(addComment(paramsAPI)).unwrap();
-  
-      // Xóa temp comment trước khi thêm comment thật
+
       setComments((prevComments) => {
-        // Xóa temp comment ở tất cả các cấp độ
         const updatedComments = removeTempComment(prevComments, tempId);
-  
-        // Thêm comment thật vào danh sách
         const newComment = { ...response.comment, tempImageUrl: null };
         if (response.comment.ID_comment_reply) {
           return addReplyToComment(updatedComments, newComment);
         }
         return [...updatedComments, newComment];
       });
-  
-      // Thu hồi URL tạm thời để tránh rò rỉ bộ nhớ
+
       if (tempImageUrl) {
         URL.revokeObjectURL(tempImageUrl);
       }
-  
-      // Nếu là reply, mở rộng hiển thị replies
+
       if (response.comment.ID_comment_reply) {
         setShowReplies((prev) => ({
           ...prev,
@@ -349,13 +324,11 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       }
     } catch (error) {
       console.log('Lỗi khi callAddComment:', error);
-      // Xóa temp comment nếu API thất bại
       setComments((prevComments) => removeTempComment(prevComments, tempId));
       setCountComments((prev) => prev - 1);
       setFailedMessage('Gửi bình luận thất bại. Vui lòng thử lại!');
       setTimeout(() => setFailedMessage(''), 3000);
-  
-      // Thu hồi URL tạm thời nếu có lỗi
+
       if (tempImageUrl) {
         URL.revokeObjectURL(tempImageUrl);
       }
@@ -389,15 +362,15 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       const updatedReactions = post.post_reactions.map((reaction) =>
         reaction.ID_user._id === me._id
           ? {
-            _id: ID_post_reaction,
-            ID_user: {
-              _id: me._id,
-              first_name: me.first_name,
-              last_name: me.last_name,
-              avatar: me.avatar,
-            },
-            ID_reaction: newReaction,
-          }
+              _id: ID_post_reaction,
+              ID_user: {
+                _id: me._id,
+                first_name: me.first_name,
+                last_name: me.last_name,
+                avatar: me.avatar,
+              },
+              ID_reaction: newReaction,
+            }
           : reaction
       );
       setPost({ ...post, post_reactions: updatedReactions });
@@ -602,18 +575,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }
   }, [post?._id]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuVisible(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const getTimeAgo = (createdAt) => {
     if (!createdAt) return "Không xác định";
     const diffMs = currentTime - new Date(createdAt).getTime();
@@ -664,7 +625,7 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
   const renderMediaGrid = (medias) => {
     const mediaCount = medias?.length || 0;
     if (mediaCount === 0) return null;
-  
+
     return (
       <div className="media-container">
         {medias.slice(0, 5).map((uri, index) => (
@@ -697,7 +658,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     );
   };
 
-  // Modified handleAddComment to handle both adding and editing comments
   const handleAddComment = (e) => {
     if (e.key === 'Enter' && newComment.trim()) {
       if (editingComment) {
@@ -751,7 +711,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     }
   };
 
-
   const handleReply = (comment) => {
     const level = getReplyLevel(comment, comments);
     if (level >= MAX_REPLY_LEVEL) {
@@ -763,28 +722,30 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     setNewComment(`@${comment.ID_user.first_name} ${comment.ID_user.last_name} `);
     commentInputRef.current?.focus();
   };
-  const handleOptionsClick = (e) => {
-    if (menuVisible) {
-      setMenuVisible(false);
-    } else {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setMenuPosition({
-        top: rect.top - 80,
-        left: rect.left - 100,
-      });
-      setMenuVisible(true);
-    }
+
+  const handleMoreClick = (event, context) => {
+    setAnchorEl(event.currentTarget);
+    setMenuContext(context);
   };
 
-  const userReaction = post?.post_reactions?.find((reaction) => reaction.ID_user._id === me._id);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuContext(null);
+  };
 
-  const timeAgo = getTimeAgo(post?.createdAt);
-  const timeAgoShare = post?.ID_post_shared ? getTimeAgo(post.ID_post_shared.createdAt) : null;
+  const handleOpenReport = () => {
+    setOpenReport(true);
+    handleMenuClose();
+  };
+
+  const handleCloseReport = () => {
+    setOpenReport(false);
+  };
 
   const handleEditComment = (comment) => {
     setEditingComment(comment);
     setNewComment(comment.content);
-    setReplyingTo(null); // Clear replying state
+    setReplyingTo(null);
     commentInputRef.current?.focus();
   };
 
@@ -827,8 +788,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
       callGetChiTietPost(post._id);
     }
   };
-
-  
 
   const renderComment = (comment, level = 0) => (
     <>
@@ -905,14 +864,12 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
             </div>
           )}
         </div>
-        {/* Ẩn dấu ba chấm khi bình luận đang ở trạng thái "Đang gửi" */}
         {comment.ID_user._id === me._id && !comment.isPending && (
           <button
-            className={styles.optionsButton}
+            className={styles.postOptionsButton}
             onClick={(e) => {
               setCommentMenu({ anchorEl: e.currentTarget, commentId: comment._id });
             }}
-            style={{ opacity: Boolean(commentMenu.anchorEl) && 1 }}
           >
             <FaEllipsisH size={16} />
           </button>
@@ -957,62 +914,109 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     </>
   );
 
-  // Phần input trong return của PostDetailModal
-  <div className={styles.inputContainer}>
-    {(replyingTo || editingComment) && (
-      <div className={styles.inputStatus}>
-        <span className={styles.inputStatusText}>
-          {editingComment
-            ? 'Đang chỉnh sửa bình luận'
-            : `Đang trả lời ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`}
-        </span>
-        <button
-          className={styles.cancelStatusButton}
-          onClick={() => {
-            setReplyingTo(null);
-            setEditingComment(null);
-            setNewComment('');
-          }}
-        >
-          Hủy
+  const userReaction = post?.post_reactions?.find((reaction) => reaction.ID_user._id === me._id);
+
+  const timeAgo = getTimeAgo(post?.createdAt);
+  const timeAgoShare = post?.ID_post_shared ? getTimeAgo(post.ID_post_shared.createdAt) : null;
+
+  const canShowShareButton = () => {
+    if (post.type === 'Share') {
+      // Nếu là bài viết shared, chỉ kiểm tra trạng thái của bài viết gốc
+      if (post.ID_post_shared?._destroy || !post.ID_post_shared) {
+        return false;
+      }
+      return post.ID_post_shared.status !== 'Chỉ mình tôi';
+    }
+    // Nếu là bài viết gốc (ko phải bài share), kiểm tra trạng thái của chính nó
+    return post.status !== 'Chỉ mình tôi';
+  };
+
+  const renderInteractions = () => (
+    <>
+      <div className={styles.footer}>
+        {post.post_reactions?.length > 0 ? (
+          <div className={styles.footerReactions}>
+            <a
+              onClick={() => setReactionListModalVisible(true)}
+              style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
+            >
+              {topReactions.map((reaction, index) => (
+                <span key={index}>{reaction.ID_reaction.icon}</span>
+              ))}
+              <span>
+                {post.post_reactions.some((r) => r.ID_user._id === me?._id)
+                  ? post.post_reactions.length === 1
+                    ? `${me?.first_name} ${me?.last_name}`
+                    : `Bạn và ${post.post_reactions.length - 1} người khác`
+                  : `${post.post_reactions.length}`}
+              </span>
+            </a>
+          </div>
+        ) : (
+          <div className={styles.footerSpacer} />
+        )}
+        {comments.length > 0 && (
+          <span className={styles.commentCount}>
+            {countComments} bình luận
+          </span>
+        )}
+      </div>
+
+      <div className={styles.interactions}>
+        <div className={styles.reactionContainer}>
+          <button
+            ref={reactionRef}
+            className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={() =>
+              userReaction
+                ? callDeletePost_reaction(userReaction._id)
+                : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
+            }
+          >
+            <div className={styles.reactionIconBox}>
+              {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
+              <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
+            </div>
+          </button>
+          {reactionsVisible && (
+            <div
+              className={styles.reactionBar}
+              onMouseEnter={() => setReactionsVisible(true)}
+              onMouseLeave={() => setReactionsVisible(false)}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {reactions.map((reaction, index) => (
+                <button
+                  key={index}
+                  className={styles.reactionButton}
+                  onClick={() => {
+                    callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
+                    setReactionsVisible(false);
+                  }}
+                >
+                  {reaction.icon}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <button className={styles.action}>
+          <FaComment size={16} /> Bình luận
         </button>
+        {canShowShareButton() && (
+          <button
+            className={styles.action}
+            onClick={() => setShareVisible(true)}
+            disabled={post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)}
+          >
+            <FaShare size={16} /> Chia sẻ
+          </button>
+        )}
       </div>
-    )}
-    <div className={styles.inputContainer2}>
-      <img src={me?.avatar} className={styles.avatar} alt="Ảnh đại diện" />
-      <div className={styles.inputWrapper}>
-        <input
-          ref={commentInputRef}
-          type="text"
-          placeholder={
-            editingComment
-              ? 'Chỉnh sửa bình luận của bạn...'
-              : replyingTo
-                ? `Trả lời ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`
-                : 'Viết bình luận...'
-          }
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          onKeyPress={handleAddComment}
-          disabled={uploadingMedia}
-        />
-      </div>
-      <div className={styles.inputIcons}>
-        <MdOutlinePhoto
-          size={20}
-          onClick={() => fileInputRef.current?.click()}
-          style={{ cursor: 'pointer' }}
-        />
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*,video/*"
-          style={{ display: 'none' }}
-          onChange={handleMediaSelect}
-        />
-      </div>
-    </div>
-  </div>
+    </>
+  );
 
   if (isLoading) {
     return <div className={styles.loading}>Đang tải...</div>;
@@ -1026,17 +1030,6 @@ const PostDetailModal = ({ post: initialPost, me, reactions, currentTime, onClos
     return <div className={styles.error}>Bài viết đã bị xóa.</div>;
   }
 
-// Hàm kiểm tra xem có nên hiển thị nút Chia sẻ hay không
-const canShowShareButton = () => {
-  // Nếu bài viết là bài chia sẻ, kiểm tra trạng thái của bài viết gốc
-  if (post.type === "Share" && post.ID_post_shared) {
-    return post.ID_post_shared.status !== "Chỉ mình tôi";
-  }
-  // Nếu là bài viết thông thường, kiểm tra trạng thái của bài viết
-  return post.status !== "Chỉ mình tôi";
-};
-
-  //View tổng 
   return (
     <div className={styles.postDetailModalOverlay} onClick={onClose}>
       <div className={styles.postDetailModal} onClick={(e) => e.stopPropagation()}>
@@ -1044,327 +1037,182 @@ const canShowShareButton = () => {
           <h3>
             Bài viết của {post.ID_user?.first_name} {post.ID_user?.last_name}
           </h3>
-          <button className={styles.closeButton} onClick={onClose}>
-            ✕
-          </button>
-        </div>
-
-        {/* Phần giao diện hành động chia sẻ: Hiển thị thông tin về hành động chia sẻ (ví dụ: ai đã chia sẻ bài viết) */}
-        <div className={styles.modalBody}>
-      {post.ID_post_shared && (
-        <div className={styles.sharedPostSection}>
-          <div className={styles.postHeader}>
-            <div className={styles.userInfo}>
-              <img
-                src={post.ID_user?.avatar}
-                className={styles.avatar}
-                alt="User Avatar"
-              />
-              <div className={styles.userDetails}>
-                <span className={styles.name}>
-                  {post.ID_user?.first_name} {post.ID_user?.last_name}
-                </span>
-                <div className={styles.boxName}>
-                  <span className={styles.time}>{timeAgo}</span>
-                  {getIcon(post.status)}
-                </div>
-              </div>
-            </div>
-            {isSharedSection && (
-              <button
-                className={styles.optionsButton}
-                onClick={handleOptionsClick}
-              >
-                <FaEllipsisH size={16} />
-              </button>
-            )}
-          </div>
-          <p className={styles.caption}>{post.caption}</p>
-        </div>
-      )}
-
-          {/* Phần giao diện bài viết được chia sẻ: Hiển thị nội dung của bài viết gốc hoặc bài viết chính */}
-          <div className={`${styles.postContent} ${styles.originalPost}`}>
-    {post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared) ? (
-      // Hiển thị thông báo khi bài viết gốc bị xóa
-      <div className={styles.userInfo}>
-        <p className={styles.caption}>Nội dung bài viết đã bị xóa</p>
-      </div>
-    ) : (
-      // Hiển thị nội dung bài viết gốc nếu chưa bị xóa
-      <>
-        <div className={styles.postHeader}>
-          <div className={styles.userInfo}>
-            <img
-              src={
-                post.ID_post_shared
-                  ? post.ID_post_shared.ID_user?.avatar
-                  : post.ID_user?.avatar
-              }
-              className={styles.avatar}
-              alt="User Avatar"
-            />
-            <div className={styles.userDetails}>
-              <span className={styles.name}>
-                {post.ID_post_shared
-                  ? `${post.ID_post_shared.ID_user.first_name} ${post.ID_post_shared.ID_user.last_name}`
-                  : `${post.ID_user?.first_name} ${post.ID_user?.last_name}`}
-                {post.ID_post_shared?.tags?.length > 0 && (
-                  <span>
-                    <span style={{ color: "#b0b3b8" }}> cùng với </span>
-                    <span className={styles.name}>
-                      {post.ID_post_shared.tags[0]?.first_name}{' '}
-                      {post.ID_post_shared.tags[0]?.last_name}
-                    </span>
-                    {post.ID_post_shared.tags.length > 1 && (
-                      <>
-                        <span style={{ color: "#b0b3b8" }}> và </span>
-                        <span className={styles.name}>
-                          {post.ID_post_shared.tags.length - 1} người khác
-                        </span>
-                      </>
-                    )}
-                  </span>
-                )}
-              </span>
-              <div className={styles.boxName}>
-                <span className={styles.time}>{timeAgoShare || timeAgo}</span>
-                {getIcon(post.ID_post_shared?.status || post.status)}
-              </div>
-            </div>
-          </div>
-          {!isSharedSection && (
-            <button
-              className={styles.optionsButton}
-              onClick={handleOptionsClick}
-            >
-              <FaEllipsisH size={16} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button className={styles.closeButton} onClick={onClose}>
+              ✕
             </button>
-          )}
-        </div>
-        <p className={styles.caption}>
-          {post.ID_post_shared ? post.ID_post_shared.caption : post.caption}
-        </p>
-        {renderMediaGrid(
-          post.ID_post_shared ? post.ID_post_shared.medias : post.medias
-        )}
-      </>
-    )}
-
-      {/* Footer và interactions cho bài viết không phải chia sẻ */}
-      {post.type !== "Share" && (
-              <>
-                <div className={styles.footer}>
-                  {post.post_reactions?.length > 0 ? (
-                    <div className={styles.footerReactions}>
-                      <a
-                        onClick={() => setReactionListModalVisible(true)}
-                        style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
-                      >
-                        {topReactions.map((reaction, index) => (
-                          <span key={index}>{reaction.ID_reaction.icon}</span>
-                        ))}
-                        <span>
-                          {post.post_reactions.some((r) => r.ID_user._id === me?._id)
-                            ? post.post_reactions.length === 1
-                              ? `${me?.first_name} ${me?.last_name}`
-                              : `Bạn và ${post.post_reactions.length - 1} người khác`
-                            : `${post.post_reactions.length}`}
-                        </span>
-                      </a>
-                    </div>
-                  ) : (
-                    <div className={styles.footerSpacer} />
-                  )}
-                  {comments.length > 0 && (
-                    <span className={styles.commentCount}>
-                      {countComments} bình luận
-                    </span>
-                  )}
-                </div>
-
-                <div className={styles.interactions}>
-                  <div className={styles.reactionContainer}>
-                    <button
-                      ref={reactionRef}
-                      className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
-                      onClick={() =>
-                        userReaction
-                          ? callDeletePost_reaction(userReaction._id)
-                          : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
-                      }
-                    >
-                      <div className={styles.reactionIconBox}>
-                        {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
-                        <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
-                      </div>
-                    </button>
-                    {reactionsVisible && (
-                      <div
-                        className={styles.reactionBar}
-                        onMouseEnter={() => setReactionsVisible(true)}
-                        onMouseLeave={() => setReactionsVisible(false)}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {reactions.map((reaction, index) => (
-                          <button
-                            key={index}
-                            className={styles.reactionButton}
-                            onClick={() => {
-                              callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
-                              setReactionsVisible(false);
-                            }}
-                          >
-                            {reaction.icon}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <button className={styles.action}>
-                    <FaComment size={16} /> Bình luận
-                  </button>
-                  {/* Chỉ hiển thị nút Chia sẻ nếu trạng thái không phải "Chỉ mình tôi" */}
-                  {canShowShareButton() && (
-                    <button
-                      className={styles.action}
-                      onClick={() => setShareVisible(true)}
-                      disabled={post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)}
-                    >
-                      <FaShare size={16} /> Chia sẻ
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
           </div>
+        </div>
 
-          {/* Footer và interactions cho bài chia sẻ */}
-          {post.type === "Share" && (
-            <>
-              <div className={styles.footer}>
-                {post.post_reactions?.length > 0 ? (
-                  <div className={styles.footerReactions}>
-                    <a
-                      onClick={() => setReactionListModalVisible(true)}
-                      style={{ cursor: 'pointer', textDecoration: 'none', color: '#65676b' }}
-                    >
-                      {topReactions.map((reaction, index) => (
-                        <span key={index}>{reaction.ID_reaction.icon}</span>
-                      ))}
-                      <span>
-                        {post.post_reactions.some((r) => r.ID_user._id === me?._id)
-                          ? post.post_reactions.length === 1
-                            ? `${me?.first_name} ${me?.last_name}`
-                            : `Bạn và ${post.post_reactions.length - 1} người khác`
-                          : `${post.post_reactions.length}`}
+        <div className={styles.modalBody}>
+          {post.ID_post_shared ? (
+            <div className={styles.sharedPostSection}>
+              <div className={styles.sharedPostHeader}>
+                <div className={styles.postHeader}>
+                  <div className={styles.userInfo}>
+                    <img
+                      src={post.ID_user?.avatar}
+                      className={styles.avatar}
+                      alt="User Avatar"
+                    />
+                    <div className={styles.userDetails}>
+                      <span className={styles.name}>
+                        {post.ID_user?.first_name} {post.ID_user?.last_name}
                       </span>
-                    </a>
+                      <div className={styles.boxName}>
+                        <span className={styles.time}>{timeAgo}</span>
+                        {getIcon(post.status)}
+                      </div>
+                    </div>
+                  </div>
+                  {isSharedSection && (
+                    <button
+                      className={styles.postOptionsButton}
+                      onClick={(e) => handleMoreClick(e, 'share')}
+                    >
+                      <FaEllipsisH size={20} />
+                    </button>
+                  )}
+                </div>
+                <p className={styles.caption}>{post.caption}</p>
+              </div>
+
+              <div className={`${styles.postContent} ${styles.originalPost}`}>
+                {post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared) ? (
+                  <div className={styles.userInfo}>
+                    <p className={styles.caption}>Nội dung bài viết đã bị xóa</p>
                   </div>
                 ) : (
-                  <div className={styles.footerSpacer} />
-                )}
-                {comments.length > 0 && (
-                  <span className={styles.commentCount}>
-                    {countComments} bình luận
-                  </span>
+                  <>
+                    <div className={styles.postHeader}>
+                      <div className={styles.userInfo}>
+                        <img
+                          src={
+                            post.ID_post_shared
+                              ? post.ID_post_shared.ID_user?.avatar
+                              : post.ID_user?.avatar
+                          }
+                          className={styles.avatar}
+                          alt="User Avatar"
+                        />
+                        <div className={styles.userDetails}>
+                          <span className={styles.name}>
+                            {post.ID_post_shared
+                              ? `${post.ID_post_shared.ID_user.first_name} ${post.ID_post_shared.ID_user.last_name}`
+                              : `${post.ID_user?.first_name} ${post.ID_user?.last_name}`}
+                            {post.ID_post_shared?.tags?.length > 0 && (
+                              <span>
+                                <span style={{ color: "#b0b3b8" }}> cùng với </span>
+                                <span className={styles.name}>
+                                  {post.ID_post_shared.tags[0]?.first_name}{' '}
+                                  {post.ID_post_shared.tags[0]?.last_name}
+                                </span>
+                                {post.ID_post_shared.tags.length > 1 && (
+                                  <>
+                                    <span style={{ color: "#b0b3b8" }}> và </span>
+                                    <span className={styles.name}>
+                                      {post.ID_post_shared.tags.length - 1} người khác
+                                    </span>
+                                  </>
+                                )}
+                              </span>
+                            )}
+                          </span>
+                          <div className={styles.boxName}>
+                            <span className={styles.time}>{timeAgoShare || timeAgo}</span>
+                            {getIcon(post.ID_post_shared?.status || post.status)}
+                          </div>
+                        </div>
+                      </div>
+                      {!isSharedSection && (
+                        <button
+                          className={styles.postOptionsButton}
+                          onClick={(e) => handleMoreClick(e, 'original')}
+                        >
+                          <FaEllipsisH size={20} />
+                        </button>
+                      )}
+                    </div>
+                    <p className={styles.caption}>
+                      {post.ID_post_shared ? post.ID_post_shared.caption : post.caption}
+                    </p>
+                    {renderMediaGrid(
+                      post.ID_post_shared ? post.ID_post_shared.medias : post.medias
+                    )}
+                  </>
                 )}
               </div>
 
-              <div className={styles.interactions}>
-                <div className={styles.reactionContainer}>
-                  <button
-                    ref={reactionRef}
-                    className={`${styles.action} ${userReaction ? styles.reacted : ''}`}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    onClick={() =>
-                      userReaction
-                        ? callDeletePost_reaction(userReaction._id)
-                        : callAddPost_Reaction(reactions[0]._id, reactions[0].name, reactions[0].icon)
-                    }
-                  >
-                    <div className={styles.reactionIconBox}>
-                      {userReaction ? userReaction.ID_reaction.icon : <FaThumbsUp size={16} />}
-                      <span>{userReaction ? userReaction.ID_reaction.name : 'Thích'}</span>
+              {renderInteractions()}
+            </div>
+          ) : (
+            <div className={`${styles.postContent} ${styles.originalPost}`}>
+              <div className={styles.postHeader}>
+                <div className={styles.userInfo}>
+                  <img
+                    src={post.ID_user?.avatar}
+                    className={styles.avatar}
+                    alt="User Avatar"
+                  />
+                  <div className={styles.userDetails}>
+                    <span className={styles.name}>
+                      {post.ID_user?.first_name} {post.ID_user?.last_name}
+                    </span>
+                    <div className={styles.boxName}>
+                      <span className={styles.time}>{timeAgo}</span>
+                      {getIcon(post.status)}
                     </div>
-                  </button>
-                  {reactionsVisible && (
-                    <div
-                      className={styles.reactionBar}
-                      onMouseEnter={() => setReactionsVisible(true)}
-                      onMouseLeave={() => setReactionsVisible(false)}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {reactions.map((reaction, index) => (
-                        <button
-                          key={index}
-                          className={styles.reactionButton}
-                          onClick={() => {
-                            callAddPost_Reaction(reaction._id, reaction.name, reaction.icon);
-                            setReactionsVisible(false);
-                          }}
-                        >
-                          {reaction.icon}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  </div>
                 </div>
-                <button className={styles.action}>
-                  <FaComment size={16} /> Bình luận
-                </button>
-                {/* Chỉ hiển thị nút Chia sẻ nếu trạng thái không phải "Chỉ mình tôi" */}
-                {canShowShareButton() && (
+                {!isSharedSection && (
                   <button
-                    className={styles.action}
-                    onClick={() => setShareVisible(true)}
-                    disabled={post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)}
+                    className={styles.postOptionsButton}
+                    onClick={(e) => handleMoreClick(e, 'original')}
                   >
-                    <FaShare size={16} /> Chia sẻ
+                    <FaEllipsisH size={20} />
                   </button>
                 )}
               </div>
-            </>
+              <p className={styles.caption}>{post.caption}</p>
+              {renderMediaGrid(post.medias)}
+              {renderInteractions()}
+            </div>
           )}
-          
-          {/* Phần bình luận */}
+
           <div className={styles.commentsSection}>
             <h4>Bình luận</h4>
             <div className={styles.commentsList}>
               {comments.length > 0 ? (
                 comments
-                  .filter((comment) => !comment._destroy) // Lọc các comment chưa bị xóa
-                  .map((comment) => renderComment(comment)) // Render từng comment
+                  .filter((comment) => !comment._destroy)
+                  .map((comment) => renderComment(comment))
               ) : (
                 <p>Chưa có bình luận nào.</p>
               )}
             </div>
-
-            <div className={styles.commentInput}>
-              {replyingTo && (
-                <div className={styles.replyPreview}>
-                  <span className={styles.replyTitle}>Đang phản hồi</span>
-                  <span className={styles.replyName}>
-                    {replyingTo.ID_user.first_name} {replyingTo.ID_user.last_name}
-                  </span>
-                  <button
-                    className={styles.cancelReply}
-                    onClick={() => {
-                      setReplyingTo(null);
-                      setNewComment('');
-                    }}
-                  >
-                    Hủy
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
         </div>
+
         <div className={styles.inputContainer}>
+          {(replyingTo || editingComment) && (
+            <div className={styles.inputStatus}>
+              <span className={styles.inputStatusText}>
+                {editingComment
+                  ? 'Đang chỉnh sửa bình luận'
+                  : `Đang trả lời ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`}
+              </span>
+              <button
+                className={styles.cancelStatusButton}
+                onClick={() => {
+                  setReplyingTo(null);
+                  setEditingComment(null);
+                  setNewComment('');
+                }}
+              >
+                Hủy
+              </button>
+            </div>
+          )}
           <div className={styles.inputContainer2}>
             <img src={me?.avatar} className={styles.avatar} alt="User Avatar" />
             <div className={styles.inputWrapper}>
@@ -1399,197 +1247,198 @@ const canShowShareButton = () => {
               />
             </div>
           </div>
-          {(replyingTo || editingComment) && (
-            <div className={styles.replyPreview}>
-              <span className={styles.replyTitle}>
-                {editingComment
-                  ? 'Đang chỉnh sửa bình luận'
-                  : `Đang phản hồi ${replyingTo.ID_user.first_name} ${replyingTo.ID_user.last_name}`}
-              </span>
-              <button
-                className={styles.cancelReply}
+        </div>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          PaperProps={{
+            style: {
+              width: '150px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+              borderRadius: '8px',
+            },
+          }}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+        >
+          {me._id === (menuContext === 'share' ? post.ID_user?._id : (post.ID_post_shared?.ID_user?._id || post.ID_user?._id)) ? (
+            <>
+              <MenuItem
                 onClick={() => {
-                  setReplyingTo(null);
-                  setEditingComment(null);
-                  setNewComment('');
+                  callChangeDestroyPost(post._id);
+                  handleMenuClose();
                 }}
               >
-                Hủy
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Menu tùy chọn */}
-      {menuVisible && (
-        <div
-          className={styles.optionsMenu}
-          style={{ top: menuPosition.top, left: menuPosition.left }}
-          ref={menuRef}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {me._id !== post.ID_user._id ? (
-            <button
-              onClick={() => {
-                setMenuVisible(false);
-              }}
-            >
-              Báo cáo
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                callChangeDestroyPost(post._id);
-                setMenuVisible(false);
-              }}
-            >
-              Xóa bài viết
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Modal xem hình ảnh/video */}
-      {isImageModalVisible && (
-        <div className={styles.mediaOverlay} onClick={() => setImageModalVisible(false)}>
-          <div className={styles.fullMediaContainer} onClick={(e) => e.stopPropagation()}>
-            {/* Nút đóng modal */}
-            <button
-              className={styles.closeButton}
-              onClick={() => setImageModalVisible(false)}
-            >
-              ✕
-            </button>
-
-            {/* Container cho các nút điều hướng */}
-            <div className={styles.navButtonsContainer}>
-              {/* Nút Previous */}
-              {mediaList.length > 1 && (
-                <button
-                  className={styles.navButton}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
+                <i
+                  className={post._destroy ? 'fas fa-undo' : 'fas fa-trash'}
+                  style={{ marginRight: '8px' }}
+                />
+                {post._destroy ? 'Phục hồi' : 'Xóa bài viết'}
+              </MenuItem>
+              {post._destroy && (
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    onClose();
                   }}
                 >
-                  ❮
-                </button>
+                  <i className='fas fa-trash' style={{ marginRight: '8px' }} />
+                  Xóa vĩnh viễn
+                </MenuItem>
               )}
+            </>
+          ) : (
+            <MenuItem onClick={handleOpenReport}>
+              <i className='fas fa-exclamation-circle' style={{ marginRight: '8px' }} />
+              Báo cáo
+            </MenuItem>
+          )}
+        </Menu>
 
-              {/* Hiển thị media hiện tại */}
-              <div className={styles.mediaWrapper}>
-                {isVideo(mediaList[currentMediaIndex]) ? (
-                  <video src={mediaList[currentMediaIndex]} className={styles.fullMedia} controls autoPlay />
-                ) : (
-                  <img src={mediaList[currentMediaIndex]} className={styles.fullMedia} alt="Full Media" />
+        <ReportDialog
+          open={openReport}
+          onClose={handleCloseReport}
+          reasons={reasons}
+          ID_me={me._id}
+          ID_post={post._id}
+          ID_user={null}
+        />
+
+        {isImageModalVisible && (
+          <div className={styles.mediaOverlay} onClick={() => setImageModalVisible(false)}>
+            <div className={styles.fullMediaContainer} onClick={(e) => e.stopPropagation()}>
+              <button
+                className={styles.closeButton}
+                onClick={() => setImageModalVisible(false)}
+              >
+                ✕
+              </button>
+              <div className={styles.navButtonsContainer}>
+                {mediaList.length > 1 && (
+                  <button
+                    className={styles.navButton}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
+                    }}
+                  >
+                    ❮
+                  </button>
+                )}
+                <div className={styles.mediaWrapper}>
+                  {isVideo(mediaList[currentMediaIndex]) ? (
+                    <video src={mediaList[currentMediaIndex]} className={styles.fullMedia} controls autoPlay />
+                  ) : (
+                    <img src={mediaList[currentMediaIndex]} className={styles.fullMedia} alt="Full Media" />
+                  )}
+                </div>
+                {mediaList.length > 1 && (
+                  <button
+                    className={styles.navButton}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
+                    }}
+                  >
+                    ❯
+                  </button>
                 )}
               </div>
+            </div>
+          </div>
+        )}
 
-              {/* Nút Next */}
-              {mediaList.length > 1 && (
-                <button
-                  className={styles.navButton}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentMediaIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
-                  }}
-                >
-                  ❯
-                </button>
+        {shareVisible && (
+          <div
+            className={styles.shareOverlay}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShareVisible(false);
+            }}
+          >
+            <SharedPost post={post} me={me} setShareVisible={setShareVisible} />
+          </div>
+        )}
+
+        {successMessage && (
+          <div className={styles.successModalOverlay} onClick={() => setSuccessMessage('')}>
+            <div className={styles.successModal} onClick={(e) => e.stopPropagation()}>
+              {successMessage}
+            </div>
+          </div>
+        )}
+
+        {failedMessage && (
+          <div className={styles.failedModalOverlay} onClick={() => setFailedMessage('')}>
+            <div className={styles.failedModal} onClick={(e) => e.stopPropagation()}>
+              {failedMessage}
+            </div>
+          </div>
+        )}
+
+        {reactionListModalVisible && (
+          <div
+            className={styles.overlay}
+            onClick={(e) => {
+              e.stopPropagation();
+              setReactionListModalVisible(false);
+            }}
+          >
+            <div
+              className={styles.modalContent1}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3>Cảm xúc về bài viết</h3>
+              <div className={styles.reactionTabs}>
+                {reactionTabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    className={selectedReactionTab === tab.id ? styles.activeTab : styles.tab}
+                    onClick={() => setSelectedReactionTab(tab.id)}
+                  >
+                    {tab.icon && <span>{tab.icon}</span>}
+                    {tab.name || ''}
+                    <span>{tab.count}</span>
+                  </button>
+                ))}
+              </div>
+              {filteredReactions?.length > 0 ? (
+                <ul className={styles.reactionList}>
+                  {filteredReactions.map((reaction, index) => (
+                    <li
+                      key={index}
+                      className={styles.reactionItem}
+                      onClick={() => navigate(`/profile/${reaction.ID_user._id}`)}
+                    >
+                      <img
+                        src={reaction.ID_user.avatar}
+                        alt="User Avatar"
+                        className={styles.reactionAvatar}
+                      />
+                      <div>
+                        <span className={styles.reactionUserName}>
+                          {reaction.ID_user.first_name} {reaction.ID_user.last_name}
+                        </span>
+                        <div>{reaction.ID_reaction.icon} {reaction.ID_reaction.name}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Chưa có biểu cảm nào.</p>
               )}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Phần giao diện chia sẻ: Modal hiển thị khi người dùng nhấn nút chia sẻ */}
-      {shareVisible && (
-        <div
-          className={styles.shareOverlay}
-          onClick={(e) => {
-            e.stopPropagation();
-            setShareVisible(false);
-          }}
-        >
-          <SharedPost post={post} me={me} setShareVisible={setShareVisible} />
-        </div>
-      )}
-
-      {/* Thông báo thành công */}
-      {successMessage && (
-        <div className={styles.successModalOverlay} onClick={() => setSuccessMessage('')}>
-          <div className={styles.successModal} onClick={(e) => e.stopPropagation()}>
-            {successMessage}
-          </div>
-        </div>
-      )}
-
-      {/* Thông báo thất bại */}
-      {failedMessage && (
-        <div className={styles.failedModalOverlay} onClick={() => setFailedMessage('')}>
-          <div className={styles.failedModal} onClick={(e) => e.stopPropagation()}>
-            {failedMessage}
-          </div>
-        </div>
-      )}
-
-
-      {/* Modal danh sách biểu cảm */}
-      {reactionListModalVisible && (
-        <div
-          className={styles.overlay}
-          onClick={(e) => {
-            e.stopPropagation();
-            setReactionListModalVisible(false);
-          }}
-        >
-          <div
-            className={styles.modalContent1}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3>Cảm xúc về bài viết</h3>
-            <div className={styles.reactionTabs}>
-              {reactionTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  className={selectedReactionTab === tab.id ? styles.activeTab : styles.tab}
-                  onClick={() => setSelectedReactionTab(tab.id)}
-                >
-                  {tab.icon && <span>{tab.icon}</span>}
-                  {tab.name || ''}
-                  <span>{tab.count}</span>
-                </button>
-              ))}
-            </div>
-            {filteredReactions?.length > 0 ? (
-              <ul className={styles.reactionList}>
-                {filteredReactions.map((reaction, index) => (
-                  <li
-                    key={index}
-                    className={styles.reactionItem}
-                    onClick={() => navigate(`/profile/${reaction.ID_user._id}`)}
-                  >
-                    <img
-                      src={reaction.ID_user.avatar}
-                      alt="User Avatar"
-                      className={styles.reactionAvatar}
-                    />
-                    <div>
-                      <span className={styles.reactionUserName}>
-                        {reaction.ID_user.first_name} {reaction.ID_user.last_name}
-                      </span>
-                      <div>{reaction.ID_reaction.icon} {reaction.ID_reaction.name}</div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Chưa có biểu cảm nào.</p>
-            )}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

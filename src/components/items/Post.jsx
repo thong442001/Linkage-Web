@@ -265,6 +265,19 @@ const Post = ({
       (reaction) => reaction.ID_reaction._id === selectedReactionTab
     );
 
+
+    const canShowShareButton = () => {
+      if (post.type === 'Share') {
+        // Nếu là bài viết shared, chỉ kiểm tra trạng thái của bài viết gốc
+        if (post.ID_post_shared?._destroy || !post.ID_post_shared) {
+          return false;
+        }
+        return post.ID_post_shared.status !== 'Chỉ mình tôi';
+      }
+      // Nếu là bài viết gốc (ko phải bài share), kiểm tra trạng thái của chính nó
+      return post.status !== 'Chỉ mình tôi';
+    };
+
   return (
     <div className={postContainerClass}>
       {/* Header share */}
@@ -612,23 +625,15 @@ const Post = ({
               <FaComment size={17} />
               <span>Bình luận</span>
             </button>
-            <button
-              className='action'
-              onClick={() => handleShare()}
-              disabled={
-                post && post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)
-              }
-            >
-              <FaShare
-                size={17}
-                color={post && post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)
-                  ? '#888' : 'black'}
-              />
-              <span
-                color={post && post.type === "Share" && (post.ID_post_shared?._destroy || !post.ID_post_shared)
-                  && '#888'}
-              > Chia sẻ</span>
-            </button>
+            {canShowShareButton() && (
+              <button
+                className='action'
+                onClick={() => handleShare()}
+              >
+                <FaShare size={17} />
+                <span>Chia sẻ</span>
+              </button>
+            )}
           </div>
         )
       }
