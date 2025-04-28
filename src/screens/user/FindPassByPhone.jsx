@@ -209,7 +209,13 @@ const FindWithPhone = () => {
         `}
       </style>
       <div className="container">
-        <form className="form">
+        <form
+          className="form"
+          onSubmit={(e) => {
+            e.preventDefault(); 
+            handleCheckPhone();
+          }}
+        >
           <div className="header">
             <div style={{ display: "flex", alignItems: "center" }}>
               <h1 className="logo">Linkage</h1>
@@ -225,6 +231,12 @@ const FindWithPhone = () => {
             onChange={(e) => {
               setPhone(e.target.value.replace(/\s/g, ""));
               setError("");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleCheckPhone();
+                e.preventDefault();
+              }
             }}
             disabled={isLoading}
           />

@@ -279,7 +279,12 @@ const CheckEmail = () => {
         `}
       </style>
       <div className="container">
-        <form className="form">
+      <form
+          className="form"
+          onSubmit={(e) => {
+            e.preventDefault(); 
+          }}
+        >
           <div className="header">
             <div style={{ display: "flex", alignItems: "center" }}>
               {/* <button
@@ -305,6 +310,12 @@ const CheckEmail = () => {
               className={error ? "inputError" : "input"}
               value={code}
               onChange={handleOtpChange}
+              onKeyDown={( e ) => {
+                if (e.key === "Enter") {
+                  handleCheckOTP();
+                }
+              }
+            }
               maxLength="4"
               inputMode="numeric"
               disabled={isLoading}

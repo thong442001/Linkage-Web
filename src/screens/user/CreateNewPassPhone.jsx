@@ -277,7 +277,12 @@ const CreateNewPassWordPhone = () => {
         `}
       </style>
       <div className="container">
-        <form className="form">
+      <form
+          className="form"
+          onSubmit={(e) => {
+            e.preventDefault(); 
+          }}
+        >
           <div className="header">
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {/* <button
@@ -326,6 +331,13 @@ const CreateNewPassWordPhone = () => {
               className={errors.confirmPassword ? 'inputError' : 'input'}
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleCreatePassword();
+                  e.preventDefault();
+                }
+              }
+            }
               disabled={isLoading}
               autoCapitalize="none"
               autoComplete="new-password"

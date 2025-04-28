@@ -350,15 +350,15 @@ const Home = ({ content }) => {
         callGetAllNotificationOfUser();
     }, [me._id, token]);
 
-    useEffect(() => {
-        const formatNotifications = () => {
-            const formatted = notifications.map((notification) => {
-                let name = '';
-                let avatar = '';
-                let icon = '';
-                let background = '';
-                let content = '';
-                let showActions = false;
+    // useEffect(() => {
+    //     const formatNotifications = () => {
+    //         const formatted = notifications.map((notification) => {
+    //             let name = '';
+    //             let avatar = '';
+    //             let icon = '';
+    //             let background = '';
+    //             let content = '';
+    //             let showActions = false;
 
                 if (notification.type === 'Lời mời kết bạn') {
                     if (notification.ID_relationship.ID_userA._id === me._id) {
@@ -475,22 +475,22 @@ const Home = ({ content }) => {
                     background = '#007bff'
                 }
 
-                return {
-                    _id: notification._id,
-                    content,
-                    avatar,
-                    time: calculateTimeAgo(notification.updatedAt),
-                    showActions,
-                    icon,
-                    background,
-                };
-            });
+    //             return {
+    //                 _id: notification._id,
+    //                 content,
+    //                 avatar,
+    //                 time: calculateTimeAgo(notification.updatedAt),
+    //                 showActions,
+    //                 icon,
+    //                 background,
+    //             };
+    //         });
 
-            setFormattedNotifications(formatted);
-        };
+    //         setFormattedNotifications(formatted);
+    //     };
 
-        formatNotifications();
-    }, [notifications, me._id]);
+    //     formatNotifications();
+    // }, [notifications, me._id]);
 
     return (
         <div className="home-container">
