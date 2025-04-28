@@ -346,147 +346,147 @@ const Home = ({ content }) => {
         callGetAllNotificationOfUser();
     }, [me._id, token]);
 
-    useEffect(() => {
-        const formatNotifications = () => {
-            const formatted = notifications.map((notification) => {
-                let name = '';
-                let avatar = '';
-                let icon = '';
-                let background = '';
-                let content = '';
-                let showActions = false;
+    // useEffect(() => {
+    //     const formatNotifications = () => {
+    //         const formatted = notifications.map((notification) => {
+    //             let name = '';
+    //             let avatar = '';
+    //             let icon = '';
+    //             let background = '';
+    //             let content = '';
+    //             let showActions = false;
 
-                if (notification.type === 'Lời mời kết bạn') {
-                    if (notification.ID_relationship.ID_userA._id === me._id) {
-                        name = `${notification.ID_relationship.ID_userB.first_name} ${notification.ID_relationship.ID_userB.last_name}`;
-                        avatar = notification.ID_relationship.ID_userB.avatar;
-                    } else {
-                        name = `${notification.ID_relationship.ID_userA.first_name} ${notification.ID_relationship.ID_userA.last_name}`;
-                        avatar = notification.ID_relationship.ID_userA.avatar;
-                    }
-                    content = `${name} đã gửi cho bạn một lời mời kết bạn.`;
-                    icon = 'person-add';
-                    background = '#007bff';
-                    showActions = true;
-                } else if (notification.type === 'Đã đăng story mới') {
-                    name = `${notification.ID_post.ID_user.first_name} ${notification.ID_post.ID_user.last_name}`;
-                    avatar = notification.ID_post.ID_user.avatar;
-                    content = `${name} đã đăng một story mới.`;
-                    icon = 'book';
-                    background = '#DA7F00';
-                } else if (notification.type === 'Đã thành bạn bè của bạn') {
-                    if (notification.ID_relationship.ID_userA._id === me._id) {
-                        name = `${notification.ID_relationship.ID_userB.first_name} ${notification.ID_relationship.ID_userB.last_name}`;
-                        avatar = notification.ID_relationship.ID_userB.avatar;
-                    } else {
-                        name = `${notification.ID_relationship.ID_userA.first_name} ${notification.ID_relationship.ID_userA.last_name}`;
-                        avatar = notification.ID_relationship.ID_userA.avatar;
-                    }
-                    content = `${name} đã trở thành bạn bè của bạn.`;
-                    icon = 'people';
-                    background = '#007bff';
-                } else if (notification.type === 'Đã đăng bài mới') {
-                    name = `${notification.ID_post.ID_user.first_name} ${notification.ID_post.ID_user.last_name}`;
-                    avatar = notification.ID_post.ID_user.avatar;
-                    content = `${name} đã đăng một bài viết mới.`;
-                    icon = 'reader';
-                    background = '#E1E111';
-                } else if (notification.type === 'Bạn có 1 cuộc gọi video đến' || notification.type === 'Bạn có 1 cuộc gọi đến') {
-                    if (notification.ID_group.isPrivate) {
-                        const otherUser = notification.ID_group.members?.find((user) => user._id !== me._id);
-                        name = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Người gọi';
-                        avatar = otherUser?.avatar || 'https://example.com/default-avatar.png';
-                    } else {
-                        name = notification.ID_group.name || notification.ID_group.members
-                            ?.filter((user) => user._id !== me._id)
-                            .map((user) => `${user.first_name} ${user.last_name}`)
-                            .join(', ');
-                        avatar = notification.ID_group.avatar || 'https://example.com/default-group-avatar.png';
-                    }
-                    content = notification.type === 'Bạn có 1 cuộc gọi video đến' ? `${name} đang gọi video cho bạn.` : `${name} đang gọi cho bạn.`;
-                    icon = notification.type === 'Bạn có 1 cuộc gọi video đến' ? 'videocam-outline' : 'call';
-                    background = '#FF5733';
-                } else if (notification.type === 'Bạn đã được mời vào nhóm mới') {
-                    if (notification.ID_group.isPrivate) {
-                        const otherUser = notification.ID_group.members?.find((user) => user._id !== me._id);
-                        name = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Người gọi';
-                        avatar = otherUser?.avatar || 'https://example.com/default-avatar.png';
-                    } else {
-                        name = notification.ID_group.name || notification.ID_group.members
-                            ?.filter((user) => user._id !== me._id)
-                            .map((user) => `${user.first_name} ${user.last_name}`)
-                            .join(', ');
-                        avatar = notification.ID_group.avatar || 'https://example.com/default-group-avatar.png';
-                    }
-                    content = `${name} đã mời bạn vào một nhóm mới.`;
-                    icon = 'people-circle';
-                    background = 'green';
-                } else if (notification.type === 'Tin nhắn mới') {
-                    name = `${notification.ID_message.sender.first_name} ${notification.ID_message.sender.last_name}`;
-                    avatar = notification.ID_message.sender.avatar;
-                    content = `${name} đã gửi cho bạn một tin nhắn mới.`;
-                    icon = 'chatbox-ellipses';
-                    background = 'green';
-                } else if (notification.type === 'Đang livestream') {
-                    if (notification.ID_relationship.ID_userA._id === me._id) {
-                        name = `${notification.ID_relationship.ID_userB.first_name} ${notification.ID_relationship.ID_userB.last_name}`;
-                        avatar = notification.ID_relationship.ID_userB.avatar;
-                    } else {
-                        name = `${notification.ID_relationship.ID_userA.first_name} ${notification.ID_relationship.ID_userA.last_name}`;
-                        avatar = notification.ID_relationship.ID_userA.avatar;
-                    }
-                    content = `${name} đang livestream.`;
-                    icon = 'logo-rss';
-                    background = 'red';
-                } else if (notification.type === 'Đã thả biểu cảm vào bài viết của bạn') {
-                    name = `${notification.ID_post_reaction?.ID_user?.first_name} ${notification.ID_post_reaction?.ID_user?.last_name}`;
-                    avatar = notification.ID_post_reaction?.ID_user?.avatar;
-                    content = `${name} đã thả biểu cảm vào bài viết của bạn.`;
-                    icon = 'happy';
-                    background = 'green';
-                } else if (notification.type === 'Đã bình luận vào bài viết của bạn' || notification.type === 'Đã trả lời bình luận của bạn') {
-                    name = `${notification.ID_comment.ID_user.first_name} ${notification.ID_comment.ID_user.last_name}`;
-                    avatar = notification.ID_comment.ID_user.avatar;
-                    content = notification.type === 'Đã bình luận vào bài viết của bạn' ? `${name} đã bình luận vào bài viết của bạn.` : `${name} đã trả lời bình luận của bạn.`;
-                    icon = 'chatbubble-ellipses';
-                    background = 'green';
-                } else if (notification.type === 'Mời chơi game 3 lá') {
-                    const otherUser = notification.ID_group.members?.find((user) => user._id !== me._id);
-                    name = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Người gọi';
-                    avatar = otherUser?.avatar || 'https://example.com/default-avatar.png';
-                    content = `${name} đã mời bạn chơi game 3 lá.`;
-                    icon = 'game-controller-outline';
-                    background = '#007bff';
-                } else if (notification.type === 'Đã thả biểu cảm vào story của bạn') {
-                    name = 'Người nào đó';
-                    avatar = notification.ID_post.ID_user?.avatar;
-                    content = `${name} đã thả biểu cảm vào story của bạn.`;
-                    icon = 'happy';
-                    background = 'green';
-                }else if (notification.type == 'Tài khoản bị khóa') {
-                    name = 'Người Dùng'
-                    avatar = 'https://i.pinimg.com/736x/99/01/a7/9901a78c402edd1f13fc2dd098550214.jpg';
-                    content = 'Tài khoản của bạn đã bị khóa.';
-                    icon = 'shield'
-                    background= '#007bff'
-                  }
+    //             if (notification.type === 'Lời mời kết bạn') {
+    //                 if (notification.ID_relationship.ID_userA._id === me._id) {
+    //                     name = `${notification.ID_relationship.ID_userB.first_name} ${notification.ID_relationship.ID_userB.last_name}`;
+    //                     avatar = notification.ID_relationship.ID_userB.avatar;
+    //                 } else {
+    //                     name = `${notification.ID_relationship.ID_userA.first_name} ${notification.ID_relationship.ID_userA.last_name}`;
+    //                     avatar = notification.ID_relationship.ID_userA.avatar;
+    //                 }
+    //                 content = `${name} đã gửi cho bạn một lời mời kết bạn.`;
+    //                 icon = 'person-add';
+    //                 background = '#007bff';
+    //                 showActions = true;
+    //             } else if (notification.type === 'Đã đăng story mới') {
+    //                 name = `${notification.ID_post.ID_user.first_name} ${notification.ID_post.ID_user.last_name}`;
+    //                 avatar = notification.ID_post.ID_user.avatar;
+    //                 content = `${name} đã đăng một story mới.`;
+    //                 icon = 'book';
+    //                 background = '#DA7F00';
+    //             } else if (notification.type === 'Đã thành bạn bè của bạn') {
+    //                 if (notification.ID_relationship.ID_userA._id === me._id) {
+    //                     name = `${notification.ID_relationship.ID_userB.first_name} ${notification.ID_relationship.ID_userB.last_name}`;
+    //                     avatar = notification.ID_relationship.ID_userB.avatar;
+    //                 } else {
+    //                     name = `${notification.ID_relationship.ID_userA.first_name} ${notification.ID_relationship.ID_userA.last_name}`;
+    //                     avatar = notification.ID_relationship.ID_userA.avatar;
+    //                 }
+    //                 content = `${name} đã trở thành bạn bè của bạn.`;
+    //                 icon = 'people';
+    //                 background = '#007bff';
+    //             } else if (notification.type === 'Đã đăng bài mới') {
+    //                 name = `${notification.ID_post.ID_user.first_name} ${notification.ID_post.ID_user.last_name}`;
+    //                 avatar = notification.ID_post.ID_user.avatar;
+    //                 content = `${name} đã đăng một bài viết mới.`;
+    //                 icon = 'reader';
+    //                 background = '#E1E111';
+    //             } else if (notification.type === 'Bạn có 1 cuộc gọi video đến' || notification.type === 'Bạn có 1 cuộc gọi đến') {
+    //                 if (notification.ID_group.isPrivate) {
+    //                     const otherUser = notification.ID_group.members?.find((user) => user._id !== me._id);
+    //                     name = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Người gọi';
+    //                     avatar = otherUser?.avatar || 'https://example.com/default-avatar.png';
+    //                 } else {
+    //                     name = notification.ID_group.name || notification.ID_group.members
+    //                         ?.filter((user) => user._id !== me._id)
+    //                         .map((user) => `${user.first_name} ${user.last_name}`)
+    //                         .join(', ');
+    //                     avatar = notification.ID_group.avatar || 'https://example.com/default-group-avatar.png';
+    //                 }
+    //                 content = notification.type === 'Bạn có 1 cuộc gọi video đến' ? `${name} đang gọi video cho bạn.` : `${name} đang gọi cho bạn.`;
+    //                 icon = notification.type === 'Bạn có 1 cuộc gọi video đến' ? 'videocam-outline' : 'call';
+    //                 background = '#FF5733';
+    //             } else if (notification.type === 'Bạn đã được mời vào nhóm mới') {
+    //                 if (notification.ID_group.isPrivate) {
+    //                     const otherUser = notification.ID_group.members?.find((user) => user._id !== me._id);
+    //                     name = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Người gọi';
+    //                     avatar = otherUser?.avatar || 'https://example.com/default-avatar.png';
+    //                 } else {
+    //                     name = notification.ID_group.name || notification.ID_group.members
+    //                         ?.filter((user) => user._id !== me._id)
+    //                         .map((user) => `${user.first_name} ${user.last_name}`)
+    //                         .join(', ');
+    //                     avatar = notification.ID_group.avatar || 'https://example.com/default-group-avatar.png';
+    //                 }
+    //                 content = `${name} đã mời bạn vào một nhóm mới.`;
+    //                 icon = 'people-circle';
+    //                 background = 'green';
+    //             } else if (notification.type === 'Tin nhắn mới') {
+    //                 name = `${notification.ID_message.sender.first_name} ${notification.ID_message.sender.last_name}`;
+    //                 avatar = notification.ID_message.sender.avatar;
+    //                 content = `${name} đã gửi cho bạn một tin nhắn mới.`;
+    //                 icon = 'chatbox-ellipses';
+    //                 background = 'green';
+    //             } else if (notification.type === 'Đang livestream') {
+    //                 if (notification.ID_relationship.ID_userA._id === me._id) {
+    //                     name = `${notification.ID_relationship.ID_userB.first_name} ${notification.ID_relationship.ID_userB.last_name}`;
+    //                     avatar = notification.ID_relationship.ID_userB.avatar;
+    //                 } else {
+    //                     name = `${notification.ID_relationship.ID_userA.first_name} ${notification.ID_relationship.ID_userA.last_name}`;
+    //                     avatar = notification.ID_relationship.ID_userA.avatar;
+    //                 }
+    //                 content = `${name} đang livestream.`;
+    //                 icon = 'logo-rss';
+    //                 background = 'red';
+    //             } else if (notification.type === 'Đã thả biểu cảm vào bài viết của bạn') {
+    //                 name = `${notification.ID_post_reaction?.ID_user?.first_name} ${notification.ID_post_reaction?.ID_user?.last_name}`;
+    //                 avatar = notification.ID_post_reaction?.ID_user?.avatar;
+    //                 content = `${name} đã thả biểu cảm vào bài viết của bạn.`;
+    //                 icon = 'happy';
+    //                 background = 'green';
+    //             } else if (notification.type === 'Đã bình luận vào bài viết của bạn' || notification.type === 'Đã trả lời bình luận của bạn') {
+    //                 name = `${notification.ID_comment.ID_user.first_name} ${notification.ID_comment.ID_user.last_name}`;
+    //                 avatar = notification.ID_comment.ID_user.avatar;
+    //                 content = notification.type === 'Đã bình luận vào bài viết của bạn' ? `${name} đã bình luận vào bài viết của bạn.` : `${name} đã trả lời bình luận của bạn.`;
+    //                 icon = 'chatbubble-ellipses';
+    //                 background = 'green';
+    //             } else if (notification.type === 'Mời chơi game 3 lá') {
+    //                 const otherUser = notification.ID_group.members?.find((user) => user._id !== me._id);
+    //                 name = otherUser ? `${otherUser.first_name} ${otherUser.last_name}` : 'Người gọi';
+    //                 avatar = otherUser?.avatar || 'https://example.com/default-avatar.png';
+    //                 content = `${name} đã mời bạn chơi game 3 lá.`;
+    //                 icon = 'game-controller-outline';
+    //                 background = '#007bff';
+    //             } else if (notification.type === 'Đã thả biểu cảm vào story của bạn') {
+    //                 name = 'Người nào đó';
+    //                 avatar = notification.ID_post.ID_user?.avatar;
+    //                 content = `${name} đã thả biểu cảm vào story của bạn.`;
+    //                 icon = 'happy';
+    //                 background = 'green';
+    //             }else if (notification.type == 'Tài khoản bị khóa') {
+    //                 name = 'Người Dùng'
+    //                 avatar = 'https://i.pinimg.com/736x/99/01/a7/9901a78c402edd1f13fc2dd098550214.jpg';
+    //                 content = 'Tài khoản của bạn đã bị khóa.';
+    //                 icon = 'shield'
+    //                 background= '#007bff'
+    //               }
 
-                return {
-                    _id: notification._id,
-                    content,
-                    avatar,
-                    time: calculateTimeAgo(notification.updatedAt),
-                    showActions,
-                    icon,
-                    background,
-                };
-            });
+    //             return {
+    //                 _id: notification._id,
+    //                 content,
+    //                 avatar,
+    //                 time: calculateTimeAgo(notification.updatedAt),
+    //                 showActions,
+    //                 icon,
+    //                 background,
+    //             };
+    //         });
 
-            setFormattedNotifications(formatted);
-        };
+    //         setFormattedNotifications(formatted);
+    //     };
 
-        formatNotifications();
-    }, [notifications, me._id]);
+    //     formatNotifications();
+    // }, [notifications, me._id]);
 
     return (
         <div className="home-container">
