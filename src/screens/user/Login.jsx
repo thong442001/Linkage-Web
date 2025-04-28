@@ -126,6 +126,7 @@ const DangNhap = () => {
     const kiemTraDangNhap = () => {
         if (!kiemTraForm()) return;
 
+        // Chuyển email về lowercase khi gửi dữ liệu
         const duLieu = kiemTraEmailHopLe(emailHoacDienThoai)
             ? { email: emailHoacDienThoai.toLowerCase(), phone: "", password: matKhau }
             : { email: "", phone: emailHoacDienThoai, password: matKhau };
@@ -196,10 +197,7 @@ const DangNhap = () => {
                     margin="normal"
                     value={emailHoacDienThoai}
                     onChange={(e) => {
-                        const value = kiemTraEmailHopLe(e.target.value)
-                            ? e.target.value.toLowerCase()
-                            : e.target.value;
-                        setEmailHoacDienThoai(value);
+                        setEmailHoacDienThoai(e.target.value);
                     }}
                     error={!!loiEmailDienThoai}
                     helperText={loiEmailDienThoai}
