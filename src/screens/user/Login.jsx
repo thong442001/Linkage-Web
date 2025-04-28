@@ -202,6 +202,11 @@ const DangNhap = () => {
                     error={!!loiEmailDienThoai}
                     helperText={loiEmailDienThoai}
                     sx={{ mb: 2 }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            kiemTraDangNhap();
+                        }
+                    }}
                 />
                 <TextField
                     label="Mật khẩu"
@@ -224,6 +229,11 @@ const DangNhap = () => {
                                 </IconButton>
                             </InputAdornment>
                         ),
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            kiemTraDangNhap();
+                        }
                     }}
                 />
                 <p

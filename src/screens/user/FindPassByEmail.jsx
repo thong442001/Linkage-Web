@@ -29,16 +29,23 @@ const FindWithEmail = () => {
     setIsLoading(true);
     try {
       console.log("Sending payload:", { gmail });
-      const response = await dispatch(sendOTP_quenMatKhau_gmail({ gmail })).unwrap();
+      const response = await dispatch(
+        sendOTP_quenMatKhau_gmail({ gmail })
+      ).unwrap();
       console.log("Response từ sendOTP_quenMatKhau_gmail:", response);
       if (response.status) {
         navigate("/check-email", { state: { gmail } });
         setGmail("");
       } else {
-        throw new Error(response.message || "Gửi OTP thất bại. Vui lòng thử lại.");
+        throw new Error(
+          response.message || "Gửi OTP thất bại. Vui lòng thử lại."
+        );
       }
     } catch (error) {
-      setFailedMessage(error.message || "Có lỗi xảy ra, hãy chắc chắn email này đã được đăng ký.");
+      setFailedMessage(
+        error.message ||
+        "Có lỗi xảy ra, hãy chắc chắn email này đã được đăng ký."
+      );
       setFailedVisible(true);
       setTimeout(() => setFailedVisible(false), 2000);
     } finally {
@@ -186,7 +193,13 @@ const FindWithEmail = () => {
         `}
       </style>
       <div className="container">
-        <form className="form">
+        <form
+          className="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleCheckEmail();
+          }}
+        >
           <div className="header">
             <div style={{ display: "flex", alignItems: "center" }}>
               <h1 className="logo">Linkage</h1>
@@ -198,11 +211,18 @@ const FindWithEmail = () => {
             <input
               type="text"
               placeholder="Email"
+              pres
               className={error ? "inputError" : "input"}
               value={gmail}
               onChange={(e) => {
                 setGmail(e.target.value);
                 setError("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleCheckEmail();
+                  e.preventDefault();
+                }
               }}
               disabled={isLoading}
             />
@@ -216,14 +236,10 @@ const FindWithEmail = () => {
           >
             {isLoading ? "Đang xử lý..." : "Tiếp tục"}
           </button>
-          <p className="link"
-            onClick={() => navigate("/find-with-phone")}
-          >
+          <p className="link" onClick={() => navigate("/find-with-phone")}>
             Tìm bằng số điện thoại
           </p>
-          <p className="link"
-           onClick={() => navigate("/")}
-           >
+          <p className="link" onClick={() => navigate("/")}>
             Bạn đã có tài khoản? Đăng nhập
           </p>
         </form>
