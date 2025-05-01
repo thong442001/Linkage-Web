@@ -308,7 +308,26 @@ const Profile = () => {
           //     post._id === postId ? { ...post, _destroy: true } : post
           //   )
           // );
-          setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
+          setPosts((prevPosts) =>
+            prevPosts
+              .map((post) => {
+                if (
+                  post.ID_post_shared &&
+                  post.ID_post_shared._id &&
+                  post.ID_post_shared._id.toString() === postId.toString()
+                ) {
+                  return {
+                    ...post,
+                    ID_post_shared: {
+                      ...post.ID_post_shared,
+                      _destroy: true,
+                    },
+                  };
+                }
+                return post;
+              })
+              .filter((post) => post._id !== postId)
+          );
           setSuccessMessage("Đã xóa bài đăng!");
         })
         .catch((err) => {
